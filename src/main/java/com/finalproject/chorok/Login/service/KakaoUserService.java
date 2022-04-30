@@ -57,7 +57,7 @@ public class KakaoUserService {
         headers.set(AUTH_HEADER, TOKEN_TYPE + " " + jwt_token);
         KakaoUserResponseDto kakaoUserResponseDto = KakaoUserResponseDto.builder()
                 .token(TOKEN_TYPE + " " + jwt_token)
-                .userId(kakaoUser.getId())
+                .userId(kakaoUser.getUserId())
                 .nickname(kakaoUser.getNickname())
                 .email(kakaoUser.getEmail())
                 .build();
