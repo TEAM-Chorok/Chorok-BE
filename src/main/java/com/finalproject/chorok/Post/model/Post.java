@@ -27,11 +27,15 @@ public class Post extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id", unique = true, nullable = false)
-    private Long PostId;
+    private Long postId;
 
     @ManyToOne
     @JoinColumn(name = "post_type_code", referencedColumnName = "post_type_code")
     private PostType postType;
+
+//    @ManyToOne
+//    @JoinColumn(name="plant_place_code", referencedColumnName = "plant_place_code")
+//    private PlantPlace plantPlace;
 
     @Column(nullable = false)
     private String postTitle;

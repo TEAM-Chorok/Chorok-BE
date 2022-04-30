@@ -1,6 +1,6 @@
 package com.finalproject.chorok.Post.service;
 
-import com.finalproject.chorok.Post.dto.PostRespoonseDto;
+import com.finalproject.chorok.Post.dto.PostResponseDto;
 import com.finalproject.chorok.Post.model.Post;
 import com.finalproject.chorok.Post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,18 +27,38 @@ public class PostService {
     private final PostRepository postRepository;
 
     // 전체 게시물 조회
-    public List<PostRespoonseDto> readPosts(String postTypeCode) {
+    public List<PostResponseDto> readPosts(String postTypeCode) {
 
         List<Post> postList = postRepository.findAllByPostTypePostTypeCodeOrderByCreatedAt(postTypeCode);
-        List<PostRespoonseDto> postRespoonseDtoList = new ArrayList<>();
-        PostRespoonseDto postRespoonseDto = null;
+        List<PostResponseDto> postRespoonseDtoList = new ArrayList<>();
+        PostResponseDto postRespoonseDto = null;
 
         for(Post post : postList){
-             postRespoonseDto = new PostRespoonseDto(post.getPostId(),post.getPostTitle(),post.getPostImgUrlNo());
+             postRespoonseDto = new PostResponseDto(post.getPostId(),post.getPostTitle(),post.getPostImgUrlNo());
              postRespoonseDtoList.add(postRespoonseDto);
         }
 
         return postRespoonseDtoList;
 
     }
+
+    // 게시글 전체 조회 (게시글 타입과 식물위치로 분류)
+//    public List<PostRespoonseDto> readPlantPlacePosts(String postTypeCode, String plantPlaceCode) {
+//        List<Post> postList = postRepository.findAllByPostTypePostTypeCodeAndPlantPlacePlantPlaceCodeOrderByCreatedAt(postTypeCode,plantPlaceCode);
+//        List<PostRespoonseDto> postRespoonseDtoList = new ArrayList<>();
+//        PostRespoonseDto postRespoonseDto = null;
+//
+//        for(Post post : postList){
+//            postRespoonseDto = new PostRespoonseDto(post.getPostId(),post.getPostTitle(),post.getPostImgUrlNo());
+//            postRespoonseDtoList.add(postRespoonseDto);
+//        }
+//        return postRespoonseDtoList;
+//    }
+
+    // 게시글 상세조회
+    public void readPostDetail(Long postId) {
+
+    }
+
+
 }

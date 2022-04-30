@@ -5,6 +5,18 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * [model] - 게시판 좋아요 model
+ *
+ * @class   : PostLike
+ * @author  : 김주호
+ * @since   : 2022.04.03
+ * @version : 1.0
+ *
+ *   수정일     수정자             수정내용
+ *  --------   --------    ---------------------------
+ *
+ */
 @Entity
 @Getter
 @NoArgsConstructor
