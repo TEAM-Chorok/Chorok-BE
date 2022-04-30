@@ -19,7 +19,7 @@ import javax.activity.InvalidActivityException;
 import javax.validation.Valid;
 
 
-@Controller
+@RestController
 public class UserController {
 
     private final UserService userService;
@@ -35,7 +35,7 @@ public class UserController {
 
     // 회원 가입 요청 처리
     @PostMapping("/user/signup")
-    public void registerUser(SignupRequestDto requestDto) {
+    public void registerUser(@RequestBody SignupRequestDto requestDto) {
         userService.registerUser(requestDto);
     }
 
