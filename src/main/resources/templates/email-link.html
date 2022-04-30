@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>초록:인증 메일</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style type="text/css">
+        /* CLIENT-SPECIFIC RESETS */
+        /* Outlook.com(Hotmail)의 전체 너비 및 적절한 줄 높이를 허용 */
+        .ReadMsgBody{ width: 100%; }
+        .ExternalClass{ width: 100%; }
+        .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height: 100%; }
+        /* Outlook 2007 이상에서 Outlook이 추가하는 테이블 주위의 간격을 제거 */
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        /* Internet Explorer에서 크기가 조정된 이미지를 렌더링하는 방식을 수정 */
+        img { -ms-interpolation-mode: bicubic; }
+        /* Webkit 및 Windows 기반 클라이언트가 텍스트 크기를 자동으로 조정하지 않도록 수정 */
+        body, table, td, p, a, li, blockquote { -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; }
+        .wrap {
+            text-align: center;
+            margin: 52px auto;
+            padding: 20px;
+        }
+        .box {
+            border-radius: 10px;
+            background-color: #fff;
+            padding: 28px 24px;
+            text-align: left;
+            margin-top: 32px;
+        }
+        .box p {
+            font-size: 15px;
+        }
+        .box span {
+            color:#4149d3;
+        }
+        a {
+            display: block;
+            width: 136px;
+            height: 54px;
+            margin-top: 28px;
+            margin-left: auto;
+            margin-bottom: 72px;
+            margin-right: auto;
+            border-radius: 10px;
+            background-color: #4149d3;
+            color:#ffffff;
+            line-height: 54px;
+            text-decoration: none;
+            text-align: center;
+        }
+        .bottom {
+            color: #a2aab3;
+            padding-top: 27px;
+            border-top: 1px solid #eff0f2;
+        }
+    </style>
+</head>
+
+<body>
+<!-- OUTERMOST CONTAINER TABLE -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="width: 100%;" id="bodyTable">
+    <tr>
+        <td>
+
+            <!-- 600px - 800px CONTENTS CONTAINER TABLE -->
+            <table class="wrap" style="width:600px; background-color:#f4f6fa; text-align: center; margin: 52px auto; padding: 20px;" border="0" cellpadding="0" cellspacing="0" width="600" bgcolor="#f4f6fa">
+                <tr>
+                    <td>
+                        <p style="margin-bottom:2px;">나를 변화시키는 습관</p>
+                        <img src="https://roffjrrnf.s3.ap-northeast-2.amazonaws.com/image/6bbb5d8a-07d6-44e6-a150-87c97665120flogo_image.png" alt="logo image" style="width:106px; height: 50px;" width="106" height="50"/>
+                        <div class="box" style="border-radius: 10px; background-color: #fff; padding: 28px 24px; text-align: left; margin-top: 32px;" bgcolor="#ffffff">
+                            <h1 style="font-size: 18px; margin-bottom: 14px;">메일 인증 안내입니다.</h1>
+                            <p style="font-size: 15px;">안녕하세요.<br/>
+                                저희 초록(Chrok)을 가입해주셔서 진심으로 감사드립니다!<br/> 아래 <span style="color:#4149d3; font-weight: bold;">'이메일 인증'</span> 버튼을 클릭하여 회원가입을 완료해 주세요.<br/>
+                                감사합니다!</p>
+                            <a th:href="@{${link}}">
+                                <p style="display: block; width: 136px; height: 54px; margin-top: 28px;margin-left: auto;margin-bottom: 72px;margin-right: auto;border-radius: 10px;background-color: #4149d3; color:#ffffff; line-height: 54px; text-decoration: none; text-align: center;">이메일 인증</p>
+                            </a>
+                            <div class="bottom" style="color: #a2aab3; padding-top: 27px; border-top: 1px solid #eff0f2;">
+                                <p style="font-size: 12px;">만약 버튼이 정상적으로 클릭되지 않는다면,<br/>
+                                    플랫폼으로 돌아가서 '이메일 재발송'을 버튼을 클릭하여 다시 시도해 주세요.</p>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+</table>
+</body>
+</html>
