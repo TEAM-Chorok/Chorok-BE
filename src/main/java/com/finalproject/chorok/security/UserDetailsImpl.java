@@ -1,46 +1,41 @@
 package com.finalproject.chorok.security;
 
 import com.finalproject.chorok.Login.model.User;
-import lombok.Builder;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
 
-@Builder
-//@AllArgsConstructor
+@Getter
+@Slf4j
 public class UserDetailsImpl implements UserDetails {
+
 
     private final User user;
 
     public UserDetailsImpl(User user) {
-       this.user = user;
+        this.user = user;
     }
 
     public User getUser() {
         return user;
     }
-//
-//    public static UserDetailsImpl initUserDetails(HashMap<String, String> userInfo) {
-//        return UserDetailsImpl.builder()
-//                .username(userInfo.get(JwtTokenUtils.CLAIM_USER_NAME))
-//                //                .password(userInfo.get(JwtTokenUtils.CLAIM_USER_PASSWORD))
-//                .build();
-//    }
-//
-//    private String username;
-//    private String password;
 
     @Override
     public String getPassword() {
         return user.getPassword();
     }
+    public String getNickname() {return user.getNickname();}
 
     @Override
     public String getUsername() {
         return user.getUsername();
     }
+    public Long getUserId() {return user.getUserId();}
 
     @Override
     public boolean isAccountNonExpired() {

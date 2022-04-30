@@ -59,7 +59,7 @@ public class KakaoUserService {
                 .token(TOKEN_TYPE + " " + jwt_token)
                 .userId(kakaoUser.getUserId())
                 .nickname(kakaoUser.getNickname())
-                .email(kakaoUser.getEmail())
+                .email(kakaoUser.getUsername())
                 .build();
         System.out.println("kakao user's token : " + TOKEN_TYPE + " " + jwt_token);
         System.out.println("LOGIN SUCCESS!");
@@ -160,7 +160,7 @@ public class KakaoUserService {
             // email: kakao email
             String email = kakaoUserInfo.getEmail();
 
-            kakaoUser = new User(nickname, encodedPassword, email, kakaoId);
+            kakaoUser = new User(email, encodedPassword, nickname, kakaoId);
             userRepository.save(kakaoUser);
         }
         return kakaoUser;

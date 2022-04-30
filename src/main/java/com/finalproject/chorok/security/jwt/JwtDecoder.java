@@ -16,8 +16,8 @@ import static com.finalproject.chorok.security.jwt.JwtTokenUtils.*;
 @Component
 public class JwtDecoder {
 
-
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 
     public String decodeUsername(String token) {
         DecodedJWT decodedJWT = isValidToken(token)
@@ -38,6 +38,7 @@ public class JwtDecoder {
 
         return username;
     }
+
 
     private Optional<DecodedJWT> isValidToken(String token) {
         DecodedJWT jwt = null;

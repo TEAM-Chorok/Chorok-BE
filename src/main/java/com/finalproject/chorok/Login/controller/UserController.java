@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.activity.InvalidActivityException;
@@ -34,13 +33,13 @@ public class UserController {
     }
 
     // 회원 가입 요청 처리
-    @PostMapping("/user/signup")
+    @PostMapping("auth/signUp")
     public void registerUser(@RequestBody SignupRequestDto requestDto) {
         userService.registerUser(requestDto);
     }
 
     //카카오 로그인
-    @GetMapping("/user/kakao/callback")
+    @GetMapping("/auth/kakao/callback")
     public void kakaoLogin(@RequestParam String code) throws JsonProcessingException {
         System.out.println("제일 시작점");
         kakaoUserService.kakaoLogin(code);
@@ -48,10 +47,9 @@ public class UserController {
     }
 
     //구글 로그인
-    @GetMapping("/api/user/google/callback")
-//    @GetMapping("/login/oauth2/code/google")
+    @GetMapping("/auth/google/callback")
     public void googleLogin(@RequestParam String code) throws JsonProcessingException {
-//    public ResponseDto<GoogleUserResponseDto> googleLogin(@RequestParam String code) throws JsonProcessingException {
+
         System.out.println("구글로그인 시작");
         ResponseDto.<GoogleUserResponseDto>builder()
                 .status(HttpStatus.OK.toString())
@@ -67,23 +65,18 @@ public class UserController {
         return userService.sendTempPassword(emailRequestDto);
     }
 
-    // 회원 관련 정보 받기
-    @PostMapping("/user/userinfo")
-    @ResponseBody
-    public UserInfoDto getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        String username = userDetails.getUser().getUsername();
+    //로그인 확인
 
-        return new UserInfoDto(username);
+    @GetMapping("/user/isLogIn")
+    private ResponseEntity<IsLoginDto> isloginChk(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        System.out.println("시작");
+        System.out.println(userDetails);
+        userService.isloginChk(userDetails);
+
+        return new ResponseEntity<>(userService.isloginChk(userDetails),HttpStatus.OK);
+
     }
 
-
-    // 토큰 테스트용
-    @GetMapping("/test/write")
-    public String write() {
-
-        System.out.println("api 호출은 된건가");
-        return "write";
-    }
 //
 //    @GetMapping("/auth/check-email-token")
 //    public void checkEmailToken(String token, String email, HttpServletResponse response) {
