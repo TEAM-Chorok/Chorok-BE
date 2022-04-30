@@ -1,6 +1,6 @@
 package com.finalproject.chorok.todo.dto;
 
-import com.sparta.realsample.Model.Todo;
+import com.finalproject.chorok.todo.model.Todo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

@@ -1,11 +1,13 @@
 package com.finalproject.chorok.todo.dto;
 
-import com.sparta.realsample.Model.Todo;
+import com.finalproject.chorok.Login.model.User;
+import com.finalproject.chorok.todo.model.Todo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,12 +22,12 @@ public class MyPlantRequestDto {
     private String myPlantName;
     private User user;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime startDay;
+    private LocalDate startDay;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime endDay;
+    private LocalDate endDay;
     private List<Todo> todoList;
 
-    public MyPlantRequestDto(int plantNo, String myPlantPlaceCode, String myPlantImgUrl, String myPlantName, User user, LocalDateTime startDay, LocalDateTime endDay) {
+    public MyPlantRequestDto(int plantNo, String myPlantPlaceCode, String myPlantImgUrl, String myPlantName, User user, LocalDate startDay, LocalDate endDay) {
         this.plantNo = plantNo;
         this.myPlantPlaceCode = myPlantPlaceCode;
         this.myPlantImgUrl = myPlantImgUrl;

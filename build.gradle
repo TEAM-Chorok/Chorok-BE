@@ -48,6 +48,10 @@ dependencies {
     //validation
     implementation 'jakarta.validation:jakarta.validation-api:2.0.2'
 
+    //localdatetime
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.10.1'
+
+
 }
 
 tasks.named('test') {

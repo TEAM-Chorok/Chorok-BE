@@ -16,25 +16,24 @@ public class MyPlantResponseDto {
     private String plantNo;
     private String myPlantImgUrl;
     private String myPlantName;
-    private MyPlantPlace myPlantPlace;
+//    private MyPlantPlaceCode myPlantPlaceCode;
 
 
 
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDateTime startDay;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private String startDay;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDateTime endDay;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private String endDay;
 
-public MyPlantRequestDto(String plantNo, String myPlantImgUrl, String myPlantName, MyPlantPlace myPlantPlace, LocalDateTime startDay, LocalDateTime endDay){
-    this.plantNo = plantNo;
-    this.myPlantImgUrl = myPlantImgUrl;
-    this.myPlantName = myPlantName;
-    this.myPlantPlace = myPlantPlace;
-    this.startDay = startDay;
-    this.endDay = endDay;
-
-
-}
+//public MyPlantRequestDto(String plantNo, String myPlantImgUrl, String myPlantName, MyPlantPlaceCode myPlantPlaceCode, LocalDateTime startDay, LocalDateTime endDay){
+//    this.plantNo = plantNo;
+//    this.myPlantImgUrl = myPlantImgUrl;
+//    this.myPlantName = myPlantName;
+//    this.myPlantPlaceCode = myPlantPlaceCode;
+//    this.startDay = startDay;
+//    this.endDay = endDay;
+//
+//}
 }

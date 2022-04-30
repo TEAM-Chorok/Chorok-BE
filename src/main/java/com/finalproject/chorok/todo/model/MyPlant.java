@@ -1,11 +1,13 @@
 package com.finalproject.chorok.todo.model;
 
-import com.sparta.realsample.Dto.MyPlantRequestDto;
+import com.finalproject.chorok.Login.model.User;
+import com.finalproject.chorok.todo.dto.MyPlantRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,11 +20,11 @@ public class MyPlant {
     @Id
     private Long MyPlantInfoNo;
     private int plantNo;
-    private LocalDateTime startDay;
-    private LocalDateTime endDay;
     private String myPlantPlace;
     private String myPlantImgUrl;
     private String myPlantName;
+    private LocalDateTime startDay;
+    private LocalDateTime endDay;
     @OneToMany
     @JoinColumn
     private List<Todo> todoList;
@@ -30,13 +32,21 @@ public class MyPlant {
     @ManyToOne
     private User user;
 
-    public MyPlant(MyPlantRequestDto myPlantRequestDto, List<Todo> todoList){
+    public MyPlant(MyPlantRequestDto myPlantRequestDto, User user){
         this.plantNo = myPlantRequestDto.getPlantNo();
         this.myPlantPlace = myPlantRequestDto.getMyPlantPlaceCode();
         this.myPlantImgUrl = myPlantRequestDto.getMyPlantImgUrl();
         this.myPlantName = myPlantRequestDto.getMyPlantName();
-        this.todoList = todoList;
         this.user = user;
 
     }
+    public MyPlant(int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, LocalDate startDay, LocalDate endDay, User user){
+        this.plantNo = plantNo;
+        this.myPlantPlace = myPlantPlace;
+        this.myPlantImgUrl = myPlantImgUrl;
+        this.myPlantName = myPlantName;
+        this.user = user;
+
+    }
+
 }
