@@ -1,4 +1,4 @@
-package com.finalproject.chorok.todo.dto;
+package com.finalproject.chorok.MyPlant.dto;
 
 import com.finalproject.chorok.Login.model.User;
 import com.finalproject.chorok.todo.model.Todo;

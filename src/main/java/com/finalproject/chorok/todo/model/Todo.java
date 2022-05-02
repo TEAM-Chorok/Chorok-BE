@@ -1,6 +1,7 @@
 package com.finalproject.chorok.todo.model;
 
 import com.finalproject.chorok.Login.model.User;
+import com.finalproject.chorok.MyPlant.model.MyPlant;
 import lombok.*;
 
 import javax.persistence.*;

@@ -1,8 +1,8 @@
-package com.finalproject.chorok.todo.controller;
+package com.finalproject.chorok.MyPlant.controller;
 
 import com.finalproject.chorok.security.UserDetailsImpl;
-import com.finalproject.chorok.todo.dto.MyPlantRequestDto;
-import com.finalproject.chorok.todo.service.MyPlantService;
+import com.finalproject.chorok.MyPlant.dto.MyPlantRequestDto;
+import com.finalproject.chorok.MyPlant.service.MyPlantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;

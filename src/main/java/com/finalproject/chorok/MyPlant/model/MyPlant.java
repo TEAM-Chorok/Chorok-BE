@@ -1,14 +1,15 @@
-package com.finalproject.chorok.todo.model;
+package com.finalproject.chorok.MyPlant.model;
 
 import com.finalproject.chorok.Login.model.User;
-import com.finalproject.chorok.todo.dto.MyPlantRequestDto;
+import com.finalproject.chorok.MyPlant.dto.MyPlantRequestDto;
+import com.finalproject.chorok.MyPlant.dto.MyPlantResponseDto;
+import com.finalproject.chorok.todo.model.Todo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter // get 함수를 일괄적으로 만들어줍니다.
@@ -23,8 +24,8 @@ public class MyPlant {
     private String myPlantPlace;
     private String myPlantImgUrl;
     private String myPlantName;
-    private LocalDateTime startDay;
-    private LocalDateTime endDay;
+    private LocalDate startDay;
+    private LocalDate endDay;
     @OneToMany
     @JoinColumn
     private List<Todo> todoList;
@@ -45,6 +46,18 @@ public class MyPlant {
         this.myPlantPlace = myPlantPlace;
         this.myPlantImgUrl = myPlantImgUrl;
         this.myPlantName = myPlantName;
+        this.startDay = startDay;
+        this.endDay = endDay;
+        this.user = user;
+
+    }
+    public MyPlant(MyPlantResponseDto myPlantResponseDto, User user){
+        this.plantNo = myPlantResponseDto.getPlantNo();
+        this.myPlantPlace = myPlantResponseDto.getMyPlantPlace();
+        this.myPlantImgUrl = myPlantResponseDto.getMyPlantImgUrl();
+        this.myPlantName = myPlantResponseDto.getMyPlantImgUrl();
+        this.startDay = myPlantResponseDto.getStartDay();
+        this.endDay = myPlantResponseDto.getEndDay();
         this.user = user;
 
     }
