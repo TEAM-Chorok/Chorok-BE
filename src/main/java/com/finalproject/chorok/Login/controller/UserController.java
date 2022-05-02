@@ -6,7 +6,7 @@ import com.finalproject.chorok.Login.dto.*;
 import com.finalproject.chorok.Login.service.GoogleUserService;
 import com.finalproject.chorok.Login.service.KakaoUserService;
 import com.finalproject.chorok.Login.service.UserService;
-import com.finalproject.chorok.utils.StatusMessage;
+import com.finalproject.chorok.Common.utils.StatusMessage;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

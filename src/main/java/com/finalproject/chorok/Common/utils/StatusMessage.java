@@ -1,4 +1,4 @@
-package com.finalproject.chorok.utils;
+package com.finalproject.chorok.Common.utils;
 
 import lombok.Data;
 
