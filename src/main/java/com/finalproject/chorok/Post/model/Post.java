@@ -1,12 +1,17 @@
 package com.finalproject.chorok.Post.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.finalproject.chorok.Login.model.User;
+import com.finalproject.chorok.Post.dto.PostWriteRequestDto;
 import com.finalproject.chorok.common.model.Timestamped;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * [model] - 게시판 model
@@ -33,7 +38,7 @@ public class Post extends Timestamped {
 
     @ManyToOne
     @JoinColumn(name = "user_id",referencedColumnName = "user_id")
-    private User userId;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "post_type_code", referencedColumnName = "post_type_code")
@@ -43,6 +48,10 @@ public class Post extends Timestamped {
     @JoinColumn(name="plant_place_code", referencedColumnName = "plant_place_code")
     private PlantPlace plantPlace;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Comment> commentList;
+
     @Column(nullable = false)
     private String postTitle;
 
@@ -50,5 +59,15 @@ public class Post extends Timestamped {
     private String postContent;
 
     @Column
-    private String postImgUrlNo;
+    private String postImgUrl;
+
+    // 게시글 등록
+    public Post(PostWriteRequestDto post, User user, PlantPlace plantPlace, PostType postType) {
+        this.user = user;
+        this.postTitle=post.getPostTitle();
+        this.postContent=post.getPostContent();
+        this.postType = postType;
+        this.postImgUrl = post.getPostImgUrl();
+        this.plantPlace=plantPlace;
+    }
 }
