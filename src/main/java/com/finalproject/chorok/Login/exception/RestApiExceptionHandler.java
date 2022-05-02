@@ -1,4 +1,4 @@
-package com.finalproject.chorok.Login.exception.Exception;
+package com.finalproject.chorok.Login.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
