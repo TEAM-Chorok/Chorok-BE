@@ -27,9 +27,6 @@ public class User {
     private String password;
 
     @Column(nullable = true, unique = true)
-    private String email;
-
-    @Column(nullable = true, unique = true)
     private String nickname;
 
     @Column(unique = true)
@@ -46,19 +43,19 @@ public class User {
     private LocalDateTime emailCheckTokenGeneratedAt;
 
     @Builder
-    public User(String username, String password, String email) {
+    public User(String username, String password, String nickname) {
         this.username = username;
         this.password = password;
-        this.email = email;
+        this.nickname = nickname;
         this.kakaoId = null;
         this.googleId = null;
 
     }
 
-    public User(String username, String password, String email, Long kakaoId) {
+    public User(String username, String password, String nickname, Long kakaoId) {
             this.username = username;
             this.password = password;
-            this.email = email;
+            this.nickname = nickname;
             this.kakaoId = kakaoId;
 
     }

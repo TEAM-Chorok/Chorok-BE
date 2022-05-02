@@ -3,15 +3,16 @@ package com.finalproject.chorok.Login.service;
 
 import com.finalproject.chorok.Login.dto.CMResponseDto;
 import com.finalproject.chorok.Login.dto.EmailRequestDto;
+import com.finalproject.chorok.Login.dto.IsLoginDto;
 import com.finalproject.chorok.Login.dto.SignupRequestDto;
 
 import com.finalproject.chorok.Login.model.EmailMessage;
 import com.finalproject.chorok.Login.model.User;
 import com.finalproject.chorok.Login.repository.EmailService;
 import com.finalproject.chorok.Login.repository.UserRepository;
+import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -58,23 +59,23 @@ public class UserService {
 
         // 패스워드 암호화
         String password = passwordEncoder.encode(requestDto.getPassword());
-        String email = requestDto.getEmail();
+        String nickname = requestDto.getNickname();
         System.out.println(password+"3");
 
 
-        User user = new User(username, password, email);
+        User user = new User(username, password, nickname);
         User savedUser = userRepository.save(user);
         System.out.println(user+"4");
 
-        savedUser.generateEmailCheckToken();
-        sendSignupConfirmEmail(savedUser);
+//        savedUser.generateEmailCheckToken();
+//        sendSignupConfirmEmail(savedUser);
 
     }
 
     @Transactional
     public ResponseEntity<CMResponseDto> sendTempPassword(EmailRequestDto emailRequestDto) throws InvalidActivityException {
 
-        User findUser = userRepository.findByEmail(emailRequestDto.getEmail()).orElseThrow(
+        User findUser = userRepository.findByUsername(emailRequestDto.getEmail()).orElseThrow(
                 () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
         );
         System.out.println("이메일 존재여부 체크");
@@ -95,7 +96,7 @@ public class UserService {
 //
     private void sendTempPasswordConfirmEmail(User user, String tempPwd) {
         EmailMessage emailMessage = EmailMessage.builder()
-                .to(user.getEmail())
+                .to(user.getUsername())
                 .subject("소행성(소소한 행동 습관 형성 챌린지), 임시 비밀번호 발급")
                 .message("<p>임시 비밀번호: <b>" + tempPwd + "</b></p><br>" +
                         "<p>로그인 후 비밀번호를 변경해주세요.</p>")
@@ -128,16 +129,32 @@ public class UserService {
 
         Context context = new Context();
         context.setVariable("link", path+"/auth/check-email-token?token=" + user.getEmailCheckToken() +
-                "&email=" + user.getEmail());
+                "&email=" + user.getUsername());
         System.out.println("진행체크1");
         String message = templateEngine.process("email-link", context);
         System.out.println("진행체크2");
         EmailMessage emailMessage = EmailMessage.builder()
-                .to(user.getEmail())
+                .to(user.getUsername())
                 .subject("초록(Chorok), 회원 가입 인증 메일")
                 .message(message)
                 .build();
         System.out.println("진행체크3");
         emailService.sendEmail(emailMessage);
+    }
+
+    //로그인 확인
+    public IsLoginDto isloginChk(UserDetailsImpl userDetails){
+        System.out.println("isloginChk함수 들어옴");
+        String username = userDetails.getUsername();
+        String nickname = userDetails.getUser().getNickname();
+        Long userId = userDetails.getUser().getUserId();
+        Optional<User> user = userRepository.findByUsername(username);
+        IsLoginDto isLoginDto = IsLoginDto.builder()
+                .username(username)
+                .nickname(nickname)
+                .userId(userId)
+                .build();
+        System.out.println("isLoginDto 만들어짐");
+        return isLoginDto;
     }
 }
