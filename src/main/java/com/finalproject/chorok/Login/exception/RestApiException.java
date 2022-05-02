@@ -1,4 +1,4 @@
-package com.finalproject.chorok.Login.exception.Exception;
+package com.finalproject.chorok.Login.exception;
 
 import lombok.Getter;
 import lombok.Setter;
