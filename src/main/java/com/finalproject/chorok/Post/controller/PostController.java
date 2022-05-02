@@ -2,11 +2,13 @@ package com.finalproject.chorok.Post.controller;
 
 import com.finalproject.chorok.Post.dto.PostDetailResponseDto;
 import com.finalproject.chorok.Post.dto.PostResponseDto;
+import com.finalproject.chorok.Post.dto.PostWriteRequestDto;
+import com.finalproject.chorok.Post.model.Post;
 import com.finalproject.chorok.Post.service.PostService;
+import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,9 +37,10 @@ public class PostController {
 
     // 게시글 전체 조회 (게시글 타입과 식물위치로 분류)
     @GetMapping("/read-posts/{postTypeCode}/{plantPlaceCode}")
-    public String readPlantPlacePosts(@PathVariable String postTypeCode, @PathVariable String plantPlaceCode){
-        postService.readPlantPlacePosts(postTypeCode,plantPlaceCode);
-        return "";
+    public List<PostResponseDto> readPlantPlacePosts(@PathVariable String postTypeCode, @PathVariable String plantPlaceCode){
+
+        return postService.readPlantPlacePosts(postTypeCode,plantPlaceCode);
+
     }
     // 상세페이지 조회
     @GetMapping("/read-post/detail/{postId}")
@@ -45,4 +48,18 @@ public class PostController {
         postService.readPostDetail(postId);
         return "";
     }
+
+    // 게시글 작성
+    @PostMapping("/write-post")
+    public Post writePost(@RequestBody PostWriteRequestDto postWriteRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+       return postService.writePost(postWriteRequestDto,userDetails.getUser());
+    }
+
+    // 게시글 삭제
+    @DeleteMapping("/delete-post/{postId}")
+    public String deletePost(@PathVariable Long postId){
+        postService.deletePost(postId);
+        return "삭제완료";
+    }
+
 }

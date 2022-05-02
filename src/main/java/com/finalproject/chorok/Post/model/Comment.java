@@ -1,5 +1,7 @@
 package com.finalproject.chorok.Post.model;
 
+import com.finalproject.chorok.Login.model.User;
+import com.finalproject.chorok.common.model.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,7 +24,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Table(name = "comment")
-public class Comment {
+public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_no", unique = true, nullable = false)
@@ -31,12 +33,18 @@ public class Comment {
     @Column(nullable = false)
     private String commentContent;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id", referencedColumnName = "post_id")
     private Post post;
 
-//    @ManyToOne
-//    @JoinColumn(name = "username", referencedColumnName = "username")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    private User user;
 
+
+    public Comment(User user, Post post, String commentContent) {
+        this.commentContent = commentContent;
+        this.post=post;
+        this.user=user;
+    }
 }
