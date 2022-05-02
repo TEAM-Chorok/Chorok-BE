@@ -48,6 +48,9 @@ dependencies {
     //validation
     implementation 'jakarta.validation:jakarta.validation-api:2.0.2'
 
+    //S3
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.3.1'
+
 }
 
 tasks.named('test') {
