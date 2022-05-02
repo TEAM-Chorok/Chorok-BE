@@ -6,6 +6,7 @@ import com.finalproject.chorok.Login.dto.*;
 import com.finalproject.chorok.Login.service.GoogleUserService;
 import com.finalproject.chorok.Login.service.KakaoUserService;
 import com.finalproject.chorok.Login.service.UserService;
+import com.finalproject.chorok.Common.utils.StatusMessage;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.activity.InvalidActivityException;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 
 
 @RestController
@@ -32,10 +35,42 @@ public class UserController {
         this.googleUserService = googleUserService;
     }
 
+    //아이디 중복 체크
+    @PostMapping("/auth/usernameCheck")
+    private ResponseEntity<StatusMessage> usernameDupliChk(@RequestBody DuplicateChkDto duplicateChkDto) {
+        StatusMessage statusMessage = new StatusMessage();
+        String msg = userService.usernameDuplichk(duplicateChkDto);
+        if (msg.equals("사용가능한 이메일 입니다.")) {
+            statusMessage.setStatusCode(StatusMessage.StatusEnum.OK);
+            statusMessage.setMessage(msg);
+            return new ResponseEntity<>(statusMessage, HttpStatus.OK);
+        } else {
+            statusMessage.setStatusCode(StatusMessage.StatusEnum.BAD_REQUEST);
+            statusMessage.setMessage(msg);
+            return new ResponseEntity<>(statusMessage, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //닉네임 중복 체크
+    @PostMapping("/auth/nicknameCheck")
+    private ResponseEntity<StatusMessage> nicknameDupliChk(@RequestBody DuplicateChkDto duplicateChkDto){
+        StatusMessage statusMessage = new StatusMessage();
+        String msg = userService.nicknameDuplichk(duplicateChkDto);
+        if(msg.equals("사용가능한 닉네임 입니다.")){
+            statusMessage.setStatusCode(StatusMessage.StatusEnum.OK);
+            statusMessage.setMessage(msg);
+            return new ResponseEntity<>(statusMessage,HttpStatus.OK);
+        }else{
+            statusMessage.setStatusCode(StatusMessage.StatusEnum.BAD_REQUEST);
+            statusMessage.setMessage(msg);
+            return new ResponseEntity<>(statusMessage, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     // 회원 가입 요청 처리
     @PostMapping("auth/signUp")
-    public void registerUser(@RequestBody SignupRequestDto requestDto) {
-        userService.registerUser(requestDto);
+    public String registerUser(@RequestBody SignupRequestDto requestDto) {
+        return userService.registerUser(requestDto);
     }
 
     //카카오 로그인
@@ -79,13 +114,14 @@ public class UserController {
 
 //
 //    @GetMapping("/auth/check-email-token")
-//    public void checkEmailToken(String token, String email, HttpServletResponse response) {
+//    public void checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
+//        System.out.println("이메일 토큰 인증과정 시작");
 //        userService.checkEmailToken(token, email);
 //        try {
-//            response.sendRedirect("https://localhost:8080/signup/complete");
-//
+//            response.sendRedirect("https://localhost:8080/auth/logIn");
+//            System.out.println("redirect 시키기");
 //        } catch (IOException e) {
-//            throw new InvalidException("유효하지 않은 주소입니다.");
+//            throw new InvalidActivityException("유효하지 않은 주소입니다.");
 //        }
 //
 //    }
