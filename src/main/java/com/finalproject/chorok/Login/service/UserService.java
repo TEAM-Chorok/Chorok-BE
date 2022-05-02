@@ -1,18 +1,16 @@
 package com.finalproject.chorok.Login.service;
 
 
-import com.finalproject.chorok.Login.dto.CMResponseDto;
-import com.finalproject.chorok.Login.dto.EmailRequestDto;
-import com.finalproject.chorok.Login.dto.IsLoginDto;
-import com.finalproject.chorok.Login.dto.SignupRequestDto;
+import com.finalproject.chorok.Login.dto.*;
 
 import com.finalproject.chorok.Login.model.EmailMessage;
 import com.finalproject.chorok.Login.model.User;
 import com.finalproject.chorok.Login.repository.EmailService;
 import com.finalproject.chorok.Login.repository.UserRepository;
+import com.finalproject.chorok.Login.validator.Validator;
 import com.finalproject.chorok.security.UserDetailsImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,42 +20,37 @@ import org.thymeleaf.context.Context;
 import javax.activity.InvalidActivityException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Random;
 
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final TemplateEngine templateEngine;
     private final HttpServletRequest request;
+    private final Validator validator;
 
-
-    @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, TemplateEngine templateEngine, HttpServletRequest request) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
-        this.templateEngine = templateEngine;
-        this.request = request;
-    }
 
     @Transactional
-    public void registerUser(SignupRequestDto requestDto) {
-        // 회원 ID 중복 확인
-        String username = requestDto.getUsername();
-        System.out.println(username+"1");
-        Optional<User> found = userRepository.findByUsername(username);
-        System.out.println(found+"2");
+    public String registerUser(SignupRequestDto requestDto) {
+        String msg = "회원가입 성공";
 
-        if (found.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자 ID 가 존재합니다.");
+        try {
+            //회원가입 확인
+            validator.signupValidate(requestDto);
+        } catch (IllegalArgumentException e) {
+            msg = e.getMessage();
+            return msg;
         }
 
         // 패스워드 암호화
+        String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
         String nickname = requestDto.getNickname();
         System.out.println(password+"3");
@@ -69,8 +62,9 @@ public class UserService {
 
 //        savedUser.generateEmailCheckToken();
 //        sendSignupConfirmEmail(savedUser);
-
+        return msg;
     }
+
 
     @Transactional
     public ResponseEntity<CMResponseDto> sendTempPassword(EmailRequestDto emailRequestDto) throws InvalidActivityException {
@@ -122,25 +116,26 @@ public class UserService {
         return buffer.toString();
     }
 //
-
-    private void sendSignupConfirmEmail(User user) {
-        System.out.println("sendSignupConfirmEmail 시작");
-        String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-
-        Context context = new Context();
-        context.setVariable("link", path+"/auth/check-email-token?token=" + user.getEmailCheckToken() +
-                "&email=" + user.getUsername());
-        System.out.println("진행체크1");
-        String message = templateEngine.process("email-link", context);
-        System.out.println("진행체크2");
-        EmailMessage emailMessage = EmailMessage.builder()
-                .to(user.getUsername())
-                .subject("초록(Chorok), 회원 가입 인증 메일")
-                .message(message)
-                .build();
-        System.out.println("진행체크3");
-        emailService.sendEmail(emailMessage);
-    }
+//
+//    private void sendSignupConfirmEmail(User user) {
+//        System.out.println("sendSignupConfirmEmail 시작");
+//        String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+//
+//        Context context = new Context();
+//        context.setVariable("link", path+"/auth/check-email-token?token=" + user.getEmailCheckToken() +
+//                "&email=" + user.getUsername());
+//        System.out.println("진행체크1");
+//        String message = templateEngine.process("email-link", context);
+//        System.out.println("진행체크2");
+//        EmailMessage emailMessage = EmailMessage.builder()
+//                .to(user.getUsername())
+//                .subject("초록(Chorok), 회원 가입 인증 메일")
+//                .message(message)
+//                .build();
+//        System.out.println("진행체크3");
+//        emailService.sendEmail(emailMessage);
+//        System.out.println("진행체크4");
+//    }
 
     //로그인 확인
     public IsLoginDto isloginChk(UserDetailsImpl userDetails){
@@ -157,4 +152,47 @@ public class UserService {
         System.out.println("isLoginDto 만들어짐");
         return isLoginDto;
     }
+
+    //아이디 중복체크
+    public String usernameDuplichk(DuplicateChkDto duplicateChkDto){
+        String msg = "사용가능한 이메일 입니다.";
+
+        try {
+            validator.idCheck(duplicateChkDto);
+        } catch (IllegalArgumentException e) {
+            msg = e.getMessage();
+            return msg;
+        }
+        return msg;
+        }
+
+
+
+    //닉네임 중복검사
+    public String nicknameDuplichk(DuplicateChkDto duplicateChkDto) {
+        String msg = "사용가능한 닉네임 입니다.";
+
+        try {
+            validator.nickCheck(duplicateChkDto);
+        } catch (IllegalArgumentException e) {
+            msg = e.getMessage();
+            return msg;
+        }
+        return msg;
+    }
+//
+//    @Transactional
+//    public ResponseEntity<CMResponseDto> checkEmailToken(String token, String email) throws InvalidActivityException {
+//        System.out.println("이메일 토큰 인증과정 함수시작");
+//        User findUser = userRepository.findByUsername(email).orElseThrow(
+//                () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
+//        );
+//
+//        if (!findUser.isValidToken(token))
+//            throw new InvalidActivityException("유효하지 않는 토큰입니다.");
+//
+//        findUser.setEmailVerified(true);
+//        System.out.println("email verified로 설정");
+//        return ResponseEntity.ok(new CMResponseDto("true"));
+//    }
 }
