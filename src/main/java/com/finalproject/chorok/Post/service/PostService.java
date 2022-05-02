@@ -30,30 +30,30 @@ public class PostService {
     public List<PostResponseDto> readPosts(String postTypeCode) {
 
         List<Post> postList = postRepository.findAllByPostTypePostTypeCodeOrderByCreatedAt(postTypeCode);
+        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+        PostResponseDto postResponseDto = null;
+
+        for(Post post : postList){
+            postResponseDto = new PostResponseDto(post.getPostId(),post.getPostTitle(),post.getPostImgUrlNo());
+            postResponseDtoList.add(postResponseDto);
+        }
+
+        return postResponseDtoList;
+
+    }
+
+     //게시글 전체 조회 (게시글 타입과 식물위치로 분류)
+    public List<PostResponseDto> readPlantPlacePosts(String postTypeCode, String plantPlaceCode) {
+        List<Post> postList = postRepository.findAllByPostTypePostTypeCodeAndPlantPlacePlantPlaceCodeOrderByCreatedAt(postTypeCode,plantPlaceCode);
         List<PostResponseDto> postRespoonseDtoList = new ArrayList<>();
         PostResponseDto postRespoonseDto = null;
 
         for(Post post : postList){
-             postRespoonseDto = new PostResponseDto(post.getPostId(),post.getPostTitle(),post.getPostImgUrlNo());
-             postRespoonseDtoList.add(postRespoonseDto);
+            postRespoonseDto = new PostResponseDto(post.getPostId(),post.getPostTitle(),post.getPostImgUrlNo());
+            postRespoonseDtoList.add(postRespoonseDto);
         }
-
         return postRespoonseDtoList;
-
     }
-
-    // 게시글 전체 조회 (게시글 타입과 식물위치로 분류)
-//    public List<PostRespoonseDto> readPlantPlacePosts(String postTypeCode, String plantPlaceCode) {
-//        List<Post> postList = postRepository.findAllByPostTypePostTypeCodeAndPlantPlacePlantPlaceCodeOrderByCreatedAt(postTypeCode,plantPlaceCode);
-//        List<PostRespoonseDto> postRespoonseDtoList = new ArrayList<>();
-//        PostRespoonseDto postRespoonseDto = null;
-//
-//        for(Post post : postList){
-//            postRespoonseDto = new PostRespoonseDto(post.getPostId(),post.getPostTitle(),post.getPostImgUrlNo());
-//            postRespoonseDtoList.add(postRespoonseDto);
-//        }
-//        return postRespoonseDtoList;
-//    }
 
     // 게시글 상세조회
     public void readPostDetail(Long postId) {

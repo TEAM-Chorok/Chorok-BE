@@ -1,7 +1,6 @@
 package com.finalproject.chorok.plant.model;
 
 
-import com.sun.org.apache.xalan.internal.xsltc.dom.SimpleResultTreeImpl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;

@@ -34,15 +34,15 @@ public class PostController {
     }
 
     // 게시글 전체 조회 (게시글 타입과 식물위치로 분류)
-//    @GetMapping("/read-posts/{postTypeCode}/{plantPlaceCode}")
-//    public String readPlantPlacePosts(@PathVariable String postTypeCode, @PathVariable String plantPlaceCode){
-//        postService.readPlantPlacePosts(postTypeCode,plantPlaceCode);
-//        return "";
-//    }
-
-//    @GetMapping("/read-post/detail/{postId}")
-//    public PostDetailResponseDto readPostDetail(@PathVariable Long postId){
-//        postService.readPostDetail(postId);
-//
-//    }
+    @GetMapping("/read-posts/{postTypeCode}/{plantPlaceCode}")
+    public String readPlantPlacePosts(@PathVariable String postTypeCode, @PathVariable String plantPlaceCode){
+        postService.readPlantPlacePosts(postTypeCode,plantPlaceCode);
+        return "";
+    }
+    // 상세페이지 조회
+    @GetMapping("/read-post/detail/{postId}")
+    public String readPostDetail(@PathVariable Long postId){
+        postService.readPostDetail(postId);
+        return "";
+    }
 }

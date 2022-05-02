@@ -1,6 +1,8 @@
 package com.finalproject.chorok.Post.model;
 
+import com.finalproject.chorok.Login.model.User;
 import com.finalproject.chorok.common.model.Timestamped;
+import com.finalproject.chorok.plant.model.PlantPlace;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,12 +32,16 @@ public class Post extends Timestamped {
     private Long postId;
 
     @ManyToOne
+    @JoinColumn(name = "user_id",referencedColumnName = "user_id")
+    private User userId;
+
+    @ManyToOne
     @JoinColumn(name = "post_type_code", referencedColumnName = "post_type_code")
     private PostType postType;
 
-//    @ManyToOne
-//    @JoinColumn(name="plant_place_code", referencedColumnName = "plant_place_code")
-//    private PlantPlace plantPlace;
+    @ManyToOne
+    @JoinColumn(name="plant_place_code", referencedColumnName = "plant_place_code")
+    private PlantPlace plantPlace;
 
     @Column(nullable = false)
     private String postTitle;
