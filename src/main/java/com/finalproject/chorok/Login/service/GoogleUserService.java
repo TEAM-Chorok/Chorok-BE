@@ -186,9 +186,9 @@ public class GoogleUserService {
 //            googleUser = new User("nickname", encodedPassword, username);
 
             googleUser = User.builder()
-                    .username(nickname)
+                    .username(username)
                     .password(encodedPassword)
-                    .email(username)
+                    .nickname(nickname)
                     .build();
             userRepository.save(googleUser);
         }

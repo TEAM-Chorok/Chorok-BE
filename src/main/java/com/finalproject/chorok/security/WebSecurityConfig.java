@@ -84,7 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // [로그아웃 기능]
                 .logout()
                 // 로그아웃 요청 처리 URL
-                .logoutUrl("/user/logout")
+                .logoutUrl("/auth/logOut")
                 .permitAll()
                 .and()
                 .exceptionHandling()
@@ -95,7 +95,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public FormLoginFilter formLoginFilter() throws Exception {
         FormLoginFilter formLoginFilter = new FormLoginFilter(authenticationManager());
-        formLoginFilter.setFilterProcessesUrl("/user/login");
+        formLoginFilter.setFilterProcessesUrl("/auth/logIn");
         formLoginFilter.setAuthenticationSuccessHandler(formLoginSuccessHandler());
         formLoginFilter.afterPropertiesSet();
         return formLoginFilter;
@@ -122,16 +122,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/h2-console/**");
         skipPathList.add("POST,/h2-console/**");
         // 회원 관리 API 허용
-        skipPathList.add("GET,/user/**");
-        skipPathList.add("GET,/api/user/**");
         skipPathList.add("GET,/auth/**");
-        skipPathList.add("POST,/user/signup");
-        skipPathList.add("POST,/auth/send-temp-password");
+        skipPathList.add("POST,/auth/**");
+
+
 
         skipPathList.add("GET,/");
-        skipPathList.add("GET,/basic.js");
 
-        skipPathList.add("GET,/favicon.ico");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
