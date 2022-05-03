@@ -60,8 +60,8 @@ public class UserService {
         User savedUser = userRepository.save(user);
         System.out.println(user+"4");
 
-//        savedUser.generateEmailCheckToken();
-//        sendSignupConfirmEmail(savedUser);
+        savedUser.generateEmailCheckToken();
+        sendSignupConfirmEmail(savedUser);
         return msg;
     }
 
@@ -115,27 +115,27 @@ public class UserService {
         System.out.println("임시비밀번호 생성"+buffer.toString());
         return buffer.toString();
     }
-//
-//
-//    private void sendSignupConfirmEmail(User user) {
-//        System.out.println("sendSignupConfirmEmail 시작");
-//        String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-//
-//        Context context = new Context();
-//        context.setVariable("link", path+"/auth/check-email-token?token=" + user.getEmailCheckToken() +
-//                "&email=" + user.getUsername());
-//        System.out.println("진행체크1");
-//        String message = templateEngine.process("email-link", context);
-//        System.out.println("진행체크2");
-//        EmailMessage emailMessage = EmailMessage.builder()
-//                .to(user.getUsername())
-//                .subject("초록(Chorok), 회원 가입 인증 메일")
-//                .message(message)
-//                .build();
-//        System.out.println("진행체크3");
-//        emailService.sendEmail(emailMessage);
-//        System.out.println("진행체크4");
-//    }
+
+
+    private void sendSignupConfirmEmail(User user) {
+        System.out.println("sendSignupConfirmEmail 시작");
+        String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+
+        Context context = new Context();
+        context.setVariable("link", path+"/auth/check-email-token?token=" + user.getEmailCheckToken() +
+                "&email=" + user.getUsername());
+        System.out.println("진행체크1");
+        String message = templateEngine.process("email-link", context);
+        System.out.println("진행체크2");
+        EmailMessage emailMessage = EmailMessage.builder()
+                .to(user.getUsername())
+                .subject("초록(Chorok), 회원 가입 인증 메일")
+                .message(message)
+                .build();
+        System.out.println("진행체크3");
+        emailService.sendEmail(emailMessage);
+        System.out.println("진행체크4");
+    }
 
     //로그인 확인
     public IsLoginDto isloginChk(UserDetailsImpl userDetails){
@@ -180,19 +180,19 @@ public class UserService {
         }
         return msg;
     }
-//
-//    @Transactional
-//    public ResponseEntity<CMResponseDto> checkEmailToken(String token, String email) throws InvalidActivityException {
-//        System.out.println("이메일 토큰 인증과정 함수시작");
-//        User findUser = userRepository.findByUsername(email).orElseThrow(
-//                () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
-//        );
-//
-//        if (!findUser.isValidToken(token))
-//            throw new InvalidActivityException("유효하지 않는 토큰입니다.");
-//
-//        findUser.setEmailVerified(true);
-//        System.out.println("email verified로 설정");
-//        return ResponseEntity.ok(new CMResponseDto("true"));
-//    }
+
+    @Transactional
+    public ResponseEntity<CMResponseDto> checkEmailToken(String token, String email) throws InvalidActivityException {
+        System.out.println("이메일 토큰 인증과정 함수시작");
+        User findUser = userRepository.findByUsername(email).orElseThrow(
+                () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
+        );
+
+        if (!findUser.isValidToken(token))
+            throw new InvalidActivityException("유효하지 않는 토큰입니다.");
+
+        findUser.setEmailVerified(true);
+        System.out.println("email verified로 설정");
+        return ResponseEntity.ok(new CMResponseDto("true"));
+    }
 }
