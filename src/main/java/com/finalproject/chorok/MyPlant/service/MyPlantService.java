@@ -21,31 +21,25 @@ public class MyPlantService {
     private final MyPlantRepository myPlantRepository;
 
     @Transactional
-    public void addMyPlant(MyPlantRequestDto myPlantRequestDto, UserDetailsImpl userDetails) {
-        User user = userDetails.getUser();
-        int plantNo = myPlantRequestDto.getPlantNo();
-        String myPlantPlaceCode = myPlantRequestDto.getMyPlantPlaceCode();
-        String myPlantImgUrl = myPlantRequestDto.getMyPlantImgUrl();
-        String myPlantName = myPlantRequestDto.getMyPlantName();
-        LocalDate startDay = myPlantRequestDto.getStartDay();
-        LocalDate endDay = myPlantRequestDto.getEndDay();
+    public MyPlant addMyPlant(MyPlantRequestDto myPlantRequestDto, User user) {
 
-        MyPlant myPlant = new MyPlant(plantNo, myPlantPlaceCode, myPlantImgUrl, myPlantName, startDay, endDay,user);
-        myPlantRepository.save(myPlant);
+        MyPlant myPlant = new MyPlant(myPlantRequestDto,user);
+       return myPlantRepository.save(myPlant);
     }
-    //나의 식물 보기
-    public List<MyPlantResponseDto> getMyPlant(Long userId, Long myPlantInfoNo){
-        List<MyPlant> myPlants = myPlantRepository.findAllByUserAndAndMyPlantInfoNo(userId, myPlantInfoNo);
+    //나의 식물들 보기
+    public List<MyPlantResponseDto> getMyPlant(UserDetailsImpl userDetails){
+        List<MyPlant> myPlants = myPlantRepository.findAllByUserUserId(userDetails.getUserId());
         List<MyPlantResponseDto> myPlantResponseDtos = new ArrayList<>();
        MyPlantResponseDto myPlantResponseDto = null;
         for (MyPlant myPlant : myPlants){
+            Long MyPlantInfoNo = myPlant.getMyPlantInfoNo();
             int plantNo = myPlant.getPlantNo();
              String myPlantPlace = myPlant.getMyPlantPlace();
              String myPlantImgUrl = myPlant.getMyPlantImgUrl();
              String myPlantName = myPlant.getMyPlantName();
-             LocalDate startDay = myPlant.getStartDay();
-             LocalDate endDay = myPlant.getEndDay();
-           myPlantResponseDto = new MyPlantResponseDto(plantNo, myPlantPlace, myPlantImgUrl, myPlantName, startDay,endDay);
+            String startDay = myPlant.getStartDay();
+            String endDay = myPlant.getEndDay();
+           myPlantResponseDto = new MyPlantResponseDto(MyPlantInfoNo, plantNo, myPlantPlace, myPlantImgUrl, myPlantName, startDay,endDay);
            myPlantResponseDtos.add(myPlantResponseDto);
         }
 

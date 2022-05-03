@@ -23,8 +23,9 @@ public class TodoService {
     private final UserRepository userRepository;
 
     //투두 보여주기
-    public List<TodoResponseDto> getTodo(Long userId) {
-        List<Todo> todos = todoRepository.findAllById(userId);
+    public List<TodoResponseDto> getTodo(Long userId, UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        List<Todo> todos = todoRepository.findAll();
         List<TodoResponseDto> todoResponseDtos = new ArrayList<>();
         for (Todo todo : todos) {
             TodoResponseDto todoResponseDto = new TodoResponseDto(
@@ -32,7 +33,8 @@ public class TodoService {
                     todo.getMyPlant().getMyPlantName(),
                     todo.getMyPlant().getMyPlantImgUrl(),
                     todo.getMyPlant().getMyPlantPlace(),
-                    todoRepository.findAllByUserAndMyPlantAndWorkTypeOrderByWorkTypeWorkTypeDesc()
+//                    todoRepository.findAllByUserAndMyPlantAndWorkTypeOrderByWorkTypeWorkTypeDesc()
+                    todoRepository.findAll()
             );
             todoResponseDtos.add(todoResponseDto);
         }

@@ -24,8 +24,8 @@ public class MyPlant {
     private String myPlantPlace;
     private String myPlantImgUrl;
     private String myPlantName;
-    private LocalDate startDay;
-    private LocalDate endDay;
+    private String startDay;
+    private String endDay;
     @OneToMany
     @JoinColumn
     private List<Todo> todoList;
@@ -38,17 +38,20 @@ public class MyPlant {
         this.myPlantPlace = myPlantRequestDto.getMyPlantPlaceCode();
         this.myPlantImgUrl = myPlantRequestDto.getMyPlantImgUrl();
         this.myPlantName = myPlantRequestDto.getMyPlantName();
+        this.startDay = myPlantRequestDto.getStartDay();
+        this.endDay = myPlantRequestDto.getEndDay();
         this.user = user;
 
     }
-    public MyPlant(int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, LocalDate startDay, LocalDate endDay, User user){
+    public MyPlant(int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, String endDay, String startDay){
         this.plantNo = plantNo;
         this.myPlantPlace = myPlantPlace;
         this.myPlantImgUrl = myPlantImgUrl;
         this.myPlantName = myPlantName;
+        this.user = user;
         this.startDay = startDay;
         this.endDay = endDay;
-        this.user = user;
+
 
     }
     public MyPlant(MyPlantResponseDto myPlantResponseDto, User user){

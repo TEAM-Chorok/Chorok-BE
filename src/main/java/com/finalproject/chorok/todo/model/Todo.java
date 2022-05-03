@@ -2,6 +2,7 @@ package com.finalproject.chorok.todo.model;
 
 import com.finalproject.chorok.Login.model.User;
 import com.finalproject.chorok.MyPlant.model.MyPlant;
+import com.finalproject.chorok.todo.dto.TodoResponseDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import javax.persistence.*;
 public class Todo{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long TodoNo;
     private String workType;
     private boolean status;
@@ -31,5 +32,7 @@ public class Todo{
         this.status = status;
         this.myPlant = myPlant;
     }
+
+
 
 }
