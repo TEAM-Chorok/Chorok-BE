@@ -38,8 +38,9 @@ public final class JwtTokenUtils {
                     .sign(generateAlgorithm());
         } catch (Exception e) {
             System.out.println(e.getMessage());
-        }
 
+        }
+        System.out.println(token);
         return token;
     }
 
