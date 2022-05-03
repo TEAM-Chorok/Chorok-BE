@@ -6,8 +6,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
-import com.finalproject.chorok.Common.Image.test.Post;
-import com.finalproject.chorok.Common.Image.test.PostRepository;
+import com.finalproject.chorok.Common.Image.test.Post1;
+import com.finalproject.chorok.Common.Image.test.PostRepository1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +29,7 @@ public class S3Uploader {
 
     private final AmazonS3Client amazonS3Client;
 
-    private final PostRepository postRepository;
+    private final PostRepository1 postRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;  // S3 버킷 이름
@@ -69,7 +69,7 @@ public class S3Uploader {
 
     // 게시글 수정 (이미지 파일 교체)
     private String imageUpdate(File uploadFile, String dirName, Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(
+        Post1 post = postRepository.findById(postId).orElseThrow(
                 ()-> new IllegalArgumentException("게시물이 없습니다")
         );
         String imageUrl = post.getImageUrl();

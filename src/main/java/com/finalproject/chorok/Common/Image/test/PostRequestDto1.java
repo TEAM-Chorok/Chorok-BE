@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-public class PostRequestDto {
+public class PostRequestDto1 {
     private String postTitle;
     private String postContents;
     private String imageUrl;
@@ -17,7 +17,7 @@ public class PostRequestDto {
     private String category;
 
     // 게시글 등록 및 수정
-    public PostRequestDto(String postTitle, String postContents, String imageUrl, int price, String category) {
+    public PostRequestDto1(String postTitle, String postContents, String imageUrl, int price, String category) {
         this.postTitle = postTitle;
         this.postContents = postContents;
         this.imageUrl = imageUrl;
@@ -26,7 +26,7 @@ public class PostRequestDto {
     }
 
     // 게시글 수정
-    public PostRequestDto(String postTitle, String postContents,  int price, String category) {
+    public PostRequestDto1(String postTitle, String postContents, int price, String category) {
         this.postTitle = postTitle;
         this.postContents = postContents;
         this.price = price;

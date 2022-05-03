@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-public class PostResponseDto {
+public class PostResponseDto1 {
     private Long postId;
     private String userName;
     private String postTitle;
@@ -24,7 +24,7 @@ public class PostResponseDto {
     private LocalDateTime createdAt;
 
     // 게시글 생성
-    public PostResponseDto(Long postId, String postTitle, String imageUrl, int price){
+    public PostResponseDto1(Long postId, String postTitle, String imageUrl, int price){
         this.postId = postId;
         this.postTitle = postTitle;
         this.imageUrl = imageUrl;
@@ -32,7 +32,7 @@ public class PostResponseDto {
     }
 
     // 게시글 수정
-    public PostResponseDto(Long postId, String postContents) {
+    public PostResponseDto1(Long postId, String postContents) {
         this.postId = postId;
         this.postContents = postContents;
     }

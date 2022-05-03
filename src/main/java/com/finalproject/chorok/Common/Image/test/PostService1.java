@@ -19,9 +19,9 @@ import org.springframework.stereotype.Service;
 @Component
 @RequiredArgsConstructor
 @Service
-public class PostService {
+public class PostService1 {
 
-    private final PostRepository postRepository;
+    private final PostRepository1 postRepository;
     private final ImageRepository imageRepository;
     private final AmazonS3Client amazonS3Client;
     private final S3Uploader s3Uploader;
@@ -32,9 +32,9 @@ public class PostService {
 //    };
 
     // 게시물 등록
-    public PostResponseDto createPost(PostRequestDto postRequestDto) {
+    public PostResponseDto1 createPost(PostRequestDto1 postRequestDto) {
 
-        Post post = Post.builder()
+        Post1 post = Post1.builder()
 
                         .postTitle(postRequestDto.getPostTitle())
                         .postContents(postRequestDto.getPostContents())
@@ -45,7 +45,7 @@ public class PostService {
 
         postRepository.save(post);
 
-        return PostResponseDto.builder()
+        return PostResponseDto1.builder()
 
                 .build();
     }

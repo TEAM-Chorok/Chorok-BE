@@ -17,9 +17,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @RestController
 @ResponseStatus(HttpStatus.OK)
-public class PostController {
+public class PostController1 {
 
-    private final PostService postService;
+    private final PostService1 postService;
     private final S3Uploader S3Uploader;
 
 
@@ -36,7 +36,7 @@ public class PostController {
     {
         String imageUrl = S3Uploader.upload(multipartFile, "static");
 
-        PostRequestDto postRequestDto = new PostRequestDto(postTitle, postContents, imageUrl, price, category);
+        PostRequestDto1 postRequestDto = new PostRequestDto1(postTitle, postContents, imageUrl, price, category);
         postService.createPost(postRequestDto);
         return ResponseEntity.status(201)
                 .header("status","201")

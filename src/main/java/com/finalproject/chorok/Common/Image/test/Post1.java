@@ -7,14 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Post {
+public class Post1 {
 
 
     @Id
@@ -53,7 +52,7 @@ public class Post {
     }
 
     // 게시글 내용 수정
-    public void update(Long postId, PostRequestDto requestDto) {
+    public void update(Long postId, PostRequestDto1 requestDto) {
         this.id = postId;
         this.postTitle = requestDto.getPostTitle();
         this.postContents = requestDto.getPostContents();
