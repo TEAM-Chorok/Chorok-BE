@@ -8,6 +8,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class GoogleUserInfoDto {
-    String username;
+    String googleId;
+    String email;
     String nickname;
 }

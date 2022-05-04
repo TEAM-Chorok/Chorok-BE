@@ -31,20 +31,17 @@ public class User {
     @Column(nullable = true, unique = true)
     private String nickname;
 
-    @Column(unique = true)
-    private Long kakaoId;
-
-    @Column(unique = true)
-    private Long googleId;
+    @Column(nullable = true)
+    private String profileImgUrl;
 
     @Column(unique = true)
     private String emailCheckToken;
 
     @Setter
-    private String CreatedAt;
-    private String UpdatedAt;
+    private Long kakaoId;
+    private String googleId;
 
-//    @Builder
+    //    @Builder
 //    public User(String username, String password, String nickname) {
 //        this.username = username;
 //        this.password = password;
@@ -72,6 +69,13 @@ public class User {
 
     }
 
+    public User(String username, String password, String nickname, Long kakaoId, String googleId) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.kakaoId = kakaoId;
+        this.googleId = googleId;
+    }
 
     public void changeTempPassword(String tempPassword) {
         this.password = tempPassword;
@@ -82,8 +86,6 @@ public class User {
         return this.emailCheckToken.equals(token);
     }
 
-//    public boolean canSendConfirmEmail() {
-//        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
     }
 
 

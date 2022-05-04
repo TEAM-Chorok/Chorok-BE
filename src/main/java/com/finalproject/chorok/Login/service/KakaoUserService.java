@@ -45,7 +45,7 @@ public class KakaoUserService {
         System.out.println("2. 토큰으로 카카오 API 호출");
         // 3. 필요시에 회원가입
 //        User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
-        User kakaoUser = registerKakaoOrUpdateKakao(kakaoUserInfo);
+        User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
         System.out.println("3. 필요시에 회원가입");
         // 4. 강제 로그인 처리
         System.out.println("4. 강제 로그인 처리");
@@ -65,7 +65,6 @@ public class KakaoUserService {
         System.out.println("LOGIN SUCCESS!");
         System.out.println(kakaoUserResponseDto.getUserId());
         return kakaoUserResponseDto;
-
 
     }
 
@@ -130,54 +129,36 @@ public class KakaoUserService {
         return new KakaoUserInfoDto(id, nickname, email);
     }
 
-    private User registerKakaoOrUpdateKakao(
-            KakaoUserInfoDto kakaoUserInfoDto
-    ) {
-        User sameUser = userRepository.findByKakaoId(kakaoUserInfoDto.getId())
-                .orElse(null);
-
-        if (sameUser == null) {
-            return registerKakaoUserIfNeeded(kakaoUserInfoDto);
-        } else {
-            return updateKakaoUser(sameUser, kakaoUserInfoDto);
-        }
-    }
-
-    private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
-        // DB 에 중복된 Kakao Id 가 있는지 확인
+    private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) { // DB Kakao Id
         Long kakaoId = kakaoUserInfo.getId();
         User kakaoUser = userRepository.findByKakaoId(kakaoId)
                 .orElse(null);
+        String nickname = kakaoUserInfo.getNickname();
+
         if (kakaoUser == null) {
-            // 회원가입
-            // username: kakao nickname
-            String nickname = kakaoUserInfo.getNickname();
+            //카카오 사용자 이메일과 동일한 이메일을 가진 회원이 있는지 확인
+            String kakaoEmail = kakaoUserInfo.getEmail();
+            User sameEmailUser = userRepository.findByUsername(kakaoEmail).orElse(null);
+            if (sameEmailUser != null) {
+                kakaoUser = sameEmailUser;
+                // 기존 회원정보에 카카오 Id 추가
+                kakaoUser.setKakaoId(kakaoId);
+            } else {
+                // 신규 회원가입
+                // 닉네임 중복검사
+                User sameNicknameUser = userRepository.findByNickname(nickname).orElse(null);
+                if(sameNicknameUser != null){
+                    nickname = UUID.randomUUID().toString().substring(5,12);
+                }
+                // password: random UUID
+                String password = UUID.randomUUID().toString();
+                String encodedPassword = passwordEncoder.encode(password);
+                // email: kakao email
+                String email = kakaoUserInfo.getEmail();
 
-            // password: random UUID
-            String password = UUID.randomUUID().toString();
-            String encodedPassword = passwordEncoder.encode(password);
-
-            // email: kakao email
-            String email = kakaoUserInfo.getEmail();
-
-            kakaoUser = new User(email, encodedPassword, nickname, kakaoId);
-            userRepository.save(kakaoUser);
-        }
-        return kakaoUser;
-    }
-
-    private User updateKakaoUser(
-            User sameUser,
-            KakaoUserInfoDto snsUserInfoDto
-    ) {
-        if (sameUser.getKakaoId() == null) {
-            System.out.println("중복");
-            sameUser.setKakaoId(snsUserInfoDto.getId());
-            sameUser.setNickname(snsUserInfoDto.getNickname());
-            userRepository.save(sameUser);
-        }
-        return sameUser;
-    }
+                kakaoUser = new User(email, encodedPassword, nickname, kakaoId); }
+            userRepository.save(kakaoUser); }
+        return kakaoUser; }
 
     private String forceLogin(User kakaoUser) {
         UserDetailsImpl userDetails = new UserDetailsImpl(kakaoUser);

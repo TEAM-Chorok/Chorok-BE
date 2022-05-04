@@ -62,6 +62,6 @@ public class UserDetailsImpl implements UserDetails {
         System.out.println("UserDetailsImpl authorities 에서 나온 결과");
 
 
-        return Collections.emptyList();
+        return null;
     }
 }

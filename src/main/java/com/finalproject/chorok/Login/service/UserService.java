@@ -21,9 +21,6 @@ import org.thymeleaf.context.Context;
 import javax.activity.InvalidActivityException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -42,7 +39,8 @@ public class UserService {
 
     @Transactional
     public String registerUser(SignupRequestDto requestDto) {
-        String msg = "회원인증 이메일 발송";
+        String msg = "회원가입 성공";
+//        String msg = "회원인증 이메일 전송";
 
         try {
             //회원가입 확인
@@ -59,15 +57,18 @@ public class UserService {
         System.out.println(password+"3");
 
         String emailCheckToken = UUID.randomUUID().toString();
-//        LocalDateTime emailCheckTokenGeneratedAt = LocalDateTime.now();
 
         User user = new User(username, password, nickname, emailCheckToken);
 
-        redisUtil.set(emailCheckToken, user, 2);
-//        User savedUser = userRepository.save(user);
-        System.out.println(user+"4");
+        // 이메일 인증 코드부분
+//        redisUtil.set(emailCheckToken, user, 2);
+//
+//        System.out.println(user+"4");
+//
+//        sendSignupConfirmEmail(user);
 
-        sendSignupConfirmEmail(user);
+        // 이메일 인증 생략하고 회원가입(추후 삭제)
+        User savedUser = userRepository.save(user);
         return msg;
     }
 
@@ -105,8 +106,6 @@ public class UserService {
         System.out.println("sendTempPasswordConfirmEmail");
         System.out.println(emailMessage);
         emailService.sendEmail(emailMessage);
-        String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        user.setUpdatedAt(now);
         System.out.println("sendEmail");
     }
 
@@ -201,10 +200,6 @@ public class UserService {
 //        );
         if (!findUser.isValidToken(token))
             throw new InvalidActivityException("유효하지 않는 토큰입니다.");
-
-        String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        findUser.setCreatedAt(now);
-        findUser.setUpdatedAt(now);
 
         User savedUser = userRepository.save(findUser);
         System.out.println("User 저장");
