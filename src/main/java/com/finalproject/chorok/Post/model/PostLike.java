@@ -1,5 +1,6 @@
 package com.finalproject.chorok.Post.model;
 
+import com.finalproject.chorok.Login.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,8 +31,17 @@ public class PostLike {
     @JoinColumn(name = "post_id", referencedColumnName = "post_id")
     private Post post;
 
-    @Column(columnDefinition = "boolean default true")
-    private Boolean postLike;
+    @ManyToOne
+    @JoinColumn(name="user_id",referencedColumnName = "user_id")
+    private User user;
+
+
+
+
+    public PostLike(Post post, User user) {
+        this.post=post;
+        this.user=user;
+    }
 
 //    @ManyToOne
 //    @JoinColumn(name = "username", referencedColumnName = "username")

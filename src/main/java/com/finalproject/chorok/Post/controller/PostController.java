@@ -7,9 +7,12 @@ import com.finalproject.chorok.Post.model.Post;
 import com.finalproject.chorok.Post.service.PostService;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -44,15 +47,16 @@ public class PostController {
     }
     // 상세페이지 조회
     @GetMapping("/read-post/detail/{postId}")
-    public String readPostDetail(@PathVariable Long postId){
-        postService.readPostDetail(postId);
-        return "";
+    public ResponseEntity<?> readPostDetail(@Valid @PathVariable Long postId){
+
+        return ResponseEntity.status(HttpStatus.OK).body(postService.readPostDetail(postId));
+
     }
 
     // 게시글 작성
     @PostMapping("/write-post")
-    public Post writePost(@RequestBody PostWriteRequestDto postWriteRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-       return postService.writePost(postWriteRequestDto,userDetails.getUser());
+    public ResponseEntity<?> writePost(@RequestBody PostWriteRequestDto postWriteRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(postService.writePost(postWriteRequestDto,userDetails.getUser()));
     }
 
     // 게시글 삭제
@@ -61,5 +65,20 @@ public class PostController {
         postService.deletePost(postId);
         return "삭제완료";
     }
+
+//    // 게시글 수정
+//    @PutMapping("/update-post/{postId}")
+//    public ResponseEntity updatePost(@PathVariable Long postId){
+//        postService.updatePost(postId);
+//    }
+
+    // 게시글 좋아요 기능
+    @PostMapping("like-post/{postId}")
+    public ResponseEntity likePost(@Valid @PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        return ResponseEntity.status(HttpStatus.OK).body(postService.likePost(postId,userDetails.getUser()));
+
+    }
+
 
 }

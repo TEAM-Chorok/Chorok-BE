@@ -18,7 +18,6 @@ import lombok.Setter;
  */
 @Getter
 @NoArgsConstructor
-@Setter
 public class PostResponseDto {
     private Long postId;
     private String postTitle;

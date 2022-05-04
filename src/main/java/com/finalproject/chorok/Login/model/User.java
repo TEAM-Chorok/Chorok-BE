@@ -55,10 +55,10 @@ public class User {
     }
 
     public User(String username, String password, String nickname, Long kakaoId) {
-            this.username = username;
-            this.password = password;
-            this.nickname = nickname;
-            this.kakaoId = kakaoId;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.kakaoId = kakaoId;
 
     }
 

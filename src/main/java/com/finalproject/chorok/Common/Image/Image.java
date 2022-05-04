@@ -1,4 +1,4 @@
-package com.finalproject.chorok.Common.Image;
+package com.finalproject.chorok.common.Image;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

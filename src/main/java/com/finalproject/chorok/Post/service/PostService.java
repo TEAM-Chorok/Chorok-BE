@@ -3,14 +3,19 @@ package com.finalproject.chorok.Post.service;
 import com.finalproject.chorok.Login.model.User;
 import com.finalproject.chorok.Post.dto.PostResponseDto;
 import com.finalproject.chorok.Post.dto.PostWriteRequestDto;
+import com.finalproject.chorok.Post.model.Comment;
 import com.finalproject.chorok.Post.model.Post;
+import com.finalproject.chorok.Post.model.PostLike;
 import com.finalproject.chorok.Post.model.PostType;
+import com.finalproject.chorok.Post.repository.PostLikeRepository;
 import com.finalproject.chorok.Post.repository.PostRepository;
 import com.finalproject.chorok.Post.utils.CommUtils;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +35,13 @@ import java.util.List;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
     private final CommUtils commUtils;
 
+
+
     // 전체 게시물 조회
+    @Transactional
     public List<PostResponseDto> readPosts(String postTypeCode) {
 
         List<Post> postList = postRepository.findAllByPostTypePostTypeCodeOrderByCreatedAt(postTypeCode);
@@ -49,6 +58,7 @@ public class PostService {
     }
 
      //게시글 전체 조회 (게시글 타입과 식물위치로 분류)
+    @Transactional
     public List<PostResponseDto> readPlantPlacePosts(String postTypeCode, String plantPlaceCode) {
         List<Post> postList = postRepository.findAllByPostTypePostTypeCodeAndPlantPlacePlantPlaceCodeOrderByCreatedAt(postTypeCode,plantPlaceCode);
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
@@ -62,11 +72,16 @@ public class PostService {
     }
 
     // 게시글 상세조회
-    public void readPostDetail(Long postId) {
-
+    @Transactional
+    public List<Comment> readPostDetail(Long postId) {
+        //게시글 조회
+        Post post = commUtils.getPost(postId);
+        // 댓글 조회
+       return commUtils.getCommentList(postId);
     }
 
     // 게시글 작성하기
+    @Transactional
     public Post writePost(PostWriteRequestDto post, User user) {
          PlantPlace plantPlace = commUtils.getPlantPlace(post.getPlantPlaceCode());
          PostType postType = commUtils.getPostType(post.getPostTypeCode());
@@ -78,4 +93,27 @@ public class PostService {
     public void deletePost(Long postId) {
         postRepository.deleteById(postId);
     }
+
+    public void updatePost(Long postId) {
+    }
+
+    // 게시글 좋아요
+    @Transactional
+    public Boolean likePost(Long postId,User user) {
+
+       if(commUtils.getLikePost(postId,user)!=null){
+            System.out.println("삭제");
+            postLikeRepository.deleteByUser_UserIdAndPost_PostId(user.getUserId(),postId);
+            return false;
+
+       }else{
+            System.out.println("추가");
+            postLikeRepository.save(new PostLike(commUtils.getPost(postId),user));
+
+            return true;
+       }
+
+
+    }
 }
+;

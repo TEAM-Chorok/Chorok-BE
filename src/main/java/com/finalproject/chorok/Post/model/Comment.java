@@ -1,6 +1,7 @@
 package com.finalproject.chorok.Post.model;
 
 import com.finalproject.chorok.Login.model.User;
+
 import com.finalproject.chorok.common.model.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
