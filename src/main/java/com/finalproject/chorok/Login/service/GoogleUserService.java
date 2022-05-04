@@ -60,7 +60,7 @@ public class GoogleUserService {
         // 2. "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
         GoogleUserInfoDto snsUserInfoDto = getGoogleUserInfo(restTemplate, accessToken);
         // 3. "구글 사용자 정보"로 필요시 회원가입  및 이미 같은 이메일이 있으면 기존회원으로 로그인
-        User googleUser = registerGoogleOrUpdateGoogle(snsUserInfoDto);
+        User googleUser = registerGoogleIfNeeded(snsUserInfoDto);
 
         // 4. 강제 로그인 처리
         final String AUTH_HEADER = "Authorization";
@@ -124,87 +124,56 @@ public class GoogleUserService {
 
         Map<String,String> userInfo = mapper.readValue(resultJson, new TypeReference<Map<String, String>>(){});
 
-
         GoogleUserInfoDto googleUserInfoDto = GoogleUserInfoDto.builder()
-                .username(userInfo.get("email"))
+                .googleId(userInfo.get("sub"))
+                .email(userInfo.get("email"))
                 .nickname(userInfo.get("name"))
+
                 .build();
 
         String nickname = userInfo.get("name");
         String email = userInfo.get("email");
-        System.out.println("구글 사용자 정보:  " + nickname + ", " + email);
+        String googleId = userInfo.get("sub");
+        System.out.println("구글 사용자 정보:  " + googleId + ", "+ nickname + ", " + email);
         return googleUserInfoDto;
     }
 
-
-    private User registerGoogleOrUpdateGoogle(GoogleUserInfoDto googleUserInfoDto) {
-
-        User sameUser = userRepository.findByUsername(googleUserInfoDto.getUsername())
-                .orElse(null);
-
-        if (sameUser == null) {
-            return registerGoogleUserIfNeeded(googleUserInfoDto);
-        }
-        else {
-            return updateGoogleUser(sameUser, googleUserInfoDto);
-        }
-    }
-
-    private User registerGoogleUserIfNeeded(GoogleUserInfoDto googleUserInfoDto) {
+    private User registerGoogleIfNeeded(GoogleUserInfoDto googleUserInfoDto) {
 
         // DB 에 중복된 google Id 가 있는지 확인
-        String googleUserId = googleUserInfoDto.getUsername();
-        User googleUser = userRepository.findByUsername(googleUserId)
+        String googleUserId = googleUserInfoDto.getGoogleId();
+        User googleUser = userRepository.findByGoogleId(googleUserId)
                 .orElse(null);
+        String nickname = googleUserInfoDto.getNickname();
 
         if (googleUser == null) {
             // 회원가입
             // username: google ID(email)
-            String username = googleUserInfoDto.getUsername();
+            //카카오 사용자 이메일과 동일한 이메일을 가진 회원이 있는지 확인
 
-            // nickname: google name
-            String nickname = googleUserInfoDto.getNickname();
-            Optional<User> user = userRepository.findByNickname(nickname);
-            if(user.isPresent()) {
-                String dbUserNickname = user.get().getNickname();
-
-                int beginIndex= nickname.length();
-                String nicknameIndex = dbUserNickname.substring(beginIndex, dbUserNickname.length());
-
-                if (!nicknameIndex.isEmpty()) {
-                    int newIndex = Integer.parseInt(nicknameIndex) + 1;
-                    nickname = nickname + newIndex;
-                } else {
-                    nickname = dbUserNickname + 1;
+            String googleEmail = googleUserInfoDto.getEmail();
+            User sameEmailUser = userRepository.findByUsername(googleEmail).orElse(null);
+            if (sameEmailUser != null) {
+                googleUser = sameEmailUser;
+                // 기존 회원정보에 카카오 Id 추가
+                googleUser.setGoogleId(googleUserId);
+            } else {
+                // 신규 회원가입
+                // 닉네임 중복검사
+                User sameNicknameUser = userRepository.findByNickname(nickname).orElse(null);
+                if(sameNicknameUser != null){
+                    nickname = UUID.randomUUID().toString().substring(3,10);
                 }
-            }
+                // password: random UUID
+                String password = UUID.randomUUID().toString();
+                String encodedPassword = passwordEncoder.encode(password);
+                // email: kakao email
+                String email = googleUserInfoDto.getEmail();
 
-            // password: random UUID
-            String password = UUID.randomUUID().toString();
-            String encodedPassword = passwordEncoder.encode(password);
+                googleUser = new User(email, encodedPassword, nickname, null, googleUserId); }
+            userRepository.save(googleUser); }
+        return googleUser; }
 
-//            googleUser = new User("nickname", encodedPassword, username);
-
-            googleUser = User.builder()
-                    .username(username)
-                    .password(encodedPassword)
-                    .nickname(nickname)
-                    .build();
-            userRepository.save(googleUser);
-        }
-
-        return googleUser;
-    }
-
-    private User updateGoogleUser(User sameUser, GoogleUserInfoDto googleUserInfoDto) {
-        if (sameUser.getUsername() == null) {
-            System.out.println("중복");
-            sameUser.setUsername(googleUserInfoDto.getUsername());
-            sameUser.setNickname(googleUserInfoDto.getNickname());
-            userRepository.save(sameUser);
-        }
-        return sameUser;
-    }
 
     private String forceLogin(User googleUser) {
         UserDetailsImpl userDetails = new UserDetailsImpl(googleUser);
