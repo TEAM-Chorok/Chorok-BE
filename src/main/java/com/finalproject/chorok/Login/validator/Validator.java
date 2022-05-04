@@ -30,6 +30,11 @@ public class Validator {
             throw new IllegalArgumentException("이메일 형식의 ID를 입력 해주세요.");
         }
 
+        if(!Pattern.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$", signupRequestDto.getPassword())){
+            throw new IllegalArgumentException("비밀번호에 대소문자, 숫자를 포함하여 8~20자로 입력해주세요.");
+        }
+
+
         if(signupRequestDto.getPassword().length()<4){
             throw new IllegalArgumentException("비밀번호는 최소 4자 이상이여야 합니다.");
         }

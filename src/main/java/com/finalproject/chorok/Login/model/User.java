@@ -37,20 +37,30 @@ public class User {
     @Column(unique = true)
     private Long googleId;
 
-    @Setter
-    private boolean emailVerified;
-
+    @Column(unique = true)
     private String emailCheckToken;
 
-    private LocalDateTime emailCheckTokenGeneratedAt;
+    @Setter
+    private String CreatedAt;
+    private String UpdatedAt;
+
+//    @Builder
+//    public User(String username, String password, String nickname) {
+//        this.username = username;
+//        this.password = password;
+//        this.nickname = nickname;
+//        this.kakaoId = null;
+//        this.googleId = null;
+//    }
 
     @Builder
-    public User(String username, String password, String nickname) {
+    public User(String username, String password, String nickname, String emailCheckToken) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.kakaoId = null;
         this.googleId = null;
+        this.emailCheckToken = emailCheckToken;
 
     }
 
@@ -63,12 +73,6 @@ public class User {
     }
 
 
-    public void generateEmailCheckToken() {
-        this.emailCheckToken = UUID.randomUUID().toString();
-        this.emailCheckTokenGeneratedAt = LocalDateTime.now();
-        System.out.println("generateEmailCheckToken");
-    }
-
     public void changeTempPassword(String tempPassword) {
         this.password = tempPassword;
         System.out.println("유저 비밀번호 임시비밀번호로 바꾸기");
@@ -78,10 +82,9 @@ public class User {
         return this.emailCheckToken.equals(token);
     }
 
-    public boolean canSendConfirmEmail() {
-        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
+//    public boolean canSendConfirmEmail() {
+//        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
     }
 
 
 
-}

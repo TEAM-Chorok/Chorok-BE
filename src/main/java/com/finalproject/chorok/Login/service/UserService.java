@@ -1,6 +1,7 @@
 package com.finalproject.chorok.Login.service;
 
 
+import com.finalproject.chorok.Common.utils.RedisUtil;
 import com.finalproject.chorok.Login.dto.*;
 
 import com.finalproject.chorok.Login.model.EmailMessage;
@@ -20,9 +21,10 @@ import org.thymeleaf.context.Context;
 import javax.activity.InvalidActivityException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 
 @Slf4j
@@ -35,11 +37,12 @@ public class UserService {
     private final TemplateEngine templateEngine;
     private final HttpServletRequest request;
     private final Validator validator;
+    private final RedisUtil redisUtil;
 
 
     @Transactional
     public String registerUser(SignupRequestDto requestDto) {
-        String msg = "회원가입 성공";
+        String msg = "회원인증 이메일 발송";
 
         try {
             //회원가입 확인
@@ -55,15 +58,19 @@ public class UserService {
         String nickname = requestDto.getNickname();
         System.out.println(password+"3");
 
+        String emailCheckToken = UUID.randomUUID().toString();
+//        LocalDateTime emailCheckTokenGeneratedAt = LocalDateTime.now();
 
-        User user = new User(username, password, nickname);
-        User savedUser = userRepository.save(user);
+        User user = new User(username, password, nickname, emailCheckToken);
+
+        redisUtil.set(emailCheckToken, user, 2);
+//        User savedUser = userRepository.save(user);
         System.out.println(user+"4");
 
-//        savedUser.generateEmailCheckToken();
-//        sendSignupConfirmEmail(savedUser);
+        sendSignupConfirmEmail(user);
         return msg;
     }
+
 
 
     @Transactional
@@ -91,13 +98,15 @@ public class UserService {
     private void sendTempPasswordConfirmEmail(User user, String tempPwd) {
         EmailMessage emailMessage = EmailMessage.builder()
                 .to(user.getUsername())
-                .subject("소행성(소소한 행동 습관 형성 챌린지), 임시 비밀번호 발급")
+                .subject("초록(Chorok), 임시 비밀번호 발급")
                 .message("<p>임시 비밀번호: <b>" + tempPwd + "</b></p><br>" +
                         "<p>로그인 후 비밀번호를 변경해주세요.</p>")
                 .build();
         System.out.println("sendTempPasswordConfirmEmail");
         System.out.println(emailMessage);
         emailService.sendEmail(emailMessage);
+        String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        user.setUpdatedAt(now);
         System.out.println("sendEmail");
     }
 
@@ -115,27 +124,27 @@ public class UserService {
         System.out.println("임시비밀번호 생성"+buffer.toString());
         return buffer.toString();
     }
-//
-//
-//    private void sendSignupConfirmEmail(User user) {
-//        System.out.println("sendSignupConfirmEmail 시작");
-//        String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-//
-//        Context context = new Context();
-//        context.setVariable("link", path+"/auth/check-email-token?token=" + user.getEmailCheckToken() +
-//                "&email=" + user.getUsername());
-//        System.out.println("진행체크1");
-//        String message = templateEngine.process("email-link", context);
-//        System.out.println("진행체크2");
-//        EmailMessage emailMessage = EmailMessage.builder()
-//                .to(user.getUsername())
-//                .subject("초록(Chorok), 회원 가입 인증 메일")
-//                .message(message)
-//                .build();
-//        System.out.println("진행체크3");
-//        emailService.sendEmail(emailMessage);
-//        System.out.println("진행체크4");
-//    }
+
+
+    private void sendSignupConfirmEmail(User user) {
+        System.out.println("sendSignupConfirmEmail 시작");
+        String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+
+        Context context = new Context();
+        context.setVariable("link", path+"/auth/check-email-token?token=" + user.getEmailCheckToken() +
+                "&email=" + user.getUsername());
+        System.out.println("진행체크1");
+        String message = templateEngine.process("email-link", context);
+        System.out.println("진행체크2");
+        EmailMessage emailMessage = EmailMessage.builder()
+                .to(user.getUsername())
+                .subject("초록(Chorok), 회원 가입 인증 메일")
+                .message(message)
+                .build();
+        System.out.println("진행체크3");
+        emailService.sendEmail(emailMessage);
+        System.out.println("진행체크4");
+    }
 
     //로그인 확인
     public IsLoginDto isloginChk(UserDetailsImpl userDetails){
@@ -180,19 +189,28 @@ public class UserService {
         }
         return msg;
     }
-//
-//    @Transactional
-//    public ResponseEntity<CMResponseDto> checkEmailToken(String token, String email) throws InvalidActivityException {
-//        System.out.println("이메일 토큰 인증과정 함수시작");
+
+    @Transactional
+    public ResponseEntity<CMResponseDto> checkEmailToken(String token, String email) throws InvalidActivityException {
+        System.out.println("이메일 토큰 인증과정 함수시작");
+
+        User findUser = (User)redisUtil.get(token);
+
 //        User findUser = userRepository.findByUsername(email).orElseThrow(
 //                () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
 //        );
-//
-//        if (!findUser.isValidToken(token))
-//            throw new InvalidActivityException("유효하지 않는 토큰입니다.");
-//
-//        findUser.setEmailVerified(true);
-//        System.out.println("email verified로 설정");
-//        return ResponseEntity.ok(new CMResponseDto("true"));
-//    }
+        if (!findUser.isValidToken(token))
+            throw new InvalidActivityException("유효하지 않는 토큰입니다.");
+
+        String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        findUser.setCreatedAt(now);
+        findUser.setUpdatedAt(now);
+
+        User savedUser = userRepository.save(findUser);
+        System.out.println("User 저장");
+        if(savedUser.getUserId() > 0) redisUtil.delete(token);
+        System.out.println("redisutil 제거");
+
+        return ResponseEntity.ok(new CMResponseDto("true"));
+    }
 }
