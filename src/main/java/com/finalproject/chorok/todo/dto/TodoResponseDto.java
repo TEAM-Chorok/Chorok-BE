@@ -17,14 +17,14 @@ public class TodoResponseDto {
     private String myPlantName;
     private String myPlantImgUrl;
     private String myPlantPlace;
-    private List<Todo> todos;
+    private List<TodoOnlyResponseDto> todoOnlys;
 
-    public TodoResponseDto( Long myPlantNo, String myPlantName, String myPlantImgUrl, String myPlantPlace, List<Todo> todos) {
+    public TodoResponseDto( Long myPlantNo, String myPlantName, String myPlantImgUrl, String myPlantPlace, List<TodoOnlyResponseDto> todoOnlys) {
         this.myPlantNo = myPlantNo;
         this.myPlantName = myPlantName;
         this.myPlantImgUrl = myPlantImgUrl;
         this.myPlantPlace = myPlantPlace;
-        this.todos = todos;
+        this.todoOnlys = todoOnlys;
 
     }
     public TodoResponseDto(TodoResponseDto todoResponseDto, UserDetailsImpl userDetails) {
@@ -32,7 +32,7 @@ public class TodoResponseDto {
         this.myPlantName = todoResponseDto.myPlantName;
         this.myPlantImgUrl = todoResponseDto.myPlantImgUrl;
         this.myPlantPlace = todoResponseDto.myPlantPlace;
-        this.todos = todoResponseDto.todos;
+        this.todoOnlys = todoResponseDto.todoOnlys;
 
     }
 
