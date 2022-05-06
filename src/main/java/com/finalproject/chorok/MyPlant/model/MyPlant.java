@@ -19,14 +19,15 @@ import java.util.List;
 public class MyPlant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long MyPlantInfoNo;
+    private Long myPlantNo;
     private int plantNo;
     private String myPlantPlace;
     private String myPlantImgUrl;
     private String myPlantName;
-    private String startDay;
-    private String endDay;
-    @OneToMany
+    private LocalDate startDay;
+    private LocalDate endDay;
+
+    @OneToMany(cascade =CascadeType.ALL)
     @JoinColumn
     private List<Todo> todoList;
 
@@ -43,7 +44,7 @@ public class MyPlant {
         this.user = user;
 
     }
-    public MyPlant(int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, String endDay, String startDay){
+    public MyPlant(int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, LocalDate endDay, LocalDate startDay){
         this.plantNo = plantNo;
         this.myPlantPlace = myPlantPlace;
         this.myPlantImgUrl = myPlantImgUrl;
