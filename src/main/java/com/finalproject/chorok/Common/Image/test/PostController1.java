@@ -19,7 +19,7 @@ import java.io.IOException;
 @ResponseStatus(HttpStatus.OK)
 public class PostController1 {
 
-    private final PostService1 postService;
+    private final com.finalproject.chorok.Common.Image.test.PostService1 postService;
     private final S3Uploader S3Uploader;
 
 
@@ -36,7 +36,7 @@ public class PostController1 {
     {
         String imageUrl = S3Uploader.upload(multipartFile, "static");
 
-        PostRequestDto1 postRequestDto = new PostRequestDto1(postTitle, postContents, imageUrl, price, category);
+        com.finalproject.chorok.Common.Image.test.PostRequestDto1 postRequestDto = new com.finalproject.chorok.Common.Image.test.PostRequestDto1(postTitle, postContents, imageUrl, price, category);
         postService.createPost(postRequestDto);
         return ResponseEntity.status(201)
                 .header("status","201")

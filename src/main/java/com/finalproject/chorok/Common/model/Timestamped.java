@@ -1,4 +1,4 @@
-package com.finalproject.chorok.common.model;
+package com.finalproject.chorok.Common.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

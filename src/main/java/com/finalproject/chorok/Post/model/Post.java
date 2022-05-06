@@ -1,11 +1,9 @@
 package com.finalproject.chorok.Post.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.finalproject.chorok.Login.model.User;
 import com.finalproject.chorok.Post.dto.PostRequestDto;
 import com.finalproject.chorok.Post.dto.PostWriteRequestDto;
-import com.finalproject.chorok.common.model.Timestamped;
-import com.finalproject.chorok.plant.model.PlantPlace;
+import com.finalproject.chorok.Common.model.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

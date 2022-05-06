@@ -1,7 +1,6 @@
-package com.finalproject.chorok.common.utils;
+package com.finalproject.chorok.Common.utils;
 
 import com.finalproject.chorok.Post.controller.CommentController;
-import com.finalproject.chorok.Post.controller.PostController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

@@ -29,9 +29,10 @@ public class TodoController {
     }
 
     //todo완료체크
-    @PostMapping("/todo/ok/{myPlantNo}")
+    @PutMapping("/todo/ok/{myPlantNo}")
     public Todo checkTodo (@PathVariable Long myPlantNo, @RequestBody TodoRequestDto todoRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         return todoService.createTodo(myPlantNo,todoRequestDto, userDetails);
     }
+
 }

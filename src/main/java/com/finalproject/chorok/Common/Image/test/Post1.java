@@ -52,7 +52,7 @@ public class Post1 {
     }
 
     // 게시글 내용 수정
-    public void update(Long postId, PostRequestDto1 requestDto) {
+    public void update(Long postId, com.finalproject.chorok.Common.Image.test.PostRequestDto1 requestDto) {
         this.id = postId;
         this.postTitle = requestDto.getPostTitle();
         this.postContents = requestDto.getPostContents();

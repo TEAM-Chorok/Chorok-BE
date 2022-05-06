@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PostService1 {
 
-    private final PostRepository1 postRepository;
+    private final com.finalproject.chorok.Common.Image.test.PostRepository1 postRepository;
     private final ImageRepository imageRepository;
     private final AmazonS3Client amazonS3Client;
     private final S3Uploader s3Uploader;
@@ -32,9 +32,9 @@ public class PostService1 {
 //    };
 
     // 게시물 등록
-    public PostResponseDto1 createPost(PostRequestDto1 postRequestDto) {
+    public com.finalproject.chorok.Common.Image.test.PostResponseDto1 createPost(com.finalproject.chorok.Common.Image.test.PostRequestDto1 postRequestDto) {
 
-        Post1 post = Post1.builder()
+        com.finalproject.chorok.Common.Image.test.Post1 post = com.finalproject.chorok.Common.Image.test.Post1.builder()
 
                         .postTitle(postRequestDto.getPostTitle())
                         .postContents(postRequestDto.getPostContents())
@@ -45,7 +45,7 @@ public class PostService1 {
 
         postRepository.save(post);
 
-        return PostResponseDto1.builder()
+        return com.finalproject.chorok.Common.Image.test.PostResponseDto1.builder()
 
                 .build();
     }

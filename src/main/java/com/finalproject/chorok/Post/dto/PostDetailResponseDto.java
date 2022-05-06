@@ -3,7 +3,7 @@ package com.finalproject.chorok.Post.dto;
 
 import com.finalproject.chorok.Post.model.Comment;
 import com.finalproject.chorok.Post.model.Post;
-import com.finalproject.chorok.common.utils.CaluateTime;
+import com.finalproject.chorok.Common.utils.CaluateTime;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
