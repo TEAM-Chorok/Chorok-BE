@@ -23,6 +23,6 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     // 게시판 타입별 게시물 전체조회
     List<Post> findAllByPostTypePostTypeCodeOrderByCreatedAt(String postTypeCode);
     // 게시판 타입과 식물위치로 게시물 전체조회
-    List<Post> findAllByPostTypePostTypeCodeAndPlantPlacePlantPlaceCodeOrderByCreatedAt(String postTypeCode, String plantPlaceCode);
+    List<Post> findAllByPostTypePostTypeCodeAndPlantPlaceCodeOrderByCreatedAt(String postTypeCode, String plantPlaceCode);
 
 }
