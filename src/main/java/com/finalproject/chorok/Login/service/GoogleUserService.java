@@ -90,7 +90,7 @@ public class GoogleUserService {
                 .code(code)
 //                .redirectUri("https://memegle.xyz/redirect/google")
 //                .redirectUri("http://localhost:3000/redirect/google")
-                .redirectUri("http://localhost:8080/api/user/google/callback")
+                .redirectUri("http://localhost:8080/auth/google/callback")
                 .grantType("authorization_code")
                 .accessType("offline")
                 .scope("openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email").build();

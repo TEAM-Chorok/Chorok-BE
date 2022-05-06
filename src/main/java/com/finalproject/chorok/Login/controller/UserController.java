@@ -108,18 +108,18 @@ public class UserController {
     }
 
 
-    @GetMapping("/auth/check-email-token")
-    public void checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
-        System.out.println("이메일 토큰 인증과정 시작");
-        userService.checkEmailToken(token, email);
-        try {
-            response.sendRedirect("https://localhost:8080/auth/logIn");
-            System.out.println("redirect 시키기");
-        } catch (IOException e) {
-            throw new InvalidActivityException("유효하지 않은 주소입니다.");
-        }
-
-    }
+//    @GetMapping("/auth/check-email-token")
+//    public void checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
+//        System.out.println("이메일 토큰 인증과정 시작");
+//        userService.checkEmailToken(token, email);
+//        try {
+//            response.sendRedirect("https://localhost:8080/auth/logIn");
+//            System.out.println("redirect 시키기");
+//        } catch (IOException e) {
+//            throw new InvalidActivityException("유효하지 않은 주소입니다.");
+//        }
+//
+//    }
 
 //    @GetMapping("/auth/check-email-token")
 //    public void checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {

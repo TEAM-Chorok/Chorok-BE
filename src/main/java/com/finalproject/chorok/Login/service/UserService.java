@@ -1,7 +1,7 @@
 package com.finalproject.chorok.Login.service;
 
 
-import com.finalproject.chorok.Common.utils.RedisUtil;
+//import com.finalproject.chorok.Common.utils.RedisUtil;
 import com.finalproject.chorok.Login.dto.*;
 
 import com.finalproject.chorok.Login.model.EmailMessage;
@@ -34,7 +34,7 @@ public class UserService {
     private final TemplateEngine templateEngine;
     private final HttpServletRequest request;
     private final Validator validator;
-    private final RedisUtil redisUtil;
+//    private final RedisUtil redisUtil;
 
 
     @Transactional
@@ -186,24 +186,24 @@ public class UserService {
         }
         return msg;
     }
-
-    @Transactional
-    public ResponseEntity<CMResponseDto> checkEmailToken(String token, String email) throws InvalidActivityException {
-        System.out.println("이메일 토큰 인증과정 함수시작");
-
-        User findUser = (User)redisUtil.get(token);
-
-//        User findUser = userRepository.findByUsername(email).orElseThrow(
-//                () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
-//        );
-        if (!findUser.isValidToken(token))
-            throw new InvalidActivityException("유효하지 않는 토큰입니다.");
-
-        User savedUser = userRepository.save(findUser);
-        System.out.println("User 저장");
-        if(savedUser.getUserId() > 0) redisUtil.delete(token);
-        System.out.println("redisutil 제거");
-
-        return ResponseEntity.ok(new CMResponseDto("true"));
-    }
+//
+//    @Transactional
+//    public ResponseEntity<CMResponseDto> checkEmailToken(String token, String email) throws InvalidActivityException {
+//        System.out.println("이메일 토큰 인증과정 함수시작");
+//
+//        User findUser = (User)redisUtil.get(token);
+//
+////        User findUser = userRepository.findByUsername(email).orElseThrow(
+////                () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
+////        );
+//        if (!findUser.isValidToken(token))
+//            throw new InvalidActivityException("유효하지 않는 토큰입니다.");
+//
+//        User savedUser = userRepository.save(findUser);
+//        System.out.println("User 저장");
+//        if(savedUser.getUserId() > 0) redisUtil.delete(token);
+//        System.out.println("redisutil 제거");
+//
+//        return ResponseEntity.ok(new CMResponseDto("true"));
+//    }
 }

@@ -19,6 +19,7 @@ public class ChorokApplication {
         new SpringApplicationBuilder(ChorokApplication.class)
                 .properties(APPLICATION_LOCATIONS)
                 .run(args);
+
     }
 
 }
