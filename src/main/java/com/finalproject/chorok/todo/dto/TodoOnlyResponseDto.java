@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class TodoOnlyResponseDto {
     Long TodoNo;
+    Long myPlantNo;
     String workType;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
@@ -22,8 +23,9 @@ public class TodoOnlyResponseDto {
 
     private boolean status;
 
-    public TodoOnlyResponseDto(Long TodoNo, String workType, LocalDate lastWorkTime, LocalDate toDoTime,boolean status){
+    public TodoOnlyResponseDto(Long TodoNo, Long myPlantNo, String workType, LocalDate lastWorkTime, LocalDate toDoTime,boolean status){
         this.TodoNo = TodoNo;
+        this.myPlantNo = myPlantNo;
         this.workType = workType;
         this.lastWorkTime = lastWorkTime;
         this.toDoTime = toDoTime;

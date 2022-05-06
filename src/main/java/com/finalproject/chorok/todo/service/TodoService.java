@@ -29,11 +29,13 @@ public class TodoService {
     //나의 모든 식물에 대한 투두 보여주기
     public List<TodoResponseDto> getTodo(UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        List<Todo> todos = todoRepository.findAllByUserAndTodoTime(user, LocalDate.now().minusDays(7)).stream().distinct().collect(Collectors.toList());
+        List<Todo> todos2 = todoRepository.findAll();
+        List<Todo> todos = todoRepository.findFirstByUserAndTodoTime(user, LocalDate.now().minusDays(7)).stream().distinct().collect(Collectors.toList());
         List<TodoOnlyResponseDto> todoOnlyResponseDtos = new ArrayList<>();
         for (Todo todo : todos) {
             TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
                     todo.getTodoNo(),
+                    todo.getMyPlant().getMyPlantNo(),
                     todo.getWorkType(),
                     todo.getLastWorkTime(),
                     todo.getTodoTime(),

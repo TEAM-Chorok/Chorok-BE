@@ -14,4 +14,6 @@ public interface MyPlantRepository extends JpaRepository<MyPlant, Long> {
     List<MyPlant> findAllByUserUserId(Long userUserId);
 
     MyPlant findByUserAndMyPlantNo(User user, Long myPlantNo);
+
+    List<MyPlant> findAllByUser(User user);
 }

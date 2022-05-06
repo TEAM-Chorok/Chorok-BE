@@ -7,6 +7,7 @@ import com.finalproject.chorok.todo.model.Todo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -29,8 +30,8 @@ public class MyPlant {
     private LocalDate startDay;
     private LocalDate endDay;
 
-    @OneToMany(mappedBy = "myPlant",cascade =CascadeType.ALL)
-    private List<Todo> todoList;
+//    @OneToMany(mappedBy = "myPlant",cascade =CascadeType.ALL)
+//    private List<Todo> todoList;
 
     @ManyToOne
     @JoinColumn(name = "user_id",referencedColumnName = "user_id")
