@@ -54,6 +54,9 @@ dependencies {
     //redis
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.4.10'
 
+    //날씨 api
+    implementation 'com.google.code.gson:gson:2.8.6'
+
 }
 
 tasks.named('test') {

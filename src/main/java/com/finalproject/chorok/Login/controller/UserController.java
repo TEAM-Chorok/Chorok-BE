@@ -75,22 +75,17 @@ public class UserController {
 
     //카카오 로그인
     @GetMapping("/auth/kakao/callback")
-    public void kakaoLogin(@RequestParam String code) throws JsonProcessingException {
+    public KakaoUserResponseDto kakaoLogin(@RequestParam String code) throws JsonProcessingException {
         System.out.println("제일 시작점");
-        kakaoUserService.kakaoLogin(code);
+        return kakaoUserService.kakaoLogin(code);
 
     }
 
     //구글 로그인
     @GetMapping("/auth/google/callback")
-    public void googleLogin(@RequestParam String code) throws JsonProcessingException {
-
+    public GoogleUserResponseDto googleLogin(@RequestParam String code) throws JsonProcessingException {
         System.out.println("구글로그인 시작");
-        ResponseDto.<GoogleUserResponseDto>builder()
-                .status(HttpStatus.OK.toString())
-                .message("구글 소셜 로그인 요청")
-                .data(googleUserService.googleLogin(code))
-                .build();
+        return googleUserService.googleLogin(code);
     }
 
 
@@ -126,4 +121,17 @@ public class UserController {
 
     }
 
+//    @GetMapping("/auth/check-email-token")
+//    public void checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
+//        System.out.println("이메일 토큰 인증과정 시작");
+//        userService.checkEmailToken(token, email);
+//        try {
+//            response.sendRedirect("https://localhost:8080/auth/logIn");
+//            System.out.println("redirect 시키기");
+//        } catch (IOException e) {
+//            throw new InvalidActivityException("유효하지 않은 주소입니다.");
+//        }
+
+//    }
+    
 }
