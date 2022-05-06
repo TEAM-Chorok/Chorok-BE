@@ -39,8 +39,8 @@ public class UserService {
 
     @Transactional
     public String registerUser(SignupRequestDto requestDto) {
-        String msg = "회원가입 성공";
-//        String msg = "회원인증 이메일 전송";
+//        String msg = "회원가입 성공";
+        String msg = "회원인증 이메일 전송";
 
         try {
             //회원가입 확인
@@ -60,11 +60,11 @@ public class UserService {
 
         User user = new User(username, password, nickname, emailCheckToken);
 
-        // 이메일 인증 코드부분
+//         이메일 인증 코드부분
 //        redisUtil.set(emailCheckToken, user, 2);
-//
-//        System.out.println(user+"4");
-//
+
+        System.out.println(user+"4");
+
 //        sendSignupConfirmEmail(user);
 
         // 이메일 인증 생략하고 회원가입(추후 삭제)
@@ -82,9 +82,7 @@ public class UserService {
         );
         System.out.println("이메일 존재여부 체크");
          //인증 이메일 1시간 지났는지 체크
-//        if (!findUser.canSendConfirmEmail())
-//            throw new InvalidActivityException("인증 이메일은 1시간에 한번만 전송할 수 있습니다.");
-//        System.out.println("인증이메일 1시간 체크");
+
         String tempPassword = temporaryPassword(10); // 8글자 랜덤으로 임시 비밀번호 생성
 
         String tempEncPassword = passwordEncoder.encode(tempPassword); // 암호화
