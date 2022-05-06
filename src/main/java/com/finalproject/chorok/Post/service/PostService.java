@@ -1,12 +1,13 @@
 package com.finalproject.chorok.Post.service;
 
 import com.finalproject.chorok.Login.model.User;
-import com.finalproject.chorok.Post.dto.PostResponseDto;
-import com.finalproject.chorok.Post.dto.PostWriteRequestDto;
-import com.finalproject.chorok.Post.model.Comment;
+import com.finalproject.chorok.Post.dto.*;
 import com.finalproject.chorok.Post.model.Post;
+import com.finalproject.chorok.Post.model.PostBookMark;
 import com.finalproject.chorok.Post.model.PostLike;
 import com.finalproject.chorok.Post.model.PostType;
+import com.finalproject.chorok.Post.repository.CommentRepository;
+import com.finalproject.chorok.Post.repository.PostBookMarkRepository;
 import com.finalproject.chorok.Post.repository.PostLikeRepository;
 import com.finalproject.chorok.Post.repository.PostRepository;
 import com.finalproject.chorok.Post.utils.CommUtils;
@@ -37,6 +38,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommUtils commUtils;
+    private final CommentRepository commentRepository;
+    private final PostBookMarkRepository postBookMarkRepository;
 
 
 
@@ -60,7 +63,7 @@ public class PostService {
      //게시글 전체 조회 (게시글 타입과 식물위치로 분류)
     @Transactional
     public List<PostResponseDto> readPlantPlacePosts(String postTypeCode, String plantPlaceCode) {
-        List<Post> postList = postRepository.findAllByPostTypePostTypeCodeAndPlantPlacePlantPlaceCodeOrderByCreatedAt(postTypeCode,plantPlaceCode);
+        List<Post> postList = postRepository.findAllByPostTypePostTypeCodeAndPlantPlaceCodeOrderByCreatedAt(postTypeCode,plantPlaceCode);
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
         PostResponseDto postResponseDto = null;
 
@@ -73,28 +76,48 @@ public class PostService {
 
     // 게시글 상세조회
     @Transactional
-    public List<Comment> readPostDetail(Long postId) {
+    public PostDetailResponseDto readPostDetail(Long postId,User user) {
         //게시글 조회
         Post post = commUtils.getPost(postId);
+        // 식물 장소
+        PlantPlace plantPlace = commUtils.getPlantPlace(post.getPlantPlaceCode());
+        // 댓글리스트
+      //  List<CommentResponseDto> commentResponseDtos = new CommentResponseDto(post.getCommentList());
+        // responseDto
+        PostDetailResponseDto postDetailResponseDto =new PostDetailResponseDto(post,plantPlace);
         // 댓글 조회
-       return commUtils.getCommentList(postId);
+        //List<Map<String,Object>> commentFormat =
+
+//        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+//        for(Map<String,Object> comment : commentFormat){
+//            CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
+//            commentResponseDtoList.add(commentResponseDto);
+//        }
+       return postDetailResponseDto;
     }
 
     // 게시글 작성하기
     @Transactional
     public Post writePost(PostWriteRequestDto post, User user) {
-         PlantPlace plantPlace = commUtils.getPlantPlace(post.getPlantPlaceCode());
-         PostType postType = commUtils.getPostType(post.getPostTypeCode());
-        Post writePost = new Post(post,user,plantPlace,postType);
 
+        PostType postType = commUtils.getPostType(post.getPostTypeCode());
+        Post writePost = new Post(post,user,postType);
         return postRepository.save(writePost);
     }
+
     // 게시글 삭제
+    @Transactional
     public void deletePost(Long postId) {
         postRepository.deleteById(postId);
+
     }
 
-    public void updatePost(Long postId) {
+    // 게시글 수정
+    @Transactional
+    public void updatePost(Long postId, PostRequestDto postRequestDto) {
+       Post post =  commUtils.getPost(postId);
+       post.update(postRequestDto);
+
     }
 
     // 게시글 좋아요
@@ -109,11 +132,22 @@ public class PostService {
        }else{
             System.out.println("추가");
             postLikeRepository.save(new PostLike(commUtils.getPost(postId),user));
-
             return true;
        }
 
+    }
+    public Object bookMarkPost(Long postId, User user) {
+
+        if(commUtils.getBookMarkPost(postId,user)!=null){
+
+            postBookMarkRepository.deleteByUserBookMarkQuery(user.getUserId(),postId);
+            return false;
+
+        }else{
+
+            postBookMarkRepository.save(new PostBookMark(commUtils.getPost(postId),user));
+            return true;
+        }
 
     }
 }
-;

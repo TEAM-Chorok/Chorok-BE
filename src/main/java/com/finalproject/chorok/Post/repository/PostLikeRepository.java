@@ -1,16 +1,12 @@
 package com.finalproject.chorok.Post.repository;
 
-import com.finalproject.chorok.Login.model.User;
-import com.finalproject.chorok.Post.model.Post;
 import com.finalproject.chorok.Post.model.PostLike;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 
 @Repository
 public interface PostLikeRepository extends JpaRepository<PostLike,Long> {

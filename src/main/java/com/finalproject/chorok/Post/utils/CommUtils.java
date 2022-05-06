@@ -1,21 +1,17 @@
 package com.finalproject.chorok.Post.utils;
 
 import com.finalproject.chorok.Login.model.User;
-import com.finalproject.chorok.Post.model.Comment;
-import com.finalproject.chorok.Post.model.Post;
-import com.finalproject.chorok.Post.model.PostLike;
-import com.finalproject.chorok.Post.model.PostType;
-import com.finalproject.chorok.Post.repository.CommentRepository;
-import com.finalproject.chorok.Post.repository.PostLikeRepository;
-import com.finalproject.chorok.Post.repository.PostRepository;
+import com.finalproject.chorok.Post.dto.CommentResponseDto;
+import com.finalproject.chorok.Post.model.*;
+import com.finalproject.chorok.Post.repository.*;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import com.finalproject.chorok.plant.repository.PlantPlaceRepository;
-import com.finalproject.chorok.Post.repository.PostTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +21,7 @@ public class CommUtils {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
+    private final PostBookMarkRepository postBookMarkRepository;
 
 
     // 식물장소코드로 식물장소 검색
@@ -47,15 +44,33 @@ public class CommUtils {
                 () -> new NullPointerException("해당 게시글이 존재하지 않습니다.")
         );
     }
+    // 댓글 번호로 댓글 조회
+    public Comment getComment(Long commentNo){
+        return commentRepository.findById(commentNo).orElseThrow(
+                ()-> new NullPointerException("해당 댓글이 존재하지 않습니다.")
+        );
+    }
     // 게시글 번호로 댓글 리스트 조회
-    public List<Comment> getCommentList(Long postId){
-        return commentRepository.findByPostPostId(postId);
+    public List<CommentResponseDto>  getCommentList(Long postId){
+        return commentRepository.findCommentToPostIdQuery(postId);
     }
     // 게시글 좋아요 조회
     public PostLike getLikePost(Long postId, User user){
 
-        System.out.println(postLikeRepository.findUserLikeQuery(user.getUserId(),postId));
         return postLikeRepository.findUserLikeQuery(user.getUserId(),postId);
 
+    }
+    // 게시글 북마크 조회
+    public PostBookMark getBookMarkPost(Long postId, User user){
+
+        return postBookMarkRepository.findUserBookMarkQuery(user.getUserId(),postId);
+
+    }
+    // 반환값 없는 API 반환값 설정
+    public HashMap<String,String> responseHashMap(HttpStatus httpCode){
+        HashMap<String,String> hs = new HashMap<>();
+        hs.put("StatusCode",String.valueOf(httpCode));
+        hs.put("msg","성공적으로 완료되었습니다");
+        return hs;
     }
 }

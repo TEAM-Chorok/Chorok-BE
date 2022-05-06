@@ -27,6 +27,7 @@ public class PostLike {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postLikeNo;
 
+
     @ManyToOne
     @JoinColumn(name = "post_id", referencedColumnName = "post_id")
     private Post post;
@@ -34,7 +35,6 @@ public class PostLike {
     @ManyToOne
     @JoinColumn(name="user_id",referencedColumnName = "user_id")
     private User user;
-
 
 
 

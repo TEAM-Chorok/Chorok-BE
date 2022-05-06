@@ -1,6 +1,7 @@
 package com.finalproject.chorok.common.utils;
 
 import com.finalproject.chorok.Post.controller.CommentController;
+import com.finalproject.chorok.Post.controller.PostController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -16,13 +17,12 @@ import java.util.Map;
 public class ApiControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex){
         Map<String, String> errors = new HashMap<>();
         errors.put("statusCode", String.valueOf(HttpStatus.BAD_REQUEST));
         ex.getBindingResult().getAllErrors()
                 .forEach(c -> errors.put(((FieldError) c).getField(), c.getDefaultMessage()));
-
         return ResponseEntity.badRequest().body(errors);
     }
 

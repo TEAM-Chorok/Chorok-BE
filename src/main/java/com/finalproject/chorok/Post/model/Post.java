@@ -1,8 +1,8 @@
 package com.finalproject.chorok.Post.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.finalproject.chorok.Login.model.User;
+import com.finalproject.chorok.Post.dto.PostRequestDto;
 import com.finalproject.chorok.Post.dto.PostWriteRequestDto;
 import com.finalproject.chorok.common.model.Timestamped;
 import com.finalproject.chorok.plant.model.PlantPlace;
@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,13 +43,20 @@ public class Post extends Timestamped {
     @JoinColumn(name = "post_type_code", referencedColumnName = "post_type_code")
     private PostType postType;
 
-    @ManyToOne
-    @JoinColumn(name="plant_place_code", referencedColumnName = "plant_place_code")
-    private PlantPlace plantPlace;
+
+    @Column(name = "plant_place_code")
+    private String plantPlaceCode;
+
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    @JsonBackReference
     private List<Comment> commentList;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostLike> postLike;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostBookMark> postBookMark;
+
 
     @Column(nullable = false)
     private String postTitle;
@@ -62,12 +68,20 @@ public class Post extends Timestamped {
     private String postImgUrl;
 
     // 게시글 등록
-    public Post(PostWriteRequestDto post, User user, PlantPlace plantPlace, PostType postType) {
+    public Post(PostWriteRequestDto post, User user, PostType postType) {
         this.user = user;
         this.postTitle=post.getPostTitle();
         this.postContent=post.getPostContent();
         this.postType = postType;
         this.postImgUrl = post.getPostImgUrl();
-        this.plantPlace=plantPlace;
+        this.plantPlaceCode=post.getPlantPlaceCode();
+    }
+
+
+    public void update(PostRequestDto postRequestDto) {
+        this.postTitle=postRequestDto.getPostTitle();
+        this.postContent=postRequestDto.getPostContent();
+        this.postImgUrl=postRequestDto.getPostImgUrl();
+        this.plantPlaceCode=postRequestDto.getPlantPlaceCode();
     }
 }

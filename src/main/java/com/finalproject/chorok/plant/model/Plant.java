@@ -68,7 +68,7 @@ public class Plant {
 
     @Column
     @Comment("봄 적정 물주기")
-    private String waterCycleSprngCode;
+    private String waterCycleSpringCode;
 
     @Column
     @Comment("여름 적정 물주기")
@@ -84,7 +84,7 @@ public class Plant {
 
     @Column
     @Comment("보편적 적정 물주기")
-    private String waterCycleCode;
+    private int waterCycleCode;
 
     @Column
     @Comment("겨울 적정 온도")
