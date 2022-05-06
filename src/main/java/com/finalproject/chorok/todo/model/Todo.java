@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @Entity
+@Table(name = "todo")
 public class Todo {
 
     @Id
@@ -24,9 +25,11 @@ public class Todo {
     private boolean status;
 
     @ManyToOne
+    @JoinColumn(name = "my_plant_no",referencedColumnName = "my_plant_no")
     private MyPlant myPlant;
 
     @ManyToOne
+    @JoinColumn(name = "user_id",referencedColumnName = "user_id")
     private User user;
 
     public Todo(String workType, LocalDate lastWorkTime, LocalDate todoTime, boolean status, User user, MyPlant myPlant) {

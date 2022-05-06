@@ -16,9 +16,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor // 기본 생성자를 만들어줍니다.
 @Entity
+@Table(name = "my_plant")
 public class MyPlant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @Column(name = "my_plant_no")
     private Long myPlantNo;
     private int plantNo;
     private String myPlantPlace;
@@ -27,11 +29,11 @@ public class MyPlant {
     private LocalDate startDay;
     private LocalDate endDay;
 
-    @OneToMany(cascade =CascadeType.ALL)
-    @JoinColumn
+    @OneToMany(mappedBy = "myPlant",cascade =CascadeType.ALL)
     private List<Todo> todoList;
 
     @ManyToOne
+    @JoinColumn(name = "user_id",referencedColumnName = "user_id")
     private User user;
 
     public MyPlant(MyPlantRequestDto myPlantRequestDto, User user){
