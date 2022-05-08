@@ -65,6 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
         web.ignoring().antMatchers("/h2-console/**");
         web.ignoring().antMatchers("kapi.kakao.com/v2/user/me");
+        web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
     }
 
     @Override
@@ -116,24 +117,34 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     //cors
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedOrigin("http://localhost:8080");
-        configuration.addAllowedOrigin("http://172.31.42.54:3000");
-        configuration.addAllowedOrigin("http://172.31.42.54:8080");
-        configuration.addAllowedOrigin("http://dogfootdogfoot.shop");
-        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:8080");
-        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:3000");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.addExposedHeader("Authorization");
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.addAllowedOrigin("http://localhost:3000");
+//        configuration.addAllowedOrigin("http://localhost:8080");
+//        configuration.addAllowedOrigin("http://172.31.42.54:3000");
+//        configuration.addAllowedOrigin("http://172.31.42.54:8080");
+//        configuration.addAllowedOrigin("http://dogfootdogfoot.shop");
+//        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:8080");
+//        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:3000");
+//        configuration.addAllowedMethod("*");
+//        configuration.addAllowedHeader("*");
+//        configuration.addExposedHeader("Authorization");
+//        configuration.addAllowedOrigin("http://52.79.233.178:8080");
+//        configuration.addAllowedOrigin("http://52.79.233.178:3000");
+//        configuration.addAllowedOrigin("http://52.79.233.178");
+//        configuration.addAllowedOrigin("/**"); //배포시
+//        configuration.addAllowedOrigin(""); //배포시
+//        configuration.addAllowedOrigin("http://192.168.0.23:3000");
+//        configuration.addAllowedOrigin("http://192.168.0.23:8080");
+//        configuration.addAllowedOrigin("http://192.168.0.23");
+////        'Access-Control-Allow-Origin' '*';
+//
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
 
     @Bean
@@ -193,6 +204,36 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
+//    cors 해결
+    public CorsConfigurationSource corsConfigurationSource(){
+        CorsConfiguration configuration = new CorsConfiguration();
+//        corsConfiguration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
+        //corsConfiguration.addAllowedOrigin(""); //배포시
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://localhost:8080");
+        configuration.addAllowedOrigin("http://172.31.42.54:3000");
+        configuration.addAllowedOrigin("http://172.31.42.54:8080");
+        configuration.addAllowedOrigin("http://dogfootdogfoot.shop");
+        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:8080");
+        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:3000");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.addExposedHeader("Authorization");
+        configuration.addAllowedOrigin("http://52.79.233.178:8080");
+        configuration.addAllowedOrigin("http://52.79.233.178:3000");
+        configuration.addAllowedOrigin("http://52.79.233.178");
+        configuration.addAllowedOrigin("/**"); //배포시
+        configuration.addAllowedOrigin(""); //배포시
+        configuration.addAllowedOrigin("http://192.168.0.23:3000");
+        configuration.addAllowedOrigin("http://192.168.0.23:8080");
+        configuration.addAllowedOrigin("http://192.168.0.23");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.addExposedHeader("Authorization");
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
 }
