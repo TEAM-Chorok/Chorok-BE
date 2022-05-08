@@ -32,7 +32,7 @@ public class User {
     private String nickname;
 
     @Column(nullable = true)
-    private String profileImgUrl;
+    private String profileImageUrl;
 
     @Column(unique = true)
     private String emailCheckToken;
@@ -61,20 +61,22 @@ public class User {
 
     }
 
-    public User(String username, String password, String nickname, Long kakaoId) {
-            this.username = username;
-            this.password = password;
-            this.nickname = nickname;
-            this.kakaoId = kakaoId;
+    public User(String username, String password, String nickname, Long kakaoId, String profileImage) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.kakaoId = kakaoId;
+        this.profileImageUrl = profileImage;
 
     }
 
-    public User(String username, String password, String nickname, Long kakaoId, String googleId) {
+    public User(String username, String password, String nickname, Long kakaoId, String googleId, String profileImage) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.kakaoId = kakaoId;
         this.googleId = googleId;
+        this.profileImageUrl = profileImage;
     }
 
     public void changeTempPassword(String tempPassword) {

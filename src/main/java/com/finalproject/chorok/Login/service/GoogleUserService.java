@@ -108,17 +108,17 @@ public class GoogleUserService {
         //Token Request
         GoogleOAuthResponse result = mapper.readValue(resultEntity.getBody(), new TypeReference<GoogleOAuthResponse>() {
         });
-        String jwtToken = result.getId_token();
-        System.out.println(jwtToken);
-        return jwtToken;
+        String accessToken = result.getAccess_token();
+        System.out.println(accessToken);
+        return accessToken;
     }
 
 
-    private GoogleUserInfoDto getGoogleUserInfo(RestTemplate restTemplate, String jwtToken) throws JsonProcessingException {
+    private GoogleUserInfoDto getGoogleUserInfo(RestTemplate restTemplate, String accessToken) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        String requestUrl = UriComponentsBuilder.fromHttpUrl("https://oauth2.googleapis.com/tokeninfo")
-//        String requestUrl = UriComponentsBuilder.fromHttpUrl("https://www.googleapis.com/oauth2/v3/userinfo")
-                .queryParam("id_token", jwtToken).encode().toUriString();
+//        String requestUrl = UriComponentsBuilder.fromHttpUrl("https://oauth2.googleapis.com/tokeninfo")
+        String requestUrl = UriComponentsBuilder.fromHttpUrl("https://www.googleapis.com/oauth2/v3/userinfo")
+                .queryParam("access_token", accessToken).encode().toUriString();
 
         String resultJson = restTemplate.getForObject(requestUrl, String.class);
 
@@ -128,13 +128,14 @@ public class GoogleUserService {
                 .googleId(userInfo.get("sub"))
                 .email(userInfo.get("email"))
                 .nickname(userInfo.get("name"))
-
+                .profileImage(userInfo.get("picture"))
                 .build();
 
         String nickname = userInfo.get("name");
         String email = userInfo.get("email");
         String googleId = userInfo.get("sub");
-        System.out.println("구글 사용자 정보:  " + googleId + ", "+ nickname + ", " + email);
+        String profileImage = userInfo.get("picture");
+        System.out.println("구글 사용자 정보:  " + googleId + ", "+ nickname + ", " + email + ", " + profileImage);
         return googleUserInfoDto;
     }
 
@@ -169,8 +170,9 @@ public class GoogleUserService {
                 String encodedPassword = passwordEncoder.encode(password);
                 // email: kakao email
                 String email = googleUserInfoDto.getEmail();
+                String profileImage = googleUserInfoDto.getProfileImage();
 
-                googleUser = new User(email, encodedPassword, nickname, null, googleUserId); }
+                googleUser = new User(email, encodedPassword, nickname, null, googleUserId, profileImage); }
             userRepository.save(googleUser); }
         return googleUser; }
 
