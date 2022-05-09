@@ -24,6 +24,10 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     List<Todo> findAllByUserAndTodoTime(User user, LocalDate toDoTime);
 
     List<Todo> findFirstByUserAndTodoTime(User user, LocalDate minusDays);
-
+Todo findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(User user, MyPlant myPlant, boolean status, String workType);
     List<TodoOnlyResponseDto> findFirstByUserAndTodoTimeAndMyPlant_MyPlantNo(User user, LocalDate toDoDate, Long myPlantNo);
+
+    List<Todo> findByTodoTime(LocalDate toDoTime);
+
+   Todo findByUserAndAndTodoNo(User user, Long todoNo);
 }

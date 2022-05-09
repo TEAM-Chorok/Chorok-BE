@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +31,13 @@ public class MyPlantService {
         MyPlant myPlant = new MyPlant(myPlantRequestDto, user);
         myPlantRepository.save(myPlant);
         todoRepository.save(new Todo("물주기", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
-        todoRepository.save(new Todo("영양제 주기", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
+        todoRepository.save(new Todo("영양제", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
         todoRepository.save(new Todo("분갈이", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
+        todoRepository.save(new Todo("잎닦기", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
 
     }
 
-    //나의 식물들 보기
+    //나의 식물들과 그에딸린 모든 투두들 보기
     public List<MyPlantResponseDto> getMyPlant(UserDetailsImpl userDetails) {
         List<MyPlant> myPlants = myPlantRepository.findAllByUser(userDetails.getUser());
         List<MyPlantResponseDto> myPlantResponseDtos = new ArrayList<>();
@@ -49,11 +51,15 @@ public class MyPlantService {
                     todo.getMyPlant().getMyPlantNo(),
                     todo.getWorkType(),
                     todo.getLastWorkTime(),
-                    todo.getTodoTime(),
+                    1,
                     todo.isStatus()
             );
             todoOnlyResponseDtos.add(todoOnlyResponseDto);
         }
+        return getMyPlantResponseDtos(myPlants, myPlantResponseDtos, todoOnlyResponseDtos);
+    }
+
+    private List<MyPlantResponseDto> getMyPlantResponseDtos(List<MyPlant> myPlants, List<MyPlantResponseDto> myPlantResponseDtos, List<TodoOnlyResponseDto> todoOnlyResponseDtos) {
         for (MyPlant myPlant : myPlants) {
             MyPlantResponseDto myPlantResponseDto = new MyPlantResponseDto(
                     myPlant.getMyPlantNo(),
@@ -63,8 +69,7 @@ public class MyPlantService {
                     myPlant.getMyPlantName(),
                     myPlant.getStartDay(),
                     myPlant.getEndDay(),
-                    todoOnlyResponseDtos.stream());
-//                    todoRepository.findAllByMyPlant_MyPlantNoOrderByWorkTypeAsc(myPlant.getMyPlantNo()));
+                    todoOnlyResponseDtos.stream().filter(h->h.getMyPlantNo().equals(myPlant.getMyPlantNo())).collect(Collectors.toList()));
                     myPlantResponseDtos.add(myPlantResponseDto);
         }
 
@@ -77,8 +82,9 @@ public class MyPlantService {
         List<MyPlant> myPlants = myPlantRepository.findAllByUser(userDetails.getUser());
         List<MyPlantResponseDto> myPlantResponseDtos = new ArrayList<>();
         //todoResponseDto에 넣어주기
-        List<Todo> todos = todoRepository.findAllByUserAndTodoTime(userDetails.getUser(), LocalDate.now().minusDays(7));
+        List<Todo> todos = todoRepository.findAllByUserAndTodoTime(userDetails.getUser(), LocalDate.now());
         List<TodoOnlyResponseDto> todoOnlyResponseDtos = new ArrayList<>();
+        User user = userDetails.getUser();
 
         for (Todo todo : todos) {
             TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
@@ -86,25 +92,13 @@ public class MyPlantService {
                     todo.getMyPlant().getMyPlantNo(),
                     todo.getWorkType(),
                     todo.getLastWorkTime(),
-                    todo.getTodoTime(),
+                    (int) (LocalDate.now().toEpochDay()-todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(user,todo.getMyPlant(),true,todo.getWorkType()).getLastWorkTime().toEpochDay()),
                     todo.isStatus()
             );
             todoOnlyResponseDtos.add(todoOnlyResponseDto);
         }
-        for (MyPlant myPlant : myPlants) {
-            MyPlantResponseDto myPlantResponseDto = new MyPlantResponseDto(
-                    myPlant.getMyPlantNo(),
-                    myPlant.getPlantNo(),
-                    myPlant.getMyPlantPlace(),
-                    myPlant.getMyPlantImgUrl(),
-                    myPlant.getMyPlantName(),
-                    myPlant.getStartDay(),
-                    myPlant.getEndDay(),
-                    todoOnlyResponseDtos.stream().filter(h->h.getMyPlantNo().equals(myPlant.getMyPlantNo())));
-            myPlantResponseDtos.add(myPlantResponseDto);
-        }
-
-        return myPlantResponseDtos;
+        return getMyPlantResponseDtos(myPlants, myPlantResponseDtos, todoOnlyResponseDtos);
     }
+
 
 }

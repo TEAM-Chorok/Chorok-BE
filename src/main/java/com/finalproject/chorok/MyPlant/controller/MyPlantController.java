@@ -1,11 +1,16 @@
 package com.finalproject.chorok.MyPlant.controller;
 
+import com.finalproject.chorok.Login.model.User;
 import com.finalproject.chorok.MyPlant.dto.MyPlantResponseDto;
 import com.finalproject.chorok.MyPlant.model.MyPlant;
+import com.finalproject.chorok.MyPlant.repository.MyPlantRepository;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.MyPlant.dto.MyPlantRequestDto;
 import com.finalproject.chorok.MyPlant.service.MyPlantService;
+import com.finalproject.chorok.MyPlant.dto.EndDayReqeustDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MyPlantController {
     private final MyPlantService myPlantService;
+    private final MyPlantRepository myPlantRepository;
 
     //내식물 등록하기
     @PostMapping("/myplant")
@@ -26,5 +32,20 @@ public class MyPlantController {
     @GetMapping("/myplant")
     public List<MyPlantResponseDto> myPlantInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return myPlantService.getMyPlant(userDetails);
+    }
+
+    //식물 죽은날 설정하기
+   @PatchMapping("/myplant/end/{myPlantNo}")
+    public void postEndDay(@PathVariable Long myPlantNo, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody EndDayReqeustDto endDayReqeustDto){
+        User user = userDetails.getUser();
+        try {
+            MyPlant myPlant = myPlantRepository.findByUserAndMyPlantNo(user,myPlantNo);
+            myPlant.setEndDay(endDayReqeustDto.getEndDay());
+            myPlantRepository.save(myPlant);
+        }
+        catch (Exception e){
+            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
     }
 }

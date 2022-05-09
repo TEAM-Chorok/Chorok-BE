@@ -2,9 +2,9 @@ package com.finalproject.chorok.todo.model;
 
 import com.finalproject.chorok.Login.model.User;
 import com.finalproject.chorok.MyPlant.model.MyPlant;
+import com.finalproject.chorok.todo.dto.TodoAutoDto;
 import com.finalproject.chorok.todo.dto.TodoRequestDto;
 import lombok.*;
-import org.apache.tomcat.jni.Local;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -20,7 +20,7 @@ public class Todo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long TodoNo;
+    private Long todoNo;
     private String workType;
     private LocalDate lastWorkTime;
     private LocalDate todoTime;
@@ -58,6 +58,15 @@ public class Todo {
         this.todoTime = todoTime;
         this.myPlant = myPlant;
 
+    }
+    //자동저장투두
+    public Todo(TodoAutoDto todoAutoDto) {
+this.workType = todoAutoDto.getWorkType();
+this.lastWorkTime = todoAutoDto.getLastWorkTime();
+this.todoTime = todoAutoDto.getTodoTime();
+this.status = todoAutoDto.isStatus();
+this.myPlant = todoAutoDto.getMyPlant();
+this.user = todoAutoDto.getUser();
     }
 
 

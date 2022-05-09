@@ -29,9 +29,9 @@ public class MyPlantResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDay;
 
-    private Stream<TodoOnlyResponseDto> todos;
+    private List<TodoOnlyResponseDto> todos;
 
-public MyPlantResponseDto (Long MyPlantNo, int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, LocalDate startDay, LocalDate endDay, Stream<TodoOnlyResponseDto> todos){
+public MyPlantResponseDto (Long MyPlantNo, int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, LocalDate startDay, LocalDate endDay, List<TodoOnlyResponseDto> todos){
     this.myPlantNo = MyPlantNo;
     this.plantNo = plantNo;
     this.myPlantPlace = myPlantPlace;

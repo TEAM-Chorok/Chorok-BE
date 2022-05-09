@@ -18,17 +18,20 @@ public class TodoOnlyResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     LocalDate lastWorkTime;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    LocalDate toDoTime;
+    int days;
+
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+//    LocalDate toDoTime;
 
     private boolean status;
 
-    public TodoOnlyResponseDto(Long TodoNo, Long myPlantNo, String workType, LocalDate lastWorkTime, LocalDate toDoTime,boolean status){
+    public TodoOnlyResponseDto(Long TodoNo, Long myPlantNo, String workType, LocalDate lastWorkTime, int days, boolean status){
         this.TodoNo = TodoNo;
         this.myPlantNo = myPlantNo;
         this.workType = workType;
+        this.days = days;
         this.lastWorkTime = lastWorkTime;
-        this.toDoTime = toDoTime;
+//        this.toDoTime = toDoTime;
         this.status = status;
     }
 
