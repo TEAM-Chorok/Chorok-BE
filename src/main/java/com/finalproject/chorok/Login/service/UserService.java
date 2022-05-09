@@ -5,13 +5,16 @@ package com.finalproject.chorok.Login.service;
 import com.finalproject.chorok.Login.dto.*;
 
 import com.finalproject.chorok.Login.model.EmailMessage;
+import com.finalproject.chorok.Login.model.Labeling;
 import com.finalproject.chorok.Login.model.User;
 import com.finalproject.chorok.Login.repository.EmailService;
+import com.finalproject.chorok.Login.repository.LabelingRepository;
 import com.finalproject.chorok.Login.repository.UserRepository;
 import com.finalproject.chorok.Login.validator.Validator;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ public class UserService {
     private final TemplateEngine templateEngine;
     private final HttpServletRequest request;
     private final Validator validator;
+    private final LabelingRepository labelingRepository;
 //    private final RedisUtil redisUtil;
 
 
@@ -206,4 +210,12 @@ public class UserService {
 //
 //        return ResponseEntity.ok(new CMResponseDto("true"));
 //    }
+
+    @Transactional
+    public String registerLabeling(LabelingDto labelingDto) {
+        String msg = "레이블링 성공";
+        Labeling labeling = new Labeling(labelingDto);
+        labelingRepository.save(labeling);
+        return msg;
+    }
 }

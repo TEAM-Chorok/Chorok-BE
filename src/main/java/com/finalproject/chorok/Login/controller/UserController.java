@@ -16,9 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.activity.InvalidActivityException;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
 
 
 @RestController
@@ -133,5 +131,10 @@ public class UserController {
 //        }
 
 //    }
-    
+
+    // 식물 추천 테스트
+    @PostMapping("/user/labeling")
+    public String recommendationTest(@RequestBody LabelingDto labelingDto) {
+        return userService.registerLabeling(labelingDto);
+    }
 }
