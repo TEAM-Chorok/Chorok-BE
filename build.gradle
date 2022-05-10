@@ -21,13 +21,50 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // validation 추가
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // 스프링 시큐리티
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // Thymeleaf (뷰 템플릿 엔진)
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    implementation 'commons-codec:commons-codec:1.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+    compileOnly 'com.auth0:java-jwt:3.13.0'
+
+    // OAuth2 Google
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    //임시 비밀번호 발급
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    //validation
+    implementation 'jakarta.validation:jakarta.validation-api:2.0.2'
+
+    //localdatetime
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.10.1'
+
+
+
+    //S3
+    //implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.3.1'
+
+    //redis
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.4.10'
+
+    //날씨 api
+    implementation 'com.google.code.gson:gson:2.8.6'
+
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
 }
