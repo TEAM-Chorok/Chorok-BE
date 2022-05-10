@@ -8,6 +8,7 @@ import com.finalproject.chorok.security.provider.FormLoginAuthProvider;
 import com.finalproject.chorok.security.provider.JWTAuthProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -18,13 +19,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity // 스프링 Security 지원을 가능하게 함
-@EnableGlobalMethodSecurity(securedEnabled = true) // @Secured 어노테이션 활성화
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JWTAuthProvider jwtAuthProvider;
@@ -37,6 +42,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.jwtAuthProvider = jwtAuthProvider;
         this.headerTokenExtractor = headerTokenExtractor;
     }
+
+//    @Bean
+//    public UserDetailsServiceImpl userDetailsService() {
+//        return new UserDetailsServiceImpl();
+//    }
 
     @Bean
     public BCryptPasswordEncoder encodePassword() {
@@ -53,17 +63,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
-        web
-                .ignoring()
-                .antMatchers("/h2-console/**");
+        web.ignoring().antMatchers("/h2-console/**");
+        web.ignoring().antMatchers("kapi.kakao.com/v2/user/me");
+        web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-
-        // 서버에서 인증은 JWT로 인증하기 때문에 Session의 생성을 막습니다.
+        http.headers().httpStrictTransportSecurity()
+                .maxAgeInSeconds(0)
+                .includeSubDomains(true);
         http
+                .cors()
+                .configurationSource(corsConfigurationSource());
+        http
+                .httpBasic().disable()
+                .csrf().disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
@@ -78,19 +93,59 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeRequests()
-                .anyRequest()
-                .permitAll()
+                .antMatchers("/user/**/**", "/api/**","/").permitAll()
+                .antMatchers("/**").permitAll()
+                // 어떤 요청이든 '인증'
+                .antMatchers("/h2-console/**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
+                .antMatchers(HttpMethod.GET).permitAll()
+                .antMatchers(HttpMethod.POST).permitAll()
+                .anyRequest().authenticated()
+//
+//                .anyRequest()
+//                .permitAll()
                 .and()
                 // [로그아웃 기능]
                 .logout()
                 // 로그아웃 요청 처리 URL
                 .logoutUrl("/auth/logOut")
-                .permitAll()
-                .and()
-                .exceptionHandling()
+                .permitAll();
+//                .and()
+//                .exceptionHandling()
                 // "접근 불가" 페이지 URL 설정
-                .accessDeniedPage("/forbidden.html");
+//                .accessDeniedPage("/forbidden.html");
     }
+
+    //cors
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.addAllowedOrigin("http://localhost:3000");
+//        configuration.addAllowedOrigin("http://localhost:8080");
+//        configuration.addAllowedOrigin("http://172.31.42.54:3000");
+//        configuration.addAllowedOrigin("http://172.31.42.54:8080");
+//        configuration.addAllowedOrigin("http://dogfootdogfoot.shop");
+//        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:8080");
+//        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:3000");
+//        configuration.addAllowedMethod("*");
+//        configuration.addAllowedHeader("*");
+//        configuration.addExposedHeader("Authorization");
+//        configuration.addAllowedOrigin("http://52.79.233.178:8080");
+//        configuration.addAllowedOrigin("http://52.79.233.178:3000");
+//        configuration.addAllowedOrigin("http://52.79.233.178");
+//        configuration.addAllowedOrigin("/**"); //배포시
+//        configuration.addAllowedOrigin(""); //배포시
+//        configuration.addAllowedOrigin("http://192.168.0.23:3000");
+//        configuration.addAllowedOrigin("http://192.168.0.23:8080");
+//        configuration.addAllowedOrigin("http://192.168.0.23");
+////        'Access-Control-Allow-Origin' '*';
+//
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
+
 
     @Bean
     public FormLoginFilter formLoginFilter() throws Exception {
@@ -149,4 +204,36 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+//    cors 해결
+    public CorsConfigurationSource corsConfigurationSource(){
+        CorsConfiguration configuration = new CorsConfiguration();
+//        corsConfiguration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
+        //corsConfiguration.addAllowedOrigin(""); //배포시
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://localhost:8080");
+        configuration.addAllowedOrigin("http://172.31.42.54:3000");
+        configuration.addAllowedOrigin("http://172.31.42.54:8080");
+        configuration.addAllowedOrigin("http://dogfootdogfoot.shop");
+        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:8080");
+        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:3000");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.addExposedHeader("Authorization");
+        configuration.addAllowedOrigin("http://52.79.233.178:8080");
+        configuration.addAllowedOrigin("http://52.79.233.178:3000");
+        configuration.addAllowedOrigin("http://52.79.233.178");
+        configuration.addAllowedOrigin("/**"); //배포시
+        configuration.addAllowedOrigin(""); //배포시
+        configuration.addAllowedOrigin("http://192.168.0.23:3000");
+        configuration.addAllowedOrigin("http://192.168.0.23:8080");
+        configuration.addAllowedOrigin("http://192.168.0.23");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.addExposedHeader("Authorization");
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 }

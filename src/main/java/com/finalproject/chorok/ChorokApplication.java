@@ -17,7 +17,17 @@ public class ChorokApplication {
             + "classpath:application.yml";
 
     public static void main(String[] args) {
-        SpringApplication.run(ChorokApplication.class, args);
+        new SpringApplicationBuilder(ChorokApplication.class)
+                .properties(APPLICATION_LOCATIONS)
+                .run(args);
+
     }
 
 }
+//@ServletComponentScan("lecturer")
+//@SpringBootApplication
+//public class ChorokApplication {
+//    public static void main(String[] args) {
+//        SpringApplication.run(ChorokApplication.class, args);
+//    }
+//}

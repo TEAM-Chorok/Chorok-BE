@@ -3,6 +3,8 @@ package com.finalproject.chorok.login.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Setter
 @Getter // get 함수를 일괄적으로 만들어줍니다.
@@ -29,8 +31,10 @@ public class User {
     @Column(nullable = true, unique = true)
     private String nickname;
 
+
     @Column(nullable = true)
-    private String profileImgUrl;
+    @Lob //Large Object : 파일이름이 길 경우 대비
+    private String profileImageUrl;
 
     @Column(unique = true)
     private String emailCheckToken;
@@ -49,30 +53,33 @@ public class User {
 //    }
 
     @Builder
-    public User(String username, String password, String nickname, String emailCheckToken) {
+    public User(String username, String password, String nickname, String emailCheckToken, String profileImageUrl) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.kakaoId = null;
         this.googleId = null;
         this.emailCheckToken = emailCheckToken;
+        this.profileImageUrl = profileImageUrl;
 
     }
 
-    public User(String username, String password, String nickname, Long kakaoId) {
+    public User(String username, String password, String nickname, Long kakaoId, String profileImage) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.kakaoId = kakaoId;
+        this.profileImageUrl = profileImage;
 
     }
 
-    public User(String username, String password, String nickname, Long kakaoId, String googleId) {
+    public User(String username, String password, String nickname, Long kakaoId, String googleId, String profileImage) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.kakaoId = kakaoId;
         this.googleId = googleId;
+        this.profileImageUrl = profileImage;
     }
 
     public void changeTempPassword(String tempPassword) {

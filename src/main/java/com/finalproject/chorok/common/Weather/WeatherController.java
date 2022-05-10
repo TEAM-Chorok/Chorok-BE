@@ -3,6 +3,7 @@ package com.finalproject.chorok.common.Weather;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,9 +25,9 @@ public class WeatherController {
     }
 
     @GetMapping("/api/weather")
-        public String getWeather(@RequestParam String lat, @RequestParam String lon) {
+        public String getWeather(@RequestBody WeatherLocationDto weatherLocationDto) {
         String API_KEY = "4572bc7f6a040b32388ddc0a2675d714";
-        String urlString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY;
+        String urlString = "https://api.openweathermap.org/data/2.5/weather?lat=" + weatherLocationDto.getLat() + "&lon=" + weatherLocationDto.getLon() + "&appid=" + API_KEY;
         String apiResult = "";
 
         try {

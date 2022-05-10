@@ -11,4 +11,5 @@ public class GoogleUserInfoDto {
     String googleId;
     String email;
     String nickname;
+    String profileImage;
 }

@@ -76,8 +76,8 @@ public class KakaoUserService {
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", "61987d99dfe1738afbdd8c691b70409a");
-        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+        body.add("client_id", "5c75f19b556cbab66949ba9276da5237");
+        body.add("redirect_uri", "http://localhost:3000/auth/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기
@@ -119,14 +119,28 @@ public class KakaoUserService {
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
+        System.out.println("jsonNode");
+        System.out.println(jsonNode);
+
         Long id = jsonNode.get("id").asLong();
         String nickname = jsonNode.get("properties")
                 .get("nickname").asText();
-        String email = jsonNode.get("kakao_account")
-                .get("email").asText();
+        String email = null;
+        String profileImage = null;
+        if(jsonNode.get("kakao_account").get("email")==null){
+        } else {
+            email = jsonNode.get("kakao_account").get("email").asText();
+        }
+        System.out.println("email 받아와짐");
 
-        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
-        return new KakaoUserInfoDto(id, nickname, email);
+        if(jsonNode.get("properties").get("profile_image")==null){
+        } else {
+            profileImage = jsonNode.get("properties").get("profile_image").asText();
+        }
+        System.out.println(profileImage);
+
+        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email+ ", " + profileImage);
+        return new KakaoUserInfoDto(id, nickname, email, profileImage);
     }
 
     private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) { // DB Kakao Id
@@ -138,6 +152,7 @@ public class KakaoUserService {
         if (kakaoUser == null) {
             //카카오 사용자 이메일과 동일한 이메일을 가진 회원이 있는지 확인
             String kakaoEmail = kakaoUserInfo.getEmail();
+            String profileImage = kakaoUserInfo.getProfileImage();
             User sameEmailUser = userRepository.findByUsername(kakaoEmail).orElse(null);
             if (sameEmailUser != null) {
                 kakaoUser = sameEmailUser;
@@ -156,7 +171,7 @@ public class KakaoUserService {
                 // email: kakao email
                 String email = kakaoUserInfo.getEmail();
 
-                kakaoUser = new User(email, encodedPassword, nickname, kakaoId); }
+                kakaoUser = new User(email, encodedPassword, nickname, kakaoId, profileImage); }
             userRepository.save(kakaoUser); }
         return kakaoUser; }
 
