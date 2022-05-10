@@ -1,9 +1,9 @@
-package com.finalproject.chorok.Login.repository;
+package com.finalproject.chorok.login.repository;
 
 
 
-import com.finalproject.chorok.Login.model.Labeling;
-import com.finalproject.chorok.Login.model.User;
+import com.finalproject.chorok.login.model.Labeling;
+import com.finalproject.chorok.login.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

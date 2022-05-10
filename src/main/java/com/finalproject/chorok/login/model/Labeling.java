@@ -1,6 +1,6 @@
-package com.finalproject.chorok.Login.model;
+package com.finalproject.chorok.login.model;
 
-import com.finalproject.chorok.Login.dto.LabelingDto;
+import com.finalproject.chorok.login.dto.LabelingDto;
 import lombok.*;
 
 import javax.persistence.*;

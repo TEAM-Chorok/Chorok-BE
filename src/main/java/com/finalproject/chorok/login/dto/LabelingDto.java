@@ -1,4 +1,4 @@
-package com.finalproject.chorok.Login.dto;
+package com.finalproject.chorok.login.dto;
 
 
 import lombok.Getter;

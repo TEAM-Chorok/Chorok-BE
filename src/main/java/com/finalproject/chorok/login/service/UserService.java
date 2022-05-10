@@ -5,8 +5,10 @@ import com.finalproject.chorok.common.utils.RedisUtil;
 import com.finalproject.chorok.login.dto.*;
 
 import com.finalproject.chorok.login.model.EmailMessage;
+import com.finalproject.chorok.login.model.Labeling;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.login.repository.EmailService;
+import com.finalproject.chorok.login.repository.LabelingRepository;
 import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.login.validator.Validator;
 import com.finalproject.chorok.security.UserDetailsImpl;

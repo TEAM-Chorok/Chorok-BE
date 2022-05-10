@@ -1,4 +1,4 @@
-package com.finalproject.chorok.Common.Weather;
+package com.finalproject.chorok.common.Weather;
 
 import lombok.Getter;
 import lombok.Setter;

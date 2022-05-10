@@ -47,7 +47,7 @@ public class PostDetailResponseDto {
     public PostDetailResponseDto(Post post, PlantPlace plantPlace) {
         this.postId=post.getPostId();
         this.nickname=post.getUser().getNickname();
-        this.profileImgUrl=post.getUser().getProfileImgUrl();
+        this.profileImgUrl=post.getUser().getProfileImageUrl();
         this.postTitle=post.getPostTitle();
         this.postContent=post.getPostContent();
         this.postImgUrl=post.getPostImgUrl();
