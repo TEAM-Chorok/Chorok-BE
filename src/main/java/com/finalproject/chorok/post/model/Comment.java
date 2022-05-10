@@ -2,8 +2,8 @@ package com.finalproject.chorok.post.model;
 
 import com.finalproject.chorok.login.model.User;
 
-import com.finalproject.chorok.post.dto.CommentUpdateRequestDto;
 import com.finalproject.chorok.common.model.Timestamped;
+import com.finalproject.chorok.post.dto.comment.CommentUpdateRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,8 +29,8 @@ import javax.persistence.*;
 public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_no", unique = true, nullable = false)
-    private Long commentNo;
+    @Column(name = "comment_id", unique = true, nullable = false)
+    private Long commentId;
 
     @Column(nullable = false)
     private String commentContent;

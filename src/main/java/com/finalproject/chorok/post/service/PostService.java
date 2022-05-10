@@ -1,11 +1,13 @@
 package com.finalproject.chorok.post.service;
 
+import com.finalproject.chorok.common.utils.PlantUtils;
 import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.plant.model.PlantImg;
+import com.finalproject.chorok.plant.repository.PlantImgRepository;
+import com.finalproject.chorok.plant.repository.PlantRepository;
 import com.finalproject.chorok.post.dto.*;
-import com.finalproject.chorok.post.model.Post;
-import com.finalproject.chorok.post.model.PostBookMark;
-import com.finalproject.chorok.post.model.PostLike;
-import com.finalproject.chorok.post.model.PostType;
+import com.finalproject.chorok.post.dto.comment.CommentResponseDto;
+import com.finalproject.chorok.post.model.*;
 import com.finalproject.chorok.post.repository.CommentRepository;
 import com.finalproject.chorok.post.repository.PostBookMarkRepository;
 import com.finalproject.chorok.post.repository.PostLikeRepository;
@@ -13,11 +15,13 @@ import com.finalproject.chorok.post.repository.PostRepository;
 import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -40,114 +44,258 @@ public class PostService {
     private final CommUtils commUtils;
     private final CommentRepository commentRepository;
     private final PostBookMarkRepository postBookMarkRepository;
+    private final PlantRepository plantRepository;
+    private final PlantImgRepository plantImgRepository;
+    private final PlantUtils plantUtils;
 
 
-
-    // 전체 게시물 조회
+    //1. 플랜테리어 전체 게시물 조회 - 로그인, 비로그인 상관없을거 같음
     @Transactional
-    public List<PostResponseDto> readPosts(String postTypeCode) {
+    public List<PostResponseDto> readPosts(PlantriaFilterRequestDto postSearchRequestDto) {
 
-        List<Post> postList = postRepository.findAllByPostTypePostTypeCodeOrderByCreatedAt(postTypeCode);
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
-        PostResponseDto postResponseDto = null;
+        PostResponseDto postResponseDto;
 
-        for(Post post : postList){
-            postResponseDto = new PostResponseDto(post.getPostId(),post.getPostTitle(),post.getPostImgUrl());
-            postResponseDtoList.add(postResponseDto);
-        }
-
-        return postResponseDtoList;
-
-    }
-
-     //게시글 전체 조회 (게시글 타입과 식물위치로 분류)
-    @Transactional
-    public List<PostResponseDto> readPlantPlacePosts(String postTypeCode, String plantPlaceCode) {
-        List<Post> postList = postRepository.findAllByPostTypePostTypeCodeAndPlantPlaceCodeOrderByCreatedAt(postTypeCode,plantPlaceCode);
-        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
-        PostResponseDto postResponseDto = null;
-
-        for(Post post : postList){
-            postResponseDto = new PostResponseDto(post.getPostId(),post.getPostTitle(),post.getPostImgUrl());
+        for(Post post : readPostsQuery(postSearchRequestDto)){
+            postResponseDto = new PostResponseDto(post);
             postResponseDtoList.add(postResponseDto);
         }
         return postResponseDtoList;
     }
 
-    // 게시글 상세조회
+    // 1-1. 플랜테이어 전체 게시물 조회 - 쿼리
+    public List<Post> readPostsQuery(PlantriaFilterRequestDto postSearchRequestDto){
+        List<Post> postList;
+
+        if(postSearchRequestDto.getPlantPlaceCode()==null || postSearchRequestDto.getPlantPlaceCode().equals("")){
+            postList = postRepository.findAllByPostTypePostTypeCodeOrderByCreatedAtDesc(postSearchRequestDto.getPostTypeCode());
+        }else{
+            postList = postRepository.findAllByPostTypePostTypeCodeAndPlantPlaceCodeOrderByCreatedAtDesc(postSearchRequestDto.getPostTypeCode(),postSearchRequestDto.getPlantPlaceCode());
+        }
+        return postList;
+    }
+
+    // 2. 초록톡 전체 게시물조회 (postTypeCode로 필터링) - 로그인 시
+    public List<CommunityResponseDto> readPostsCommunity(User user,String postTypeCode) {
+        List<CommunityResponseDto> communityResponseDtoList = new ArrayList<>();
+
+        for(Post communityPost : readPostsCommunityQuery(postTypeCode)){
+            CommunityResponseDto communityResponseDto = new CommunityResponseDto(
+                    communityPost,
+                    commUtils.LikePostChk(communityPost.getPostId(),user),
+                    commUtils.BookMarkPostChk(communityPost.getPostId(),user)
+            );
+            communityResponseDtoList.add(communityResponseDto);
+        }
+        return communityResponseDtoList;
+    }
+
+
+    // 3. 초록톡 전체 게시물조회 (postTypeCode로 필터링) - 비로그인 시
+    public List<CommunityResponseDto> nonLoginReadPostsCommunity(String postTypeCode) {
+        List<CommunityResponseDto> communityResponseDtoList = new ArrayList<>();
+
+        for(Post communityPost : readPostsCommunityQuery(postTypeCode)){
+            CommunityResponseDto communityResponseDto = new CommunityResponseDto(
+                    communityPost
+            );
+            communityResponseDtoList.add(communityResponseDto);
+        }
+        return communityResponseDtoList;
+    }
+
+    // 2-2,3-2. 초록톡 전체 게시물 조회 - 쿼리
+    public List<Post> readPostsCommunityQuery(String postTypeCode){
+
+        List<Post> communityList = new ArrayList<>();
+        if(postTypeCode == null || postTypeCode.equals("")){
+            communityList =postRepository.findByPostTypePostTypeCodeInOrderByCreatedAt(commUtils.getAllCommunityCode());
+        }else{
+            communityList =postRepository.findByPostTypePostTypeCodeInOrderByCreatedAt(commUtils.getCommunityCode(postTypeCode));
+        }
+        return communityList;
+    }
+
+
+    // 4. 게시글 상세조회
     @Transactional
     public PostDetailResponseDto readPostDetail(Long postId,User user) {
         //게시글 조회
         Post post = commUtils.getPost(postId);
+        // 댓글리스트 Dto
+        List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
+        // 댓글리스트
+        for(Comment comment : post.getCommentList()){
+            commentResponseDtos.add(new CommentResponseDto(comment));
+        }
+
+        // 녹색톡 상세조회
+        if(post.getPlantPlaceCode()== null || post.getPlantPlaceCode().equals("")){
+            return new PostDetailResponseDto(
+                    post,
+                    commUtils.LikePostChk(postId,user),
+                    commUtils.BookMarkPostChk(postId,user),
+                    commentResponseDtos);
+        }
         // 식물 장소
         PlantPlace plantPlace = commUtils.getPlantPlace(post.getPlantPlaceCode());
-        // 댓글리스트
-      //  List<CommentResponseDto> commentResponseDtos = new CommentResponseDto(post.getCommentList());
-        // responseDto
-        PostDetailResponseDto postDetailResponseDto =new PostDetailResponseDto(post,plantPlace);
-        // 댓글 조회
-        //List<Map<String,Object>> commentFormat =
 
-//        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-//        for(Map<String,Object> comment : commentFormat){
-//            CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
-//            commentResponseDtoList.add(commentResponseDto);
-//        }
-       return postDetailResponseDto;
+        // 플렌테이어 상세조회
+        return new PostDetailResponseDto(
+                post,
+                plantPlace,
+                commUtils.LikePostChk(postId,user),
+                commUtils.BookMarkPostChk(postId,user),
+                commentResponseDtos);
     }
 
-    // 게시글 작성하기
+    // 5. 게시글 작성하기
     @Transactional
-    public Post writePost(PostWriteRequestDto post, User user) {
+    public HashMap<String, String> writePost(PostWriteRequestDto post, User user) {
 
         PostType postType = commUtils.getPostType(post.getPostTypeCode());
         Post writePost = new Post(post,user,postType);
-        return postRepository.save(writePost);
+        postRepository.save(writePost);
+        return commUtils.responseHashMap(HttpStatus.OK);
     }
 
-    // 게시글 삭제
+    // 6. 게시글 삭제
     @Transactional
-    public void deletePost(Long postId) {
+    public HashMap<String, String> deletePost(Long postId) {
         postRepository.deleteById(postId);
+        return commUtils.responseHashMap(HttpStatus.OK);
 
     }
 
-    // 게시글 수정
+    // 7. 게시글 수정
     @Transactional
-    public void updatePost(Long postId, PostRequestDto postRequestDto) {
-       Post post =  commUtils.getPost(postId);
-       post.update(postRequestDto);
+    public HashMap<String, String> updatePost(Long postId, PostRequestDto postRequestDto) {
+        Post post =  commUtils.getPost(postId);
+        post.update(postRequestDto);
+        return commUtils.responseHashMap(HttpStatus.OK);
 
     }
 
-    // 게시글 좋아요
+    // 8. 게시글 좋아요
     @Transactional
     public Boolean likePost(Long postId,User user) {
 
-       if(commUtils.getLikePost(postId,user)!=null){
-            System.out.println("삭제");
+        if(commUtils.getLikePost(postId,user)!=null){
+            // 좋아요 삭제
             postLikeRepository.deleteByUser_UserIdAndPost_PostId(user.getUserId(),postId);
             return false;
-
-       }else{
-            System.out.println("추가");
+        }else{
+            // 좋아요 추가
             postLikeRepository.save(new PostLike(commUtils.getPost(postId),user));
             return true;
-       }
+        }
 
     }
-    public Object bookMarkPost(Long postId, User user) {
+    // 9. 게시글 북마크
+    @Transactional
+    public Boolean bookMarkPost(Long postId, User user) {
 
         if(commUtils.getBookMarkPost(postId,user)!=null){
-
+            // 북마크 삭제
             postBookMarkRepository.deleteByUserBookMarkQuery(user.getUserId(),postId);
             return false;
 
         }else{
-
+            // 북마크 추가
             postBookMarkRepository.save(new PostBookMark(commUtils.getPost(postId),user));
             return true;
         }
 
+    }
+
+    // 10. 플랜테리어 통합검색
+    @Transactional
+    public PostSearchResponseDto integrateSearchPlantria(String keyword) {
+        // 플랜테이어 검색 - 갯수
+        int plantriaCount =  postRepository.plantariaSearchCountQuery(keyword);
+        // 플랜테이어 검색(제목,내용)
+        List<Post> plantriaSearchList = postRepository.plantariaSearchQuery(keyword);
+        // 식물도감 검색 (이름)
+        List<PlantImg> plantDictionaryList =plantImgRepository.plantSearchToPlantNameQuery(keyword);
+
+        PostSearchResponseDto postSearchResponseDto = new PostSearchResponseDto(
+                plantriaCount,
+                getPlantriaSearchList(plantriaSearchList),
+                getPlantDictionarySearchList(plantDictionaryList)
+        );
+
+        return postSearchResponseDto;
+    }
+    // 10-1. 플랜테이어 검색 결과 DTO
+    public List<PlantriaSearchResponseDto> getPlantriaSearchList(List<Post> plantriaSearchList){
+
+        List<PlantriaSearchResponseDto> responseDtoList = new ArrayList<>();
+        PlantriaSearchResponseDto responseDto;
+
+        for(Post post : plantriaSearchList){
+            responseDto= new  PlantriaSearchResponseDto(post.getPostId(),post.getPostImgUrl());
+            responseDtoList.add(responseDto);
+        }
+
+        return responseDtoList;
+    }
+
+    // 10-2. 식물도감 검색 결과 DTO
+    public List<PlantDictionaryResponseDto> getPlantDictionarySearchList( List<PlantImg> plantDictionaryList){
+        List<PlantDictionaryResponseDto> responseDtoList = new ArrayList<>();
+        PlantDictionaryResponseDto responseDto;
+
+        for(PlantImg plantImg : plantDictionaryList){
+            responseDto= new  PlantDictionaryResponseDto(
+                    plantImg.getPlantNo(),
+                    plantImg.getPlantName(),
+                    plantUtils.getPlantThumbImg(plantImg.getPlantNo()));
+            responseDtoList.add(responseDto);
+        }
+        return responseDtoList;
+    }
+    // 11. 플랜테이어 통합 검색 결과 -  사진
+    public PlantriaPhotoResponseDto photoSearchPlantria(String keyword, String plantPlaceCode) {
+        List<PostResponseDto> responseDtoList = new ArrayList<>();
+        System.out.println(plantPlaceCode);
+        int plantriaCount;
+        if(plantPlaceCode == null || plantPlaceCode.equals("")){
+            // 플랜테이어 검색 - 갯수
+            plantriaCount =  postRepository.plantariaSearchCountQuery(keyword);
+            // 플랜테이어 검색 - 리스트
+            List<Post> postList =postRepository.plantariaSearchPhotoQuery(keyword);
+            PostResponseDto responseDto;
+            for(Post post : postList){
+                responseDto = new PostResponseDto(post);
+                responseDtoList.add(responseDto);
+            }
+        }else{
+            // 플랜테이어 검색 - 갯수
+            plantriaCount =  postRepository.plantariaSearchPhotoToPostTypeCodeCountQuery(keyword,plantPlaceCode);
+            // 플랜테이어 검색 - 리스트
+            List<Post> postList =postRepository.plantariaSearchPhotoToPostTypeCodeQuery(keyword,plantPlaceCode);
+            PostResponseDto responseDto;
+            for(Post post : postList){
+                responseDto = new PostResponseDto(post);
+                responseDtoList.add(responseDto);
+            }
+        }
+        return new PlantriaPhotoResponseDto(plantriaCount,responseDtoList);
+    }
+
+    public PlantariaDictionaryResponseDto dictionarySearchPlantria(String keyword) {
+
+        List<PlantDictionaryResponseDto> responseDtoList = new ArrayList<>();
+        // 식물도감검색
+        List<PlantImg> plantDictionaryList =plantImgRepository.plantSearchToPlantNameQuery(keyword);
+        PlantDictionaryResponseDto responseDto;
+        for(PlantImg plantImg : plantDictionaryList){
+            responseDto= new  PlantDictionaryResponseDto(
+                    plantImg.getPlantNo(),
+                    plantImg.getPlantName(),
+                    plantUtils.getPlantThumbImg(plantImg.getPlantNo()));
+            responseDtoList.add(responseDto);
+        }
+        return new PlantariaDictionaryResponseDto(plantDictionaryList.size(),responseDtoList);
     }
 }

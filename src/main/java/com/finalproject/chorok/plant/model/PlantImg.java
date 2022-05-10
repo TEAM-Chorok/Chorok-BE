@@ -12,7 +12,7 @@ import javax.persistence.*;
 public class PlantImg {
     @Id
     @Column(name = "plant_no")
-    private String plantNo;
+    private Long plantNo;
     @Column(name = "plant_name")
     private String plantName;
     @Column(name = "plant_img_prefix")

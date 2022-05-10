@@ -83,3 +83,4 @@ public class Post extends Timestamped {
         this.plantPlaceCode=postRequestDto.getPlantPlaceCode();
     }
 }
+

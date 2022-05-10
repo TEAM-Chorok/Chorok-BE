@@ -1,7 +1,7 @@
 package com.finalproject.chorok.post.controller;
 
-import com.finalproject.chorok.post.dto.CommentRequestDto;
-import com.finalproject.chorok.post.dto.CommentUpdateRequestDto;
+import com.finalproject.chorok.post.dto.comment.CommentRequestDto;
+import com.finalproject.chorok.post.dto.comment.CommentUpdateRequestDto;
 import com.finalproject.chorok.post.service.CommentService;
 import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
@@ -30,11 +30,19 @@ public class CommentController {
         commentService.writeComment(userDetails.getUser(),commentRequestDto);
         return  ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.OK));
     }
-    
+
     // 댓글 수정
     @PutMapping("/update-comment")
     public ResponseEntity<?> updateComment(@Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto){
-         commentService.updateComment(commentUpdateRequestDto);
-         return  ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.OK));
+        commentService.updateComment(commentUpdateRequestDto);
+        return  ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.OK));
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/delete-comment/{commentId}")
+    public ResponseEntity<?> deleteComment(@Valid @PathVariable Long commentId){
+        commentService.deleteComment(commentId);
+        return ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.OK));
     }
 }
+
