@@ -1,8 +1,8 @@
 package com.finalproject.chorok.todo.controller;
 
-import com.finalproject.chorok.Login.model.User;
-import com.finalproject.chorok.MyPlant.dto.MyPlantResponseDto;
-import com.finalproject.chorok.MyPlant.service.MyPlantService;
+import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.myPlant.dto.MyPlantResponseDto;
+import com.finalproject.chorok.myPlant.service.MyPlantService;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.todo.dto.TodoRequestDto;
 import com.finalproject.chorok.todo.model.Todo;

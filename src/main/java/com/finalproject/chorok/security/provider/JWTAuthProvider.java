@@ -1,8 +1,8 @@
 package com.finalproject.chorok.security.provider;
 
 
-import com.finalproject.chorok.Login.model.User;
-import com.finalproject.chorok.Login.repository.UserRepository;
+import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.security.jwt.JwtDecoder;
 import com.finalproject.chorok.security.jwt.JwtPreProcessingToken;
@@ -13,8 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
 
 @Component
 @RequiredArgsConstructor

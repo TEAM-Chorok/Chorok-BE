@@ -1,7 +1,7 @@
 package com.finalproject.chorok.todo.model;
 
-import com.finalproject.chorok.Login.model.User;
-import com.finalproject.chorok.MyPlant.model.MyPlant;
+import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.todo.dto.TodoAutoDto;
 import com.finalproject.chorok.todo.dto.TodoRequestDto;
 import lombok.*;

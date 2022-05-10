@@ -1,8 +1,8 @@
 package com.finalproject.chorok.security;
 
 
-import com.finalproject.chorok.Login.model.User;
-import com.finalproject.chorok.Login.repository.UserRepository;
+import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.login.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

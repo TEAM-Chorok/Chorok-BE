@@ -1,6 +1,6 @@
 package com.finalproject.chorok.security;
 
-import com.finalproject.chorok.Login.model.User;
+import com.finalproject.chorok.login.model.User;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
 
 @Getter
 @Slf4j

@@ -1,8 +1,6 @@
 package com.finalproject.chorok.todo.dto;
 
-import com.finalproject.chorok.Login.model.User;
 import com.finalproject.chorok.security.UserDetailsImpl;
-import com.finalproject.chorok.todo.model.Todo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

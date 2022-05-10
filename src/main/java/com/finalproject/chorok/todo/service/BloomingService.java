@@ -1,8 +1,8 @@
 package com.finalproject.chorok.todo.service;
 
-import com.finalproject.chorok.Login.model.User;
-import com.finalproject.chorok.MyPlant.model.MyPlant;
-import com.finalproject.chorok.MyPlant.repository.MyPlantRepository;
+import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.myPlant.model.MyPlant;
+import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.todo.dto.BloomingDayRequestDto;
 import com.finalproject.chorok.todo.model.BloomingDay;
