@@ -2,6 +2,7 @@ package com.finalproject.chorok.Login.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import com.finalproject.chorok.Common.Image.S3Uploader;
 import com.finalproject.chorok.Login.dto.*;
 import com.finalproject.chorok.Login.service.GoogleUserService;
 import com.finalproject.chorok.Login.service.KakaoUserService;
@@ -14,9 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.activity.InvalidActivityException;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 
 
 @RestController
@@ -25,12 +29,14 @@ public class UserController {
     private final UserService userService;
     private final KakaoUserService kakaoUserService;
     private final GoogleUserService googleUserService;
+    private final S3Uploader s3Uploader;
 
     @Autowired
-    public UserController(UserService userService, KakaoUserService kakaoUserService, GoogleUserService googleUserService) {
+    public UserController(UserService userService, KakaoUserService kakaoUserService, GoogleUserService googleUserService, S3Uploader s3Uploader) {
         this.userService = userService;
         this.kakaoUserService  = kakaoUserService;
         this.googleUserService = googleUserService;
+        this.s3Uploader = s3Uploader;
     }
 
     //아이디 중복 체크
@@ -67,8 +73,22 @@ public class UserController {
 
     // 회원 가입 요청 처리
     @PostMapping("auth/signUp")
-    public String registerUser(@RequestBody SignupRequestDto requestDto) {
-        return userService.registerUser(requestDto);
+    public String registerUser(
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam("nickname") String nickname,
+            @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile
+            ) throws IOException {
+        System.out.println("실행");
+        String profileImgUrl = null;
+        username = username.replaceFirst(".$","");
+        password = password.replaceFirst(".$","");
+        nickname = nickname.replaceFirst(".$","");
+        System.out.println(multipartFile);
+        if(!multipartFile.isEmpty()){
+        profileImgUrl = s3Uploader.upload(multipartFile, "static");}
+        SignupRequestDto signupRequestDto = new SignupRequestDto(username, password, nickname, profileImgUrl);
+        return userService.registerUser(signupRequestDto);
     }
 
     //카카오 로그인
@@ -106,35 +126,23 @@ public class UserController {
     }
 
 
-//    @GetMapping("/auth/check-email-token")
-//    public void checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
-//        System.out.println("이메일 토큰 인증과정 시작");
-//        userService.checkEmailToken(token, email);
-//        try {
-//            response.sendRedirect("https://localhost:8080/auth/logIn");
-//            System.out.println("redirect 시키기");
-//        } catch (IOException e) {
-//            throw new InvalidActivityException("유효하지 않은 주소입니다.");
-//        }
-//
-//    }
+    @GetMapping("/auth/check-email-token")
+    public void checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
+        System.out.println("이메일 토큰 인증과정 시작");
+        userService.checkEmailToken(token, email);
+        try {
+            response.sendRedirect("http://localhost:8080/auth/logIn");
+            System.out.println("redirect 시키기");
+        } catch (IOException e) {
+            throw new InvalidActivityException("유효하지 않은 주소입니다.");
+        }
 
-//    @GetMapping("/auth/check-email-token")
-//    public void checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
-//        System.out.println("이메일 토큰 인증과정 시작");
-//        userService.checkEmailToken(token, email);
-//        try {
-//            response.sendRedirect("https://localhost:8080/auth/logIn");
-//            System.out.println("redirect 시키기");
-//        } catch (IOException e) {
-//            throw new InvalidActivityException("유효하지 않은 주소입니다.");
-//        }
+    }
 
-//    }
 
     // 식물 추천 테스트
-    @PostMapping("/user/labeling")
-    public String recommendationTest(@RequestBody LabelingDto labelingDto) {
-        return userService.registerLabeling(labelingDto);
+    @PutMapping("/user/labeling")
+    public String recommendationTest(@RequestBody LabelingDto labelingDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.updateLabeling(labelingDto, userDetails);
     }
 }

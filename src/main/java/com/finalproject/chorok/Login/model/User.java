@@ -31,7 +31,9 @@ public class User {
     @Column(nullable = true, unique = true)
     private String nickname;
 
+
     @Column(nullable = true)
+    @Lob //Large Object : 파일이름이 길 경우 대비
     private String profileImageUrl;
 
     @Column(unique = true)
@@ -51,13 +53,14 @@ public class User {
 //    }
 
     @Builder
-    public User(String username, String password, String nickname, String emailCheckToken) {
+    public User(String username, String password, String nickname, String emailCheckToken, String profileImageUrl) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.kakaoId = null;
         this.googleId = null;
         this.emailCheckToken = emailCheckToken;
+        this.profileImageUrl = profileImageUrl;
 
     }
 

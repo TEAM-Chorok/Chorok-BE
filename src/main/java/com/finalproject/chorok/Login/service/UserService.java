@@ -1,7 +1,7 @@
 package com.finalproject.chorok.Login.service;
 
 
-//import com.finalproject.chorok.Common.utils.RedisUtil;
+import com.finalproject.chorok.Common.utils.RedisUtil;
 import com.finalproject.chorok.Login.dto.*;
 
 import com.finalproject.chorok.Login.model.EmailMessage;
@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.ast.Test;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -38,7 +39,7 @@ public class UserService {
     private final HttpServletRequest request;
     private final Validator validator;
     private final LabelingRepository labelingRepository;
-//    private final RedisUtil redisUtil;
+    private final RedisUtil redisUtil;
 
 
     @Transactional
@@ -61,18 +62,21 @@ public class UserService {
         System.out.println(password+"3");
 
         String emailCheckToken = UUID.randomUUID().toString();
+        String profileImgUrl = requestDto.getProfileImgUrl();
 
-        User user = new User(username, password, nickname, emailCheckToken);
+        User user = new User(username, password, nickname, emailCheckToken, profileImgUrl);
 
-//         이메일 인증 코드부분
-//        redisUtil.set(emailCheckToken, user, 2);
+         //이메일 인증 코드부분
+        redisUtil.set(emailCheckToken, user, 2);
 
         System.out.println(user+"4");
 
-//        sendSignupConfirmEmail(user);
+        sendSignupConfirmEmail(user);
 
         // 이메일 인증 생략하고 회원가입(추후 삭제)
-        User savedUser = userRepository.save(user);
+//        User savedUser = userRepository.save(user);
+//        Labeling defaultLabeling = new Labeling(savedUser);
+//        labelingRepository.save(defaultLabeling);
         return msg;
     }
 
@@ -191,31 +195,35 @@ public class UserService {
         return msg;
     }
 //
-//    @Transactional
-//    public ResponseEntity<CMResponseDto> checkEmailToken(String token, String email) throws InvalidActivityException {
-//        System.out.println("이메일 토큰 인증과정 함수시작");
-//
-//        User findUser = (User)redisUtil.get(token);
-//
-////        User findUser = userRepository.findByUsername(email).orElseThrow(
-////                () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
-////        );
-//        if (!findUser.isValidToken(token))
-//            throw new InvalidActivityException("유효하지 않는 토큰입니다.");
-//
-//        User savedUser = userRepository.save(findUser);
-//        System.out.println("User 저장");
-//        if(savedUser.getUserId() > 0) redisUtil.delete(token);
-//        System.out.println("redisutil 제거");
-//
-//        return ResponseEntity.ok(new CMResponseDto("true"));
-//    }
+    @Transactional
+    public ResponseEntity<CMResponseDto> checkEmailToken(String token, String email) throws InvalidActivityException {
+        System.out.println("이메일 토큰 인증과정 함수시작");
+
+        User findUser = (User)redisUtil.get(token);
+
+//        User findUser = userRepository.findByUsername(email).orElseThrow(
+//                () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
+//        );
+        if (!findUser.isValidToken(token))
+            throw new InvalidActivityException("유효하지 않는 토큰입니다.");
+
+        User savedUser = userRepository.save(findUser);
+        Labeling defaultLabeling = new Labeling(savedUser);
+        labelingRepository.save(defaultLabeling);
+        System.out.println("User 저장");
+        if(savedUser.getUserId() > 0) redisUtil.delete(token);
+        System.out.println("redisutil 제거");
+
+        return ResponseEntity.ok(new CMResponseDto("true"));
+    }
 
     @Transactional
-    public String registerLabeling(LabelingDto labelingDto) {
-        String msg = "레이블링 성공";
-        Labeling labeling = new Labeling(labelingDto);
-        labelingRepository.save(labeling);
+    public String updateLabeling(LabelingDto labelingDto, UserDetailsImpl userDetails) {
+        String msg = "레이블링 업데이트 성공";
+        Labeling labeling = labelingRepository.findByUser(userDetails.getUser()).orElseThrow(
+                () -> new IllegalArgumentException("판매하지 않는 상품입니다.")
+        );
+        labeling.update(labelingDto);
         return msg;
     }
 }

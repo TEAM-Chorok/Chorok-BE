@@ -52,7 +52,7 @@ dependencies {
     implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.3.1'
 
     //redis
-//    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.4.10'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.4.10'
 
     //날씨 api
     implementation 'com.google.code.gson:gson:2.8.6'

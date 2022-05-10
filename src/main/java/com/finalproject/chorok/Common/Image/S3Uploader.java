@@ -79,6 +79,18 @@ public class S3Uploader {
         return upload(uploadFile, dirName);
     }
 
+//    // 프로필 수정 (이미지 파일 교체)
+//    private String profileImageUpdate(File uploadFile, String dirName, Long userId) {
+//        Post1 post = postRepository.findById(postId).orElseThrow(
+//                ()-> new IllegalArgumentException("게시물이 없습니다")
+//        );
+//        String imageUrl = post.getImageUrl();
+//        Image image = imageRepository.findByImageUrl(imageUrl);
+//        String fileName = image.getFilename();
+//        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
+//        return upload(uploadFile, dirName);
+//    }
+
     // S3로 업로드
     private String putS3(File uploadFile, String fileName) {
         amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
