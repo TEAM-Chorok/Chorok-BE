@@ -27,11 +27,11 @@ public class Todo {
     private boolean status;
 
     @ManyToOne
-    @JoinColumn(name = "my_plant_no",referencedColumnName = "my_plant_no")
+    @JoinColumn(name = "my_plant_no", referencedColumnName = "my_plant_no")
     private MyPlant myPlant;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",referencedColumnName = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
     public Todo(String workType, LocalDate lastWorkTime, LocalDate todoTime, boolean status, User user, MyPlant myPlant) {
@@ -42,13 +42,6 @@ public class Todo {
         this.user = user;
         this.myPlant = myPlant;
     }
-//    public Todo (String workType, LocalDate lastWorkTime, boolean status, MyPlant myPlant, User user) {
-//        this.user = user;
-//        this.workType = workType;
-//        this.lastWorkTime = lastWorkTime;
-//        this.status = status;
-//        this.myPlant = myPlant;
-//    }
 
     public Todo(TodoRequestDto todoRequestDto, LocalDate lastWorkTime, LocalDate todoTime, User user, MyPlant myPlant) {
         this.workType = todoRequestDto.getWorkType();
@@ -59,15 +52,14 @@ public class Todo {
         this.myPlant = myPlant;
 
     }
+
     //자동저장투두
     public Todo(TodoAutoDto todoAutoDto) {
-this.workType = todoAutoDto.getWorkType();
-this.lastWorkTime = todoAutoDto.getLastWorkTime();
-this.todoTime = todoAutoDto.getTodoTime();
-this.status = todoAutoDto.isStatus();
-this.myPlant = todoAutoDto.getMyPlant();
-this.user = todoAutoDto.getUser();
+        this.workType = todoAutoDto.getWorkType();
+        this.lastWorkTime = todoAutoDto.getLastWorkTime();
+        this.todoTime = todoAutoDto.getTodoTime();
+        this.status = todoAutoDto.isStatus();
+        this.myPlant = todoAutoDto.getMyPlant();
+        this.user = todoAutoDto.getUser();
     }
-
-
 }

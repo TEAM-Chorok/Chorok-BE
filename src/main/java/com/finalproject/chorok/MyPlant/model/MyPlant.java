@@ -29,6 +29,10 @@ public class MyPlant {
     private String myPlantName;
     private LocalDate startDay;
     private LocalDate endDay;
+    private int watering;
+    private int changing;
+    private int supplements;
+    private int leafCleaning;
 
 //    @OneToMany(mappedBy = "myPlant",cascade =CascadeType.ALL)
 //    private List<Todo> todoList;
@@ -45,6 +49,10 @@ public class MyPlant {
         this.startDay = myPlantRequestDto.getStartDay();
         this.endDay = myPlantRequestDto.getEndDay();
         this.user = user;
+        this.watering = 7;
+        this.changing = 90;
+        this.supplements = 90;
+        this.leafCleaning = 3;
 
     }
     public MyPlant(int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, LocalDate endDay, LocalDate startDay){

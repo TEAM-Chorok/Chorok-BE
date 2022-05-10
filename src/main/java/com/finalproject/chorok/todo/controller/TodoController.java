@@ -5,7 +5,6 @@ import com.finalproject.chorok.MyPlant.dto.MyPlantResponseDto;
 import com.finalproject.chorok.MyPlant.service.MyPlantService;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.todo.dto.TodoRequestDto;
-import com.finalproject.chorok.todo.dto.TodoResponseDto;
 import com.finalproject.chorok.todo.model.Todo;
 import com.finalproject.chorok.todo.repository.TodoRepository;
 import com.finalproject.chorok.todo.service.TodoService;
@@ -40,8 +39,20 @@ public class TodoController {
     public void checkTodoOk(@PathVariable Long todoNo, @AuthenticationPrincipal UserDetailsImpl userDetails){
        User user = userDetails.getUser();
         try {
-            Todo todo = todoRepository.findByUserAndAndTodoNo(user, todoNo);
+            Todo todo = todoRepository.findByUserAndTodoNo(user, todoNo);
             todo.setStatus(true);
+            todoRepository.save(todo);
+        }
+        catch (Exception e){
+            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PatchMapping("/todo/cancle/{todoNo}")
+    public void checkTodoCancle(@PathVariable Long todoNo, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        User user = userDetails.getUser();
+        try {
+            Todo todo = todoRepository.findByUserAndTodoNo(user, todoNo);
+            todo.setStatus(false);
             todoRepository.save(todo);
         }
         catch (Exception e){

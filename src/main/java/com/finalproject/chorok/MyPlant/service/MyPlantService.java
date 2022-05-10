@@ -39,6 +39,7 @@ public class MyPlantService {
 
     //나의 식물들과 그에딸린 모든 투두들 보기
     public List<MyPlantResponseDto> getMyPlant(UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
         List<MyPlant> myPlants = myPlantRepository.findAllByUser(userDetails.getUser());
         List<MyPlantResponseDto> myPlantResponseDtos = new ArrayList<>();
         //TodoOnlyResponseDto에 값 넣어주기
@@ -51,7 +52,7 @@ public class MyPlantService {
                     todo.getMyPlant().getMyPlantNo(),
                     todo.getWorkType(),
                     todo.getLastWorkTime(),
-                    1,
+                    (int) (LocalDate.now().toEpochDay() - todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType()).getLastWorkTime().toEpochDay()),
                     todo.isStatus()
             );
             todoOnlyResponseDtos.add(todoOnlyResponseDto);
@@ -69,8 +70,8 @@ public class MyPlantService {
                     myPlant.getMyPlantName(),
                     myPlant.getStartDay(),
                     myPlant.getEndDay(),
-                    todoOnlyResponseDtos.stream().filter(h->h.getMyPlantNo().equals(myPlant.getMyPlantNo())).collect(Collectors.toList()));
-                    myPlantResponseDtos.add(myPlantResponseDto);
+                    todoOnlyResponseDtos.stream().filter(h -> h.getMyPlantNo().equals(myPlant.getMyPlantNo())).collect(Collectors.toList()));
+            myPlantResponseDtos.add(myPlantResponseDto);
         }
 
         return myPlantResponseDtos;
@@ -79,12 +80,15 @@ public class MyPlantService {
     //날짜별로 투두 맞는것만
     //나의 식물들 보기
     public List<MyPlantResponseDto> getMyPlantForTodo(UserDetailsImpl userDetails) {
-        List<MyPlant> myPlants = myPlantRepository.findAllByUser(userDetails.getUser());
+        //유저별 모든 식물 찾아오기
+        User user = userDetails.getUser();
+
+        List<MyPlant> myPlants = myPlantRepository.findAllByUser(user);
         List<MyPlantResponseDto> myPlantResponseDtos = new ArrayList<>();
         //todoResponseDto에 넣어주기
+        //작업수행여부에 상관없이 다 가져와서 보여줌.
         List<Todo> todos = todoRepository.findAllByUserAndTodoTime(userDetails.getUser(), LocalDate.now());
         List<TodoOnlyResponseDto> todoOnlyResponseDtos = new ArrayList<>();
-        User user = userDetails.getUser();
 
         for (Todo todo : todos) {
             TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
@@ -92,7 +96,8 @@ public class MyPlantService {
                     todo.getMyPlant().getMyPlantNo(),
                     todo.getWorkType(),
                     todo.getLastWorkTime(),
-                    (int) (LocalDate.now().toEpochDay()-todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(user,todo.getMyPlant(),true,todo.getWorkType()).getLastWorkTime().toEpochDay()),
+                    //워크타입별 스테이터스가 true인 값과 오늘의 날짜차이. 즉, 몇일이 지났는지.
+                    (int) (LocalDate.now().toEpochDay() - todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType()).getLastWorkTime().toEpochDay()),
                     todo.isStatus()
             );
             todoOnlyResponseDtos.add(todoOnlyResponseDto);
