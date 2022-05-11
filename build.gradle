@@ -62,10 +62,6 @@ dependencies {
 
     //날씨 api
     implementation 'com.google.code.gson:gson:2.8.6'
-    //풀리퀘확인용
-    //풀리퀘22
-    //풀리퀘33
-
 
 
     //jwtdecoder veryify부분 배포에러 해결
