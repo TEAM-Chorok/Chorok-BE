@@ -30,11 +30,13 @@ public class ScheduledTodo {
         LocalDate changingToDoTime = LocalDate.now().minusDays(90);
         LocalDate supplementToDoTime = LocalDate.now().minusDays(90);
         LocalDate cleaningToDoTime = LocalDate.now().minusDays(3);
+        LocalDate windyToDoTime = LocalDate.now().minusDays(1);
 
         List<Todo> waterTodos = todoRepository.findByTodoTimeAndWorkType(waterToDoTime,"물주기");
         List<Todo> changingTodos = todoRepository.findByTodoTimeAndWorkType(changingToDoTime,"분갈이");
         List<Todo> supplementTodos = todoRepository.findByTodoTimeAndWorkType(supplementToDoTime,"영양제");
         List<Todo> cleaningTodos = todoRepository.findByTodoTimeAndWorkType(cleaningToDoTime,"잎닦기");
+        List<Todo> windyTodos = todoRepository.findByTodoTimeAndWorkType(windyToDoTime,"환기");
         for (Todo todo : waterTodos) {
             String workType = todo.getWorkType();
             LocalDate lastWorkTime = todo.getTodoTime();
@@ -69,6 +71,17 @@ public class ScheduledTodo {
             todoRepository.save(todo2);
         }
         for (Todo todo : cleaningTodos) {
+            String workType = todo.getWorkType();
+            LocalDate lastWorkTime = todo.getTodoTime();
+            LocalDate todoTime = LocalDate.now();
+            boolean status = false;
+            MyPlant myPlant = todo.getMyPlant();
+            User user = todo.getUser();
+            Todo todo2 = new Todo(workType, lastWorkTime, todoTime, status, user, myPlant);
+
+            todoRepository.save(todo2);
+        }
+        for (Todo todo : windyTodos) {
             String workType = todo.getWorkType();
             LocalDate lastWorkTime = todo.getTodoTime();
             LocalDate todoTime = LocalDate.now();

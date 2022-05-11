@@ -3,6 +3,7 @@ package com.finalproject.chorok.myPlant.model;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.MyPlantRequestDto;
 import com.finalproject.chorok.myPlant.dto.MyPlantResponseDto;
+import com.finalproject.chorok.myPlant.dto.MyPlantUpdateRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +21,7 @@ public class MyPlant {
     @Id
     @Column(name = "my_plant_no")
     private Long myPlantNo;
-    private int plantNo;
+    private Long plantNo;
     private String myPlantPlace;
     private String myPlantImgUrl;
     private String myPlantName;
@@ -52,7 +53,7 @@ public class MyPlant {
         this.leafCleaning = 3;
 
     }
-    public MyPlant(int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, LocalDate endDay, LocalDate startDay){
+    public MyPlant(Long plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, LocalDate endDay, LocalDate startDay){
         this.plantNo = plantNo;
         this.myPlantPlace = myPlantPlace;
         this.myPlantImgUrl = myPlantImgUrl;
@@ -72,6 +73,13 @@ public class MyPlant {
         this.endDay = myPlantResponseDto.getEndDay();
         this.user = user;
 
+    }
+
+    public void update(MyPlantUpdateRequestDto myPlantUpdateRequestDto){
+        this.plantNo = myPlantUpdateRequestDto.getPlantNo();
+        this.myPlantName = myPlantUpdateRequestDto.getMyPlantName();
+        this.myPlantPlace = myPlantUpdateRequestDto.getMyPlantPlace();
+        this.myPlantImgUrl = myPlantUpdateRequestDto.getMyPlantImgUrl();
     }
 
 }

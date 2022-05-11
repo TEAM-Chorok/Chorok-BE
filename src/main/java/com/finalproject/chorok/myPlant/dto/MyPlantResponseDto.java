@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class MyPlantResponseDto {
     private Long myPlantNo;
-    private int plantNo;
+    private Long plantNo;
     private String myPlantPlace;
     private String myPlantImgUrl;
     private String myPlantName;
@@ -29,8 +29,8 @@ public class MyPlantResponseDto {
 
     private List<TodoOnlyResponseDto> todos;
 
-public MyPlantResponseDto (Long MyPlantNo, int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, LocalDate startDay, LocalDate endDay, List<TodoOnlyResponseDto> todos){
-    this.myPlantNo = MyPlantNo;
+public MyPlantResponseDto (Long myPlantNo, Long plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, LocalDate startDay, LocalDate endDay, List<TodoOnlyResponseDto> todos){
+    this.myPlantNo = myPlantNo;
     this.plantNo = plantNo;
     this.myPlantPlace = myPlantPlace;
     this.myPlantImgUrl = myPlantImgUrl;
