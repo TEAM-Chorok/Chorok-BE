@@ -20,7 +20,7 @@ public class MyPlant {
     @Id
     @Column(name = "my_plant_no")
     private Long myPlantNo;
-    private int plantNo;
+    private Long plantNo;
     private String myPlantPlace;
     private String myPlantImgUrl;
     private String myPlantName;
@@ -52,7 +52,7 @@ public class MyPlant {
         this.leafCleaning = 3;
 
     }
-    public MyPlant(int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, LocalDate endDay, LocalDate startDay){
+    public MyPlant(Long plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, LocalDate endDay, LocalDate startDay){
         this.plantNo = plantNo;
         this.myPlantPlace = myPlantPlace;
         this.myPlantImgUrl = myPlantImgUrl;

@@ -11,16 +11,10 @@ import java.time.LocalDate;
 @Setter
 @Getter
 @NoArgsConstructor
-public class MyPlantRequestDto {
+public class MyPlantUpdateRequestDto {
     private Long plantNo;
-    private String myPlantPlaceCode;
-    private String myPlantImgUrl;
     private String myPlantName;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate startDay;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate endDay;
-
-
+    private String myPlantPlace;
+    private String myPlantImgUrl;
 
 }

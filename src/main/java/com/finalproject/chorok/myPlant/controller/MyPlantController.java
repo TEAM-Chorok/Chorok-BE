@@ -1,13 +1,11 @@
 package com.finalproject.chorok.myPlant.controller;
 
 import com.finalproject.chorok.login.model.User;
-import com.finalproject.chorok.myPlant.dto.MyPlantResponseDto;
+import com.finalproject.chorok.myPlant.dto.*;
 import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
 import com.finalproject.chorok.security.UserDetailsImpl;
-import com.finalproject.chorok.myPlant.dto.MyPlantRequestDto;
 import com.finalproject.chorok.myPlant.service.MyPlantService;
-import com.finalproject.chorok.myPlant.dto.EndDayReqeustDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,16 +22,21 @@ public class MyPlantController {
 
     //내식물 등록하기
     @PostMapping("/myplant")
-    public void createMyPlant(@RequestBody MyPlantRequestDto myPlantRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        myPlantService.addMyPlant(myPlantRequestDto, userDetails.getUser());
+    public ResponseEntity<?>  createMyPlant(@RequestBody MyPlantRequestDto myPlantRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.addMyPlant(myPlantRequestDto, userDetails.getUser()));
     }
 
     //내 식물들 보기
     @GetMapping("/myplant")
-    public List<MyPlantResponseDto> myPlantInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return myPlantService.getMyPlant(userDetails);
+    public List<AllMyPlantResponseDto> myPlantInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return myPlantService.getAllMyPlant(userDetails);
     }
 
+    //내 식물 디테일까지 전체보기
+    @GetMapping("/myplant/all")
+    public ResponseEntity<?>  myAllPlantDetailResponseDtos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.getAllMyPlantDetail(userDetails));
+    }
     //식물 죽은날 설정하기
    @PatchMapping("/myplant/end/{myPlantNo}")
     public void postEndDay(@PathVariable Long myPlantNo, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody EndDayReqeustDto endDayReqeustDto){
