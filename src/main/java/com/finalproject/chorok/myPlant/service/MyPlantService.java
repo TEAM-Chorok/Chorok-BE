@@ -1,12 +1,9 @@
 package com.finalproject.chorok.myPlant.service;
 
 import com.finalproject.chorok.login.model.User;
-import com.finalproject.chorok.myPlant.dto.AllMyPlantResponseDto;
-import com.finalproject.chorok.myPlant.dto.MyAllPlantDetailResponseDto;
+import com.finalproject.chorok.myPlant.dto.*;
 import com.finalproject.chorok.plant.repository.PlantRepository;
 import com.finalproject.chorok.security.UserDetailsImpl;
-import com.finalproject.chorok.myPlant.dto.MyPlantRequestDto;
-import com.finalproject.chorok.myPlant.dto.MyPlantResponseDto;
 import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
 import com.finalproject.chorok.todo.dto.TodoOnlyResponseDto;
@@ -158,6 +155,15 @@ public class MyPlantService {
         }
 
         return myAllPlantDetailResponseDtos;
+    }
+
+    //나의 식물 수정하기
+    public MyPlant updateMyPlant(MyPlantUpdateRequestDto myPlantUpdateRequestDto, Long myPlantNo, UserDetailsImpl userDetails){
+        MyPlant myPlant = myPlantRepository.findById(myPlantNo).orElseThrow(
+                () -> new IllegalArgumentException("나의식물이 존재하지 않습니다.")
+        );
+        myPlant.update(myPlantUpdateRequestDto);
+        return myPlant;
     }
 
 

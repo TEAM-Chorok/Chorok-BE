@@ -3,6 +3,7 @@ package com.finalproject.chorok.myPlant.model;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.MyPlantRequestDto;
 import com.finalproject.chorok.myPlant.dto.MyPlantResponseDto;
+import com.finalproject.chorok.myPlant.dto.MyPlantUpdateRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -72,6 +73,13 @@ public class MyPlant {
         this.endDay = myPlantResponseDto.getEndDay();
         this.user = user;
 
+    }
+
+    public void update(MyPlantUpdateRequestDto myPlantUpdateRequestDto){
+        this.plantNo = myPlantUpdateRequestDto.getPlantNo();
+        this.myPlantName = myPlantUpdateRequestDto.getMyPlantName();
+        this.myPlantPlace = myPlantUpdateRequestDto.getMyPlantPlace();
+        this.myPlantImgUrl = myPlantUpdateRequestDto.getMyPlantImgUrl();
     }
 
 }
