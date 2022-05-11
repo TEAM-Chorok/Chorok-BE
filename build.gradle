@@ -67,6 +67,7 @@ dependencies {
     //풀리퀘33
 
 
+
     //jwtdecoder veryify부분 배포에러 해결
     implementation group: 'com.auth0', name: 'java-jwt', version: '3.16.0'
 }
