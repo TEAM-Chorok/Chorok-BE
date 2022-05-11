@@ -62,6 +62,7 @@ dependencies {
 
     //날씨 api
     implementation 'com.google.code.gson:gson:2.8.6'
+    //풀리퀘확인용
 
 }
 
