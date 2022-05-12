@@ -16,16 +16,19 @@ public class CommunityResponseDto {
     private String profileImgUrl;
     private String postType;
     private String postImgUrl;
+    private String postContent;
     private int postLikeCount;
     private int commentCount;
     private Boolean postLike;
     private Boolean postBookMark;
     private String postRecentTime;
 
+
     public CommunityResponseDto(Post communityPost,Boolean likePostChk, Boolean bookMarkPostChk){
         this.postId = communityPost.getPostId();
         this.nickname = communityPost.getUser().getNickname();
         this.profileImgUrl = communityPost.getUser().getProfileImageUrl();
+        this.postContent = communityPost.getPostContent();
         this.postType = communityPost.getPostType().getPostType();
         this.postImgUrl=communityPost.getPostImgUrl();
         this.postLikeCount= communityPost.getPostLike().size();
@@ -40,6 +43,7 @@ public class CommunityResponseDto {
         this.postId = communityPost.getPostId();
         this.nickname = communityPost.getUser().getNickname();
         this.profileImgUrl = communityPost.getUser().getProfileImageUrl();
+        this.postContent = communityPost.getPostContent();
         this.postType = communityPost.getPostType().getPostType();
         this.postImgUrl=communityPost.getPostImgUrl();
         this.postLikeCount= communityPost.getPostLike().size();

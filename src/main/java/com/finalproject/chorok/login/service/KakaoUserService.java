@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.finalproject.chorok.login.dto.KakaoUserInfoDto;
 import com.finalproject.chorok.login.dto.KakaoUserResponseDto;
+import com.finalproject.chorok.login.model.Labeling;
 import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.login.repository.LabelingRepository;
 import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.security.jwt.JwtTokenUtils;
@@ -29,11 +31,13 @@ import java.util.UUID;
 public class KakaoUserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final LabelingRepository labelingRepository;
 
     @Autowired
-    public KakaoUserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public KakaoUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.labelingRepository = labelingRepository;
     }
 
     public KakaoUserResponseDto kakaoLogin(String code) throws JsonProcessingException {
@@ -170,10 +174,18 @@ public class KakaoUserService {
                 String encodedPassword = passwordEncoder.encode(password);
                 // email: kakao email
                 String email = kakaoUserInfo.getEmail();
+                kakaoUser = new User(email, encodedPassword, nickname, kakaoId, profileImage);
+                Labeling defaultLabeling = new Labeling(kakaoUser);
+                labelingRepository.save(defaultLabeling);
+            }
 
-                kakaoUser = new User(email, encodedPassword, nickname, kakaoId, profileImage); }
-            userRepository.save(kakaoUser); }
-        return kakaoUser; }
+                userRepository.save(kakaoUser);
+
+
+        }
+
+        return kakaoUser;
+    }
 
     private String forceLogin(User kakaoUser) {
         UserDetailsImpl userDetails = new UserDetailsImpl(kakaoUser);

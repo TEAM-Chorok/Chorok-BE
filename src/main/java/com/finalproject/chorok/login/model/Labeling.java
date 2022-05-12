@@ -33,7 +33,7 @@ public class Labeling {
     @Column(nullable = true)
     private String answer4;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="user_id",referencedColumnName = "user_id")
     private User user;
 
