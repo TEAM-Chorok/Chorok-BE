@@ -47,10 +47,7 @@ public class MyPlantController {
             @RequestParam("myPlantName") String myPlantName,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
-        System.out.println(myPlantPlaceCode);
-        System.out.println(plantNo);
-        System.out.println(myPlantName);
-        System.out.println(multipartFile);
+
         String myPlantImgUrl = "";
         if (multipartFile!=null) {
              myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
