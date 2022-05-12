@@ -2,8 +2,10 @@ package com.finalproject.chorok.common.Weather;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedReader;
@@ -15,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@Slf4j
 public class WeatherController {
 
     public static Map<String,Object> jsonToMap(String str){
@@ -24,11 +27,14 @@ public class WeatherController {
     }
 
     @GetMapping("/api/weather")
-        public String getWeather(@RequestBody WeatherLocationDto weatherLocationDto) {
+        public String getWeather(WeatherLocationDto weatherLocationDto) {
         String API_KEY = "4572bc7f6a040b32388ddc0a2675d714";
         String urlString = "https://api.openweathermap.org/data/2.5/weather?lat=" + weatherLocationDto.getLat() + "&lon=" + weatherLocationDto.getLon() + "&appid=" + API_KEY;
         String apiResult = "";
-
+        log.info("watherLocationDto.getLat ={}",weatherLocationDto.getLat());
+        log.info("watherLocationDto.getlon ={}",weatherLocationDto.getLon());
+        System.out.println("WeatherController.getWeather");
+        System.out.println("weatherLocationDto = " + weatherLocationDto.getLat());
         try {
 
             StringBuilder result = new StringBuilder();

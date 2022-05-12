@@ -46,7 +46,7 @@ public class MyPlant {
         this.myPlantPlace = myPlantPlace;
         this.myPlantImgUrl = myPlantRequestDto.getMyPlantImgUrl();
         this.myPlantName = myPlantRequestDto.getMyPlantName();
-        this.startDay = LocalDate.parse(myPlantRequestDto.getStartDay(), DateTimeFormatter.ISO_DATE);
+        this.startDay = LocalDate.now();
         this.user = user;
         this.watering = 7;
         this.changing = 90;

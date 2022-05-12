@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlantLevelRepository extends JpaRepository<PlantLevel,String> {
+    PlantLevel findByPlantLevelCode(String plantLevelCode);
 }

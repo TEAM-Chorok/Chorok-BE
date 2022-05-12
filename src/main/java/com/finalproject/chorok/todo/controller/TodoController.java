@@ -47,7 +47,7 @@ public class TodoController {
             new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PatchMapping("/todo/cancle/{todoNo}")
+    @PatchMapping("/todo/cancel/{todoNo}")
     public void checkTodoCancle(@PathVariable Long todoNo, @AuthenticationPrincipal UserDetailsImpl userDetails){
         User user = userDetails.getUser();
         try {

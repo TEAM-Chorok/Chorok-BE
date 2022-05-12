@@ -174,6 +174,10 @@ public class KakaoUserService {
                 String encodedPassword = passwordEncoder.encode(password);
                 // email: kakao email
                 String email = kakaoUserInfo.getEmail();
+                kakaoUser = new User(email, encodedPassword, nickname, kakaoId, profileImage);
+                Labeling defaultLabeling = new Labeling(kakaoUser);
+                labelingRepository.save(defaultLabeling);
+            }
 
                 kakaoUser = new User(email, encodedPassword, nickname, kakaoId, profileImage);
                 Labeling defaultLabeling = new Labeling(kakaoUser);
@@ -181,6 +185,7 @@ public class KakaoUserService {
             }
             userRepository.save(kakaoUser); }
         return kakaoUser; }
+
 
     private String forceLogin(User kakaoUser) {
         UserDetailsImpl userDetails = new UserDetailsImpl(kakaoUser);
