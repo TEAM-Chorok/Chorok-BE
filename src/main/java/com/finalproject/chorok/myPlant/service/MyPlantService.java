@@ -88,6 +88,7 @@ public class MyPlantService {
             MyPlantResponseDto myPlantResponseDto = new MyPlantResponseDto(
                     myPlant.getMyPlantNo(),
                     myPlant.getPlantNo(),
+                    plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName(),
                     myPlant.getMyPlantPlace(),
                     myPlant.getMyPlantImgUrl(),
                     myPlant.getMyPlantName(),
@@ -128,6 +129,7 @@ public class MyPlantService {
             MyPlantResponseDto myPlantResponseDto = new MyPlantResponseDto(
                     myPlant.getMyPlantNo(),
                     myPlant.getPlantNo(),
+                    plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName(),
                     myPlant.getMyPlantPlace(),
                     myPlant.getMyPlantImgUrl(),
                     myPlant.getMyPlantName(),

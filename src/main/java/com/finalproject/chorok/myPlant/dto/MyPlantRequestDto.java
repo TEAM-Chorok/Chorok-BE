@@ -17,18 +17,18 @@ public class MyPlantRequestDto {
     private String myPlantImgUrl;
     private String myPlantName;
 //    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private String startDay;
+//    private String startDay;
 //    @DateTimeFormat(pattern = "yyyy-MM-dd")
 //    private LocalDate endDay;
 
-    public MyPlantRequestDto(String plantNo, String myPlantPlaceCode, String myPlantImgUrl, String myPlantName,String startDay
+    public MyPlantRequestDto(String plantNo, String myPlantPlaceCode, String myPlantImgUrl, String myPlantName
 //            ,LocalDate endDay
     ){
         this.plantNo = plantNo;
         this.myPlantPlaceCode = myPlantPlaceCode;
         this.myPlantImgUrl = myPlantImgUrl;
         this.myPlantName = myPlantName;
-        this.startDay = startDay;
+//        this.startDay = startDay;
 //        this.endDay = endDay;
 
     }

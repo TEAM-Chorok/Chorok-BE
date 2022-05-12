@@ -11,5 +11,6 @@ import java.util.List;
 public interface PlantImgRepository extends JpaRepository<PlantImg,Long> {
     @Query(nativeQuery = true,value = "SELECT * FROM plant_img WHERE plant_name like  %:keyword%")
     List<PlantImg> plantSearchToPlantNameQuery(String keyword);
+    PlantImg findByPlantNo(Long plantNo);
 
 }
