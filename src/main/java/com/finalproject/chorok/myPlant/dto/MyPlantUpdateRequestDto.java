@@ -12,9 +12,16 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 public class MyPlantUpdateRequestDto {
-    private Long plantNo;
+    private String plantNo;
     private String myPlantName;
     private String myPlantPlace;
     private String myPlantImgUrl;
 
+    public MyPlantUpdateRequestDto(String plantNo, String myPlantName, String myPlantPlace, String myPlantImgUrl){
+        this.plantNo = plantNo;
+        this.myPlantName = myPlantName;
+        this.myPlantImgUrl = myPlantImgUrl;
+        this.myPlantPlace = myPlantPlace;
+
+    }
 }

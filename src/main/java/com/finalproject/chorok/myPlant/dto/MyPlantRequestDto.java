@@ -16,7 +16,7 @@ public class MyPlantRequestDto {
     private String myPlantPlaceCode;
     private String myPlantImgUrl;
     private String myPlantName;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+//    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private String startDay;
 //    @DateTimeFormat(pattern = "yyyy-MM-dd")
 //    private LocalDate endDay;

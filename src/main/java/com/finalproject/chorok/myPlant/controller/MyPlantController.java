@@ -40,22 +40,36 @@ public class MyPlantController {
 //    }
     //내식물 이미지포함 등록하기
     @PostMapping("/myplant")
-    public ResponseEntity<?> createMyPlant(
+    public ResponseEntity<?>  createMyPlant(
             @RequestParam("plantNo") String plantNo,
-            @RequestParam("myPlantPlaceCode") String myPlantPlaceCode,
+            @RequestParam(value = "myPlantPlaceCode") String myPlantPlaceCode,
             @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
             @RequestParam("myPlantName") String myPlantName,
             @RequestParam(value = "startDay", required = false) String startDay,
-//            @RequestParam(value = "endDay",required = false) LocalDate endDay,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
         String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
-        //
+
         MyPlantRequestDto myPlantRequestDto = new MyPlantRequestDto(plantNo, myPlantPlaceCode, myPlantImgUrl, myPlantName, startDay);
         String plantPlace = plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace();
         myPlantService.addMyPlant(myPlantRequestDto, plantPlace, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(myPlantService.addMyPlant(myPlantRequestDto, plantPlace, userDetails.getUser()));
+    }
+    //내식물 수정하기
+    @PatchMapping("myplant/update/{myPlantNo}")
+    public ResponseEntity<?> updateMyPlant(@PathVariable Long myPlantNo,
+                                           @RequestParam ("plantNo") String plantNo,
+                                           @RequestParam ("myPlantName") String myPlantName,
+                                           @RequestParam ("myPlantPlace") String myPlantPlace,
+                                           @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
+                                           @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws IOException {
+
+        String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
+MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(plantNo, myPlantName, myPlantPlace,myPlantImgUrl);
+        myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails));
     }
 
     //내 식물들 보기
@@ -84,10 +98,5 @@ public class MyPlantController {
         }
     }
 
-    //내식물 수정하기
-    @PatchMapping("myplant/update/{myPlantNo}")
-    public ResponseEntity updateMyPlant(@PathVariable Long myPlantNo, @RequestBody MyPlantUpdateRequestDto myPlantUpdateRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails));
-    }
+
 }
