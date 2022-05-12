@@ -68,7 +68,7 @@ public class UserService {
         String profileImgUrl = requestDto.getProfileImgUrl();
 
         User user = new User(username, password, nickname, emailCheckToken, profileImgUrl);
-//
+
 //         //이메일 인증 코드부분
 //        redisUtil.set(emailCheckToken, user, 2);
 //

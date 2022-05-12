@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface PlantRepository extends JpaRepository<Plant,String> {
+    Plant findByPlantNo(Long plantNo);
 
     //위치, category, 검색(searchtitle)를 받아서 (appear) 보여주는 정보만 보여주면서 정렬한다. 기준 cost
 //    @Query(value = "select * from plant p where p.plant_level_code=:answer1 and p.plant_place_code like %:answer2% and plant_type_code like %:answer3% and plant_growth_shape_code like %:answer4% order by p.plant_no asc", nativeQuery = true)

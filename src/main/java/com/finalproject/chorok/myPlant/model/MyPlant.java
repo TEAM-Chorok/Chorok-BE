@@ -3,12 +3,14 @@ package com.finalproject.chorok.myPlant.model;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.MyPlantRequestDto;
 import com.finalproject.chorok.myPlant.dto.MyPlantResponseDto;
+import com.finalproject.chorok.myPlant.dto.MyPlantUpdateRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Getter // get 함수를 일괄적으로 만들어줍니다.
 @Setter
@@ -20,7 +22,7 @@ public class MyPlant {
     @Id
     @Column(name = "my_plant_no")
     private Long myPlantNo;
-    private int plantNo;
+    private Long plantNo;
     private String myPlantPlace;
     private String myPlantImgUrl;
     private String myPlantName;
@@ -38,13 +40,13 @@ public class MyPlant {
     @JoinColumn(name = "user_id",referencedColumnName = "user_id")
     private User user;
 
-    public MyPlant(MyPlantRequestDto myPlantRequestDto, User user){
-        this.plantNo = myPlantRequestDto.getPlantNo();
-        this.myPlantPlace = myPlantRequestDto.getMyPlantPlaceCode();
+
+    public MyPlant(MyPlantRequestDto myPlantRequestDto, String myPlantPlace, User user){
+        this.plantNo = Long.parseLong(myPlantRequestDto.getPlantNo());
+        this.myPlantPlace = myPlantPlace;
         this.myPlantImgUrl = myPlantRequestDto.getMyPlantImgUrl();
         this.myPlantName = myPlantRequestDto.getMyPlantName();
-        this.startDay = myPlantRequestDto.getStartDay();
-        this.endDay = myPlantRequestDto.getEndDay();
+        this.startDay = LocalDate.parse(myPlantRequestDto.getStartDay(), DateTimeFormatter.ISO_DATE);
         this.user = user;
         this.watering = 7;
         this.changing = 90;
@@ -52,7 +54,7 @@ public class MyPlant {
         this.leafCleaning = 3;
 
     }
-    public MyPlant(int plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, LocalDate endDay, LocalDate startDay){
+    public MyPlant(Long plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, LocalDate endDay, LocalDate startDay){
         this.plantNo = plantNo;
         this.myPlantPlace = myPlantPlace;
         this.myPlantImgUrl = myPlantImgUrl;
@@ -72,6 +74,13 @@ public class MyPlant {
         this.endDay = myPlantResponseDto.getEndDay();
         this.user = user;
 
+    }
+
+    public void update(MyPlantUpdateRequestDto myPlantUpdateRequestDto){
+        this.plantNo = Long.parseLong(myPlantUpdateRequestDto.getPlantNo());
+        this.myPlantName = myPlantUpdateRequestDto.getMyPlantName();
+        this.myPlantPlace = myPlantUpdateRequestDto.getMyPlantPlace();
+        this.myPlantImgUrl = myPlantUpdateRequestDto.getMyPlantImgUrl();
     }
 
 }

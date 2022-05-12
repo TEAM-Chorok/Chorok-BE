@@ -86,10 +86,7 @@ public class UserController {
             ) throws IOException {
         System.out.println("실행");
         String profileImgUrl = null;
-        //form data로 받으면 , 가 끝에 붙어서 날아옴. 맨뒤 글자 제거하는 코드
-//        username = username.replaceFirst(".$","");
-//        password = password.replaceFirst(".$","");
-//        nickname = nickname.replaceFirst(".$","");
+
         System.out.println(multipartFile);
         if(!multipartFile.isEmpty()){
         profileImgUrl = s3Uploader.upload(multipartFile, "static");}
