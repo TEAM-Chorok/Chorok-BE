@@ -87,9 +87,9 @@ public class UserController {
         System.out.println("실행");
         String profileImgUrl = null;
         //form data로 받으면 , 가 끝에 붙어서 날아옴. 맨뒤 글자 제거하는 코드
-        username = username.replaceFirst(".$","");
-        password = password.replaceFirst(".$","");
-        nickname = nickname.replaceFirst(".$","");
+//        username = username.replaceFirst(".$","");
+//        password = password.replaceFirst(".$","");
+//        nickname = nickname.replaceFirst(".$","");
         System.out.println(multipartFile);
         if(!multipartFile.isEmpty()){
         profileImgUrl = s3Uploader.upload(multipartFile, "static");}
@@ -161,6 +161,7 @@ public class UserController {
     // 메인페이지 식물 추천 테스트 조회
     @GetMapping("/user/labeling/results")
     public List<LabelingResponseDto> getLabelingResults(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        System.out.println("컨트롤러 들어오나");
         return userService.getLabelingResults(userDetails);
 
     }

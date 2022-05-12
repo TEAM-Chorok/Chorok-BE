@@ -251,8 +251,12 @@ public class UserService {
 
     @Transactional
     public List<LabelingResponseDto> getLabelingResults(UserDetailsImpl userDetails) {
-
-        Optional<Labeling> labelingTested = labelingRepository.findByUser(userDetails.getUser());
+        System.out.println("서비스 단으로 넘어오나??");
+//        Long temp = 6L;
+//        Optional<Labeling> labelingTested = labelingRepository.findByUserUserId(temp);
+        System.out.println(userDetails.getUser().getUserId());
+        System.out.println(userDetails.getUserId());
+        Optional<Labeling> labelingTested = labelingRepository.findByUser_UserId(userDetails.getUserId());
         if(labelingTested.isPresent()){
         List<Plant> labeledPlants = plantRepository.searchThreePlantByLabeling(
                 labelingTested.get().getAnswer1(),

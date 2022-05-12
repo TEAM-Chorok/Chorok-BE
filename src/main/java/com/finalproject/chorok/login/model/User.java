@@ -15,7 +15,7 @@ import java.util.UUID;
 public class User {
 
     // ID가 자동으로 생성 및 증가합니다.
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     @Column(name = "user_id")
     private Long userId;

@@ -12,5 +12,5 @@ import java.util.Optional;
 @Repository
 public interface LabelingRepository extends JpaRepository<Labeling, Long> {
     Optional<Labeling> findByUser(User user);
-
+    Optional<Labeling> findByUser_UserId(Long userId);
 }
