@@ -178,12 +178,9 @@ public class KakaoUserService {
                 Labeling defaultLabeling = new Labeling(kakaoUser);
                 labelingRepository.save(defaultLabeling);
             }
+            userRepository.save(kakaoUser);
+        }
 
-                kakaoUser = new User(email, encodedPassword, nickname, kakaoId, profileImage);
-                Labeling defaultLabeling = new Labeling(kakaoUser);
-                labelingRepository.save(defaultLabeling);
-            }
-            userRepository.save(kakaoUser); }
         return kakaoUser; }
 
 
