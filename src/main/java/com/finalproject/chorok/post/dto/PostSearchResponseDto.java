@@ -16,10 +16,19 @@ public class PostSearchResponseDto {
     private int plantDictionaryCount;
     private List<PlantDictionaryResponseDto> plantDictionaryList;
 
-    public PostSearchResponseDto(int plantriaCount, List<PlantriaSearchResponseDto> plantriaSearchList, List<PlantDictionaryResponseDto> plantDictionarySearchList) {
-        this.plantriaCount=plantriaCount;
+    public PostSearchResponseDto(Long planteriorCount, List<PlantriaSearchResponseDto> plantriaSearchList,Long plantDictionaryCount, List<PlantDictionaryResponseDto> plantDictionarySearchList) {
+        this.plantriaCount= Math.toIntExact(planteriorCount);
         this.plantriaSearchList=plantriaSearchList;
-        this.plantDictionaryCount=plantDictionarySearchList.size();
+        this.plantDictionaryCount= Math.toIntExact(plantDictionaryCount);
         this.plantDictionaryList=plantDictionarySearchList;
     }
+
+    //QueryDSl
+
+//    public PostSearchResponseDto(Long plantriaCount, List<PlantriaSearchResponseDto> plantriaSearchList, int plantDictionaryCount, List<PlantDictionaryResponseDto> plantDictionaryList) {
+//        this.plantriaCount = Math.toIntExact(plantriaCount);
+//        this.plantriaSearchList = plantriaSearchList;
+//        this.plantDictionaryCount = plantDictionaryCount;
+//        this.plantDictionaryList = plantDictionaryList;
+//    }
 }

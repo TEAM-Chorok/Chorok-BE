@@ -9,6 +9,7 @@ public class PlantriaSearchResponseDto {
     private Long postId;
     private String postImgUrl;
 
+
     public PlantriaSearchResponseDto(Long postId, String postImgUrl) {
         this.postId= postId;
         this.postImgUrl=postImgUrl;
