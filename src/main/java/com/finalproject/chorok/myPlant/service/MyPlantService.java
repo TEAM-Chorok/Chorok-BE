@@ -2,6 +2,7 @@ package com.finalproject.chorok.myPlant.service;
 
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.*;
+import com.finalproject.chorok.plant.repository.PlantPlaceRepository;
 import com.finalproject.chorok.plant.repository.PlantRepository;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.myPlant.model.MyPlant;
@@ -28,8 +29,8 @@ public class MyPlantService {
 
     //투두리스트를 처음에 자동으로 저장해줌.
     @Transactional
-    public MyPlant addMyPlant(MyPlantRequestDto myPlantRequestDto, User user) {
-        MyPlant myPlant = new MyPlant(myPlantRequestDto, user);
+    public MyPlant addMyPlant(MyPlantRequestDto myPlantRequestDto, String plantPlace, User user) {
+        MyPlant myPlant = new MyPlant(myPlantRequestDto, plantPlace, user);
         todoRepository.save(new Todo("물주기", myPlant.getStartDay(), myPlant.getStartDay(), true, user, myPlant));
         todoRepository.save(new Todo("영양제", myPlant.getStartDay(), myPlant.getStartDay(), true, user, myPlant));
         todoRepository.save(new Todo("분갈이", myPlant.getStartDay(), myPlant.getStartDay(), true, user, myPlant));

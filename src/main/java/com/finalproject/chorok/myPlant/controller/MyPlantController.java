@@ -1,9 +1,12 @@
 package com.finalproject.chorok.myPlant.controller;
 
+import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.*;
 import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
+import com.finalproject.chorok.plant.repository.PlantPlaceRepository;
+import com.finalproject.chorok.post.dto.PostRequestDto;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.myPlant.service.MyPlantService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -19,11 +26,50 @@ import java.util.List;
 public class MyPlantController {
     private final MyPlantService myPlantService;
     private final MyPlantRepository myPlantRepository;
+    private final S3Uploader S3Uploader;
+    private final PlantPlaceRepository plantPlaceRepository;
+
 
     //내식물 등록하기
+//    @PostMapping("/myplant")
+//    public ResponseEntity<?> createMyPlant(@RequestBody MyPlantRequestDto myPlantRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        String myPlantPlaceCode = myPlantRequestDto.getMyPlantPlaceCode();
+//        String plantPlace = plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace();
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.addMyPlant(myPlantRequestDto, plantPlace, userDetails.getUser()));
+//    }
+    //내식물 이미지포함 등록하기
     @PostMapping("/myplant")
-    public ResponseEntity<?> createMyPlant(@RequestBody MyPlantRequestDto myPlantRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.addMyPlant(myPlantRequestDto, userDetails.getUser()));
+    public ResponseEntity<?>  createMyPlant(
+            @RequestParam("plantNo") String plantNo,
+            @RequestParam(value = "myPlantPlaceCode") String myPlantPlaceCode,
+            @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
+            @RequestParam("myPlantName") String myPlantName,
+            @RequestParam(value = "startDay", required = false) String startDay,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws IOException {
+        String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
+
+        MyPlantRequestDto myPlantRequestDto = new MyPlantRequestDto(plantNo, myPlantPlaceCode, myPlantImgUrl, myPlantName, startDay);
+        String plantPlace = plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace();
+        myPlantService.addMyPlant(myPlantRequestDto, plantPlace, userDetails.getUser());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(myPlantService.addMyPlant(myPlantRequestDto, plantPlace, userDetails.getUser()));
+    }
+    //내식물 수정하기
+    @PatchMapping("myplant/update/{myPlantNo}")
+    public ResponseEntity<?> updateMyPlant(@PathVariable Long myPlantNo,
+                                           @RequestParam ("plantNo") String plantNo,
+                                           @RequestParam ("myPlantName") String myPlantName,
+                                           @RequestParam ("myPlantPlace") String myPlantPlace,
+                                           @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
+                                           @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws IOException {
+
+        String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
+MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(plantNo, myPlantName, myPlantPlace,myPlantImgUrl);
+        myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails));
     }
 
     //내 식물들 보기
@@ -52,10 +98,5 @@ public class MyPlantController {
         }
     }
 
-    //내식물 수정하기
-    @PatchMapping("myplant/update/{myPlantNo}")
-    public ResponseEntity updateMyPlant(@PathVariable Long myPlantNo, @RequestBody MyPlantUpdateRequestDto myPlantUpdateRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails));
-    }
+
 }

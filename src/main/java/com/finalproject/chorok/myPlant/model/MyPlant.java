@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Getter // get 함수를 일괄적으로 만들어줍니다.
 @Setter
@@ -39,13 +40,13 @@ public class MyPlant {
     @JoinColumn(name = "user_id",referencedColumnName = "user_id")
     private User user;
 
-    public MyPlant(MyPlantRequestDto myPlantRequestDto, User user){
-        this.plantNo = myPlantRequestDto.getPlantNo();
-        this.myPlantPlace = myPlantRequestDto.getMyPlantPlaceCode();
+
+    public MyPlant(MyPlantRequestDto myPlantRequestDto, String myPlantPlace, User user){
+        this.plantNo = Long.parseLong(myPlantRequestDto.getPlantNo());
+        this.myPlantPlace = myPlantPlace;
         this.myPlantImgUrl = myPlantRequestDto.getMyPlantImgUrl();
         this.myPlantName = myPlantRequestDto.getMyPlantName();
-        this.startDay = myPlantRequestDto.getStartDay();
-        this.endDay = myPlantRequestDto.getEndDay();
+        this.startDay = LocalDate.parse(myPlantRequestDto.getStartDay(), DateTimeFormatter.ISO_DATE);
         this.user = user;
         this.watering = 7;
         this.changing = 90;
@@ -76,7 +77,7 @@ public class MyPlant {
     }
 
     public void update(MyPlantUpdateRequestDto myPlantUpdateRequestDto){
-        this.plantNo = myPlantUpdateRequestDto.getPlantNo();
+        this.plantNo = Long.parseLong(myPlantUpdateRequestDto.getPlantNo());
         this.myPlantName = myPlantUpdateRequestDto.getMyPlantName();
         this.myPlantPlace = myPlantUpdateRequestDto.getMyPlantPlace();
         this.myPlantImgUrl = myPlantUpdateRequestDto.getMyPlantImgUrl();

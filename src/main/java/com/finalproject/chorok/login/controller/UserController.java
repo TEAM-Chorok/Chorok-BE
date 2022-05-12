@@ -8,7 +8,8 @@ import com.finalproject.chorok.login.dto.*;
 import com.finalproject.chorok.login.service.GoogleUserService;
 import com.finalproject.chorok.login.service.KakaoUserService;
 import com.finalproject.chorok.login.service.UserService;
-import com.finalproject.chorok.common.utils.StatusMessage;
+import com.finalproject.chorok.plant.service.PlantFilterService;
+import com.finalproject.chorok.login.dto.LabelingResponseDto;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import javax.activity.InvalidActivityException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 
 
 @RestController
@@ -31,13 +33,15 @@ public class UserController {
     private final KakaoUserService kakaoUserService;
     private final GoogleUserService googleUserService;
     private final S3Uploader s3Uploader;
+    private final PlantFilterService plantFilterService;
 
     @Autowired
-    public UserController(UserService userService, KakaoUserService kakaoUserService, GoogleUserService googleUserService, S3Uploader s3Uploader) {
+    public UserController(UserService userService, KakaoUserService kakaoUserService, GoogleUserService googleUserService, S3Uploader s3Uploader, PlantFilterService plantFilterService) {
         this.userService = userService;
         this.kakaoUserService  = kakaoUserService;
         this.googleUserService = googleUserService;
         this.s3Uploader = s3Uploader;
+        this.plantFilterService = plantFilterService;
     }
 
     //아이디 중복 체크
@@ -82,9 +86,7 @@ public class UserController {
             ) throws IOException {
         System.out.println("실행");
         String profileImgUrl = null;
-        username = username.replaceFirst(".$","");
-        password = password.replaceFirst(".$","");
-        nickname = nickname.replaceFirst(".$","");
+
         System.out.println(multipartFile);
         if(!multipartFile.isEmpty()){
         profileImgUrl = s3Uploader.upload(multipartFile, "static");}
@@ -139,11 +141,26 @@ public class UserController {
         }
 
     }
-
+    //임시 비밀번호 보내기
+    @PostMapping("/user/labeling/test")
+    public void labelingTest(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        userService.labelingTest(userDetails);
+    }
 
     // 식물 추천 테스트
     @PutMapping("/user/labeling")
-    public String recommendationTest(@RequestBody LabelingDto labelingDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userService.updateLabeling(labelingDto, userDetails);
+    public LabelingResponseDto labelingTest(@RequestBody LabelingDto labelingDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.updateLabeling(labelingDto, userDetails);
+        return userService.getLabelingPlant(labelingDto);
+
     }
+
+    // 메인페이지 식물 추천 테스트 조회
+    @GetMapping("/user/labeling/results")
+    public List<LabelingResponseDto> getLabelingResults(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        System.out.println("컨트롤러 들어오나");
+        return userService.getLabelingResults(userDetails);
+
+    }
+
 }
