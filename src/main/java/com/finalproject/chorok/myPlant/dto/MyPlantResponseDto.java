@@ -16,6 +16,7 @@ import java.util.List;
 public class MyPlantResponseDto {
     private Long myPlantNo;
     private Long plantNo;
+    private String plantName;
     private String myPlantPlace;
     private String myPlantImgUrl;
     private String myPlantName;
@@ -29,9 +30,10 @@ public class MyPlantResponseDto {
 
     private List<TodoOnlyResponseDto> todos;
 
-public MyPlantResponseDto (Long myPlantNo, Long plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, LocalDate startDay, LocalDate endDay, List<TodoOnlyResponseDto> todos){
+public MyPlantResponseDto (Long myPlantNo, Long plantNo, String plantName, String myPlantPlace, String myPlantImgUrl, String myPlantName, LocalDate startDay, LocalDate endDay, List<TodoOnlyResponseDto> todos){
     this.myPlantNo = myPlantNo;
     this.plantNo = plantNo;
+    this.plantName = plantName;
     this.myPlantPlace = myPlantPlace;
     this.myPlantImgUrl = myPlantImgUrl;
     this.myPlantName = myPlantName;
