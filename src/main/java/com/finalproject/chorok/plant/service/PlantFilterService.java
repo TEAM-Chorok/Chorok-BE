@@ -20,7 +20,7 @@ public class PlantFilterService {
     private final PlantLevelRepository plantLevelRepository;
     private final PlantTypeRepository plantTypeRepository;
     private final PlantGrowthShapeRepository plantGrowthShapeRepository;
-
+    
     public List<PlantPlace> getPlantPlace() {
         return plantPlaceRepository.findAll();
     }

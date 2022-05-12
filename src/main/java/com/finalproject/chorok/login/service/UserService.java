@@ -1,6 +1,7 @@
 package com.finalproject.chorok.login.service;
 
 
+import com.finalproject.chorok.common.utils.PlantUtils;
 import com.finalproject.chorok.common.utils.RedisUtil;
 import com.finalproject.chorok.login.dto.*;
 
@@ -11,12 +12,13 @@ import com.finalproject.chorok.login.repository.EmailService;
 import com.finalproject.chorok.login.repository.LabelingRepository;
 import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.login.validator.Validator;
+import com.finalproject.chorok.plant.model.Plant;
+import com.finalproject.chorok.plant.repository.PlantRepository;
+import com.finalproject.chorok.login.dto.LabelingResponseDto;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Test;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -40,7 +42,8 @@ public class UserService {
     private final Validator validator;
     private final LabelingRepository labelingRepository;
     private final RedisUtil redisUtil;
-
+    private final PlantRepository plantRepository;
+    private final PlantUtils plantUtils;
 
     @Transactional
     public String registerUser(SignupRequestDto requestDto) {
@@ -65,24 +68,30 @@ public class UserService {
         String profileImgUrl = requestDto.getProfileImgUrl();
 
         User user = new User(username, password, nickname, emailCheckToken, profileImgUrl);
-
-         //이메일 인증 코드부분
-        redisUtil.set(emailCheckToken, user, 2);
-
-        System.out.println(user+"4");
-
-        sendSignupConfirmEmail(user);
+//
+//         //이메일 인증 코드부분
+//        redisUtil.set(emailCheckToken, user, 2);
+//
+//        System.out.println(user+"4");
+//
+//        sendSignupConfirmEmail(user);
 
         // 이메일 인증 생략하고 회원가입(추후 삭제)
-//        User savedUser = userRepository.save(user);
-//        Labeling defaultLabeling = new Labeling(savedUser);
-//        labelingRepository.save(defaultLabeling);
+        User savedUser = userRepository.save(user);
+        Labeling defaultLabeling = new Labeling(savedUser);
+        labelingRepository.save(defaultLabeling);
         return msg;
+    }
+
+    public void labelingTest(UserDetailsImpl userDetails) {
+
+        Labeling defaultLabeling = new Labeling(userDetails.getUser());
+        labelingRepository.save(defaultLabeling);
     }
 
 
 
-    @Transactional
+        @Transactional
     public ResponseEntity<CMResponseDto> sendTempPassword(EmailRequestDto emailRequestDto) throws InvalidActivityException {
 
         User findUser = userRepository.findByUsername(emailRequestDto.getEmail()).orElseThrow(
@@ -194,7 +203,7 @@ public class UserService {
         }
         return msg;
     }
-//
+
     @Transactional
     public ResponseEntity<CMResponseDto> checkEmailToken(String token, String email) throws InvalidActivityException {
         System.out.println("이메일 토큰 인증과정 함수시작");
@@ -221,9 +230,51 @@ public class UserService {
     public String updateLabeling(LabelingDto labelingDto, UserDetailsImpl userDetails) {
         String msg = "레이블링 업데이트 성공";
         Labeling labeling = labelingRepository.findByUser(userDetails.getUser()).orElseThrow(
-                () -> new IllegalArgumentException("판매하지 않는 상품입니다.")
+                () -> new IllegalArgumentException("레이블링 오류입니다.")
         );
         labeling.update(labelingDto);
+
         return msg;
+    }
+
+    @Transactional
+    public LabelingResponseDto getLabelingPlant(LabelingDto labelingDto) {
+
+        Plant labeledPlant = plantRepository.searchOnePlantByLabeling(labelingDto.getAnswer1(), labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
+
+        return new LabelingResponseDto(
+                labeledPlant.getPlantNo(),
+                plantUtils.getPlantThumbImg(labeledPlant.getPlantNo()),
+                labeledPlant.getPlantName()
+        );
+    }
+
+    @Transactional
+    public List<LabelingResponseDto> getLabelingResults(UserDetailsImpl userDetails) {
+
+        Optional<Labeling> labelingTested = labelingRepository.findByUser(userDetails.getUser());
+        if(labelingTested.isPresent()){
+        List<Plant> labeledPlants = plantRepository.searchThreePlantByLabeling(
+                labelingTested.get().getAnswer1(),
+                labelingTested.get().getAnswer2(),
+                labelingTested.get().getAnswer3(),
+                labelingTested.get().getAnswer4());
+
+        List<LabelingResponseDto> labelingResponseDtos = new ArrayList<>();
+
+        for (Plant labeledPlant : labeledPlants) {
+
+            LabelingResponseDto labelingResponseDto = new LabelingResponseDto(
+                    labeledPlant.getPlantNo(),
+                    plantUtils.getPlantThumbImg(labeledPlant.getPlantNo()),
+                    labeledPlant.getPlantName()
+            );
+            labelingResponseDtos.add(labelingResponseDto);
+
+        }
+        return labelingResponseDtos;}
+        else {
+            return null;
+        }
     }
 }
