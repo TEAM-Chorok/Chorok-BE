@@ -82,9 +82,9 @@ public class UserController {
             ) throws IOException {
         System.out.println("실행");
         String profileImgUrl = null;
-        username = username.replaceFirst(".$","");
-        password = password.replaceFirst(".$","");
-        nickname = nickname.replaceFirst(".$","");
+//        username = username.replaceFirst(".$","");
+//        password = password.replaceFirst(".$","");
+//        nickname = nickname.replaceFirst(".$","");
         System.out.println(multipartFile);
         if(!multipartFile.isEmpty()){
         profileImgUrl = s3Uploader.upload(multipartFile, "static");}
