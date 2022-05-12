@@ -6,6 +6,7 @@ import com.finalproject.chorok.security.filter.JwtAuthFilter;
 import com.finalproject.chorok.security.jwt.HeaderTokenExtractor;
 import com.finalproject.chorok.security.provider.FormLoginAuthProvider;
 import com.finalproject.chorok.security.provider.JWTAuthProvider;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,7 +22,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
-        web.ignoring().antMatchers("/h2-console/**/**");
+        web.ignoring().antMatchers("/h2-console/**");
         web.ignoring().antMatchers("kapi.kakao.com/v2/user/me");
         web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
     }
@@ -97,6 +100,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").permitAll()
                 // 어떤 요청이든 '인증'
                 .antMatchers("/h2-console/**").permitAll()
+
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .antMatchers(HttpMethod.GET).permitAll()
                 .antMatchers(HttpMethod.POST).permitAll()
@@ -181,6 +186,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/auth/**");
 
 
+        skipPathList.add("GET,/non-login/**");
 
         skipPathList.add("GET,/");
 
@@ -207,27 +213,30 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //    cors 해결
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-//        corsConfiguration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
+        configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
         //corsConfiguration.addAllowedOrigin(""); //배포시
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedOrigin("http://localhost:8080");
-        configuration.addAllowedOrigin("http://172.31.42.54:3000");
-        configuration.addAllowedOrigin("http://172.31.42.54:8080");
-        configuration.addAllowedOrigin("http://dogfootdogfoot.shop");
-        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:8080");
-        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:3000");
+//        configuration.addAllowedOrigin("http://localhost:3000");
+//        configuration.addAllowedOrigin("http://localhost:8080");
+//        configuration.addAllowedOrigin("http://172.31.42.54:3000");
+//        configuration.addAllowedOrigin("http://172.31.42.54:8080");
+//        configuration.addAllowedOrigin("http://dogfootdogfoot.shop");
+//        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:8080");
+//        configuration.addAllowedOrigin("http://dogfootdogfoot.shop:3000");
+//        configuration.addAllowedMethod("*");
+//        configuration.addAllowedHeader("*");
+//        configuration.addExposedHeader("Authorization");
+//        configuration.addAllowedOrigin("http://52.79.233.178:8080");
+//        configuration.addAllowedOrigin("http://52.79.233.178:3000");
+//        configuration.addAllowedOrigin("http://52.79.233.178");
+//        configuration.addAllowedOrigin("/**"); //배포시
+//        configuration.addAllowedOrigin(""); //배포시
+//        configuration.addAllowedOrigin("http://192.168.0.23:3000");
+//        configuration.addAllowedOrigin("http://192.168.0.23:8080");
+//        configuration.addAllowedOrigin("http://192.168.0.23");
         configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.addExposedHeader("Authorization");
-        configuration.addAllowedOrigin("http://52.79.233.178:8080");
-        configuration.addAllowedOrigin("http://52.79.233.178:3000");
-        configuration.addAllowedOrigin("http://52.79.233.178");
-        configuration.addAllowedOrigin("/**"); //배포시
-        configuration.addAllowedOrigin(""); //배포시
-        configuration.addAllowedOrigin("http://192.168.0.23:3000");
-        configuration.addAllowedOrigin("http://192.168.0.23:8080");
-        configuration.addAllowedOrigin("http://192.168.0.23");
-        configuration.addAllowedMethod("*");
+        configuration.addAllowedMethod("GET");
+        configuration.addAllowedMethod("POST");
+        configuration.addAllowedMethod("PUT");
         configuration.addAllowedHeader("*");
         configuration.addExposedHeader("Authorization");
         configuration.setAllowCredentials(true);
