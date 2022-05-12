@@ -179,13 +179,13 @@ public class KakaoUserService {
                 labelingRepository.save(defaultLabeling);
             }
 
-                userRepository.save(kakaoUser);
+                kakaoUser = new User(email, encodedPassword, nickname, kakaoId, profileImage);
+                Labeling defaultLabeling = new Labeling(kakaoUser);
+                labelingRepository.save(defaultLabeling);
+            }
+            userRepository.save(kakaoUser); }
+        return kakaoUser; }
 
-
-        }
-
-        return kakaoUser;
-    }
 
     private String forceLogin(User kakaoUser) {
         UserDetailsImpl userDetails = new UserDetailsImpl(kakaoUser);

@@ -233,13 +233,13 @@ public class UserService {
                 () -> new IllegalArgumentException("레이블링 오류입니다.")
         );
         labeling.update(labelingDto);
-
+        System.out.println("레이블링 업데이트 성공");
         return msg;
     }
 
     @Transactional
     public LabelingResponseDto getLabelingPlant(LabelingDto labelingDto) {
-
+        System.out.println("식물 검색하기 까지 들어옴");
         Plant labeledPlant = plantRepository.searchOnePlantByLabeling(labelingDto.getAnswer1(), labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
 
         return new LabelingResponseDto(
