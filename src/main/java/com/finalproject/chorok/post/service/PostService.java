@@ -77,13 +77,14 @@ public class PostService {
 
     // 2. 초록톡 전체 게시물조회 (postTypeCode로 필터링) - 로그인 시
     public List<CommunityResponseDto> readPostsCommunity(User user,String postTypeCode) {
+
         List<CommunityResponseDto> communityResponseDtoList = new ArrayList<>();
 
         for(Post communityPost : readPostsCommunityQuery(postTypeCode)){
             CommunityResponseDto communityResponseDto = new CommunityResponseDto(
-                    communityPost,
-                    commUtils.LikePostChk(communityPost.getPostId(),user),
-                    commUtils.BookMarkPostChk(communityPost.getPostId(),user)
+//                    communityPost,
+//                    commUtils.LikePostChk(communityPost.getPostId(),user),
+//                    commUtils.BookMarkPostChk(communityPost.getPostId(),user)
             );
             communityResponseDtoList.add(communityResponseDto);
         }
@@ -97,7 +98,7 @@ public class PostService {
 
         for(Post communityPost : readPostsCommunityQuery(postTypeCode)){
             CommunityResponseDto communityResponseDto = new CommunityResponseDto(
-                    communityPost
+//                    communityPost
             );
             communityResponseDtoList.add(communityResponseDto);
         }

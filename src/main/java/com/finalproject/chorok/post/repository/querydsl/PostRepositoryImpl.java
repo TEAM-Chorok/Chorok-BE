@@ -107,22 +107,22 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
     }
 
     // 플랜테리어 - 통합검색(사진)
-    @Override
-    public List<PlantriaSearchResponseDto> photoSearchPlanterior(String keyword) {
-        return queryFactory
-                .select(
-                        Projections.constructor(PlantriaSearchResponseDto.class,
-                                post.postId,
-                                post.postImgUrl
-                        )
-                )
-                .from(post)
-                .where(
-                        searchKeyword(keyword).and(post.postType.postTypeCode.eq("postType01"))
-                )
-                .orderBy(post.createdAt.desc()).limit(6)
-                .fetch();
-    }
+//    @Override
+//    public List<PlantriaSearchResponseDto> photoSearchPlanterior(String keyword) {
+//        return queryFactory
+//                .select(
+//                        Projections.constructor(PlantriaSearchResponseDto.class,
+//                                post.postId,
+//                                post.postImgUrl
+//                        )
+//                )
+//                .from(post)
+//                .where(
+//                        searchKeyword(keyword).and(post.postType.postTypeCode.eq("postType01"))
+//                )
+//                .orderBy(post.createdAt.desc()).limit(6)
+//                .fetch();
+//    }
 
     /* 공통  */
     private BooleanExpression postTypeCode(String postTypeCode) {
