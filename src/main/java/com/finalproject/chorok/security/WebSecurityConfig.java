@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
-        web.ignoring().antMatchers("/h2-console/**");
+        web.ignoring().antMatchers("/h2-console/**/**");
         web.ignoring().antMatchers("kapi.kakao.com/v2/user/me");
         web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
     }
