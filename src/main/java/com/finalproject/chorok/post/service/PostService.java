@@ -49,7 +49,7 @@ public class PostService {
     private final PlantUtils plantUtils;
 
 
-    //1. 플랜테리어 전체 게시물 조회 - 로그인, 비로그인 상관없을거 같음
+    /*//1. 플랜테리어 전체 게시물 조회 - 로그인, 비로그인 상관없을거 같음
     @Transactional
     public List<PostResponseDto> readPosts(PlantriaFilterRequestDto postSearchRequestDto) {
 
@@ -73,7 +73,7 @@ public class PostService {
             postList = postRepository.findAllByPostTypePostTypeCodeAndPlantPlaceCodeOrderByCreatedAtDesc(postSearchRequestDto.getPostTypeCode(),postSearchRequestDto.getPlantPlaceCode());
         }
         return postList;
-    }
+    }*/
 
     // 2. 초록톡 전체 게시물조회 (postTypeCode로 필터링) - 로그인 시
     public List<CommunityResponseDto> readPostsCommunity(User user,String postTypeCode) {
@@ -210,23 +210,26 @@ public class PostService {
 
     // 10. 플랜테리어 통합검색
     @Transactional
-    public PostSearchResponseDto integrateSearchPlantria(String keyword) {
+    public PostSearchResponseDto integrateSearchPlanterior(String keyword) {
         // 플랜테이어 검색 - 갯수
-        int plantriaCount =  postRepository.plantariaSearchCountQuery(keyword);
+        Long planteriorCount =  postRepository.integrateSearchPlanteriorCount(keyword);
         // 플랜테이어 검색(제목,내용)
-        List<Post> plantriaSearchList = postRepository.plantariaSearchQuery(keyword);
+        List<PlantriaSearchResponseDto> planteriorSearchList = postRepository.integrateSearchPlanterior(keyword);
+        // 식물도감 검색 - 갯수
+        Long plantDictionaryCount = postRepository.plantDictionaryListCount(keyword);
         // 식물도감 검색 (이름)
-        List<PlantImg> plantDictionaryList =plantImgRepository.plantSearchToPlantNameQuery(keyword);
+        List<PlantImg> plantDictionaryList =postRepository.plantDictionaryList(keyword);
 
         PostSearchResponseDto postSearchResponseDto = new PostSearchResponseDto(
-                plantriaCount,
-                getPlantriaSearchList(plantriaSearchList),
+                planteriorCount,
+                planteriorSearchList,
+                plantDictionaryCount,
                 getPlantDictionarySearchList(plantDictionaryList)
         );
 
         return postSearchResponseDto;
     }
-    // 10-1. 플랜테이어 검색 결과 DTO
+/*    // 10-1. 플랜테이어 검색 결과 DTO
     public List<PlantriaSearchResponseDto> getPlantriaSearchList(List<Post> plantriaSearchList){
 
         List<PlantriaSearchResponseDto> responseDtoList = new ArrayList<>();
@@ -238,7 +241,7 @@ public class PostService {
         }
 
         return responseDtoList;
-    }
+    }*/
 
     // 10-2. 식물도감 검색 결과 DTO
     public List<PlantDictionaryResponseDto> getPlantDictionarySearchList( List<PlantImg> plantDictionaryList){
@@ -254,12 +257,14 @@ public class PostService {
         }
         return responseDtoList;
     }
+
     // 11. 플랜테이어 통합 검색 결과 -  사진
-    public PlantriaPhotoResponseDto photoSearchPlantria(String keyword, String plantPlaceCode) {
-        List<PostResponseDto> responseDtoList = new ArrayList<>();
-        System.out.println(plantPlaceCode);
-        int plantriaCount;
-        if(plantPlaceCode == null || plantPlaceCode.equals("")){
+    public PlantriaPhotoResponseDto photoSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto) {
+        List<PostResponseDto> responseDtoList = postRepository.plantriaReadPosts(postSearchRequestDto);
+        int planteriorCount  = Math.toIntExact(postRepository.integrateSearchPlanteriorCount(postSearchRequestDto.getKeyword()));
+
+
+/*        if(plantPlaceCode == null || plantPlaceCode.equals("")){
             // 플랜테이어 검색 - 갯수
             plantriaCount =  postRepository.plantariaSearchCountQuery(keyword);
             // 플랜테이어 검색 - 리스트
@@ -279,16 +284,18 @@ public class PostService {
                 responseDto = new PostResponseDto(post);
                 responseDtoList.add(responseDto);
             }
-        }
-        return new PlantriaPhotoResponseDto(plantriaCount,responseDtoList);
+        }*/
+        return new PlantriaPhotoResponseDto(planteriorCount,responseDtoList);
     }
 
+    // 식물 도감 검색
     public PlantariaDictionaryResponseDto dictionarySearchPlantria(String keyword) {
 
         List<PlantDictionaryResponseDto> responseDtoList = new ArrayList<>();
         // 식물도감검색
-        List<PlantImg> plantDictionaryList =plantImgRepository.plantSearchToPlantNameQuery(keyword);
+        List<PlantImg> plantDictionaryList = plantImgRepository.plantSearchToPlantNameQuery(keyword);
         PlantDictionaryResponseDto responseDto;
+
         for(PlantImg plantImg : plantDictionaryList){
             responseDto= new  PlantDictionaryResponseDto(
                     plantImg.getPlantNo(),

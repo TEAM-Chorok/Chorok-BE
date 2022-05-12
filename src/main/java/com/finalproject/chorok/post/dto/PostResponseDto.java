@@ -2,6 +2,7 @@ package com.finalproject.chorok.post.dto;
 
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.post.model.Post;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,8 +18,7 @@ import lombok.NoArgsConstructor;
  *  --------   --------    ---------------------------
  *
  */
-@Getter
-@NoArgsConstructor
+@Data
 public class PostResponseDto {
     private Long postId;
     private String postTitle;
@@ -26,7 +26,7 @@ public class PostResponseDto {
     private String postContent;
     private String nickname;
     private Long userId;
-    private String profileImgUrl;
+    private String profileImageUrl;
 
 
 
@@ -45,7 +45,19 @@ public class PostResponseDto {
         this.postContent=post.getPostContent();
         this.nickname=post.getUser().getNickname();
         this.userId = post.getUser().getUserId();
-        this.profileImgUrl=post.getUser().getProfileImageUrl();
+        this.profileImageUrl=post.getUser().getProfileImageUrl();
 
+    }
+
+    //Test
+
+    public PostResponseDto(Long postId, String postTitle, String postImgUrl, String postContent, String nickname, Long userId, String profileImgUrl) {
+        this.postId = postId;
+        this.postTitle = postTitle;
+        this.postImgUrl = postImgUrl;
+        this.postContent = postContent;
+        this.nickname = nickname;
+        this.userId = userId;
+        this.profileImageUrl = profileImgUrl;
     }
 }

@@ -1,6 +1,7 @@
 package com.finalproject.chorok.common.utils;
 
 import com.finalproject.chorok.post.controller.CommentController;
+import com.finalproject.chorok.post.controller.PostController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestControllerAdvice(basePackageClasses = CommentController.class)
+@RestControllerAdvice(basePackageClasses = PostController.class)
 public class ApiControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

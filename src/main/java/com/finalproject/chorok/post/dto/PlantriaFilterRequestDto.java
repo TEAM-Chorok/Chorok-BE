@@ -16,4 +16,6 @@ public class PlantriaFilterRequestDto {
     private String postTypeCode;
 
     private String plantPlaceCode;
+
+    private String keyword;
 }

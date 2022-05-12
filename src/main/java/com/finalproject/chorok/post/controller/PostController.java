@@ -3,6 +3,7 @@ package com.finalproject.chorok.post.controller;
 import com.finalproject.chorok.post.dto.PlantriaFilterRequestDto;
 import com.finalproject.chorok.post.dto.PostRequestDto;
 import com.finalproject.chorok.post.dto.PostWriteRequestDto;
+import com.finalproject.chorok.post.repository.PostRepository;
 import com.finalproject.chorok.post.service.PostService;
 import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
@@ -32,6 +33,7 @@ import javax.validation.Valid;
 public class PostController {
     private final PostService postService;
     private final CommUtils commUtils;
+    private final PostRepository postRepository;
 
 
     /*
@@ -40,7 +42,33 @@ public class PostController {
      */
     @GetMapping("/read-posts")
     public ResponseEntity<?> readPosts(@Valid PlantriaFilterRequestDto postSearchRequestDto){
-        return ResponseEntity.status(HttpStatus.OK).body(postService.readPosts(postSearchRequestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(postRepository.plantriaReadPosts(postSearchRequestDto));
+    }
+    /*
+     * 플렌테리어 통합 검색
+     * @Example : /search-post/planterior?keyword=
+     */
+    @GetMapping("/search-post/integrate/planterior")
+    public ResponseEntity<?> integrateSearchPlanterior(@RequestParam(name = "keyword",required = false) String keyword){
+
+        return ResponseEntity.status(HttpStatus.OK).body(postService.integrateSearchPlanterior(keyword));
+    }
+    /*
+     * 플렌테리어 통합 검색 - 사진
+     */
+    @GetMapping("/search-post/photo/planterior")
+    public ResponseEntity<?> photoSearchPlanterior(@Valid PlantriaFilterRequestDto postSearchRequestDto
+    ) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(postService.photoSearchPlanterior(postSearchRequestDto));
+    }
+    /*
+     * 플렌테리어 통합 검색 - 식물도감
+     */
+    @GetMapping("/search-post/dictionary/plantria")
+    public ResponseEntity<?> dictionarySearchPlanterior(@RequestParam(name = "keyword",required = false) String keyword) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(postService.dictionarySearchPlantria(keyword));
     }
 
     /*
@@ -74,33 +102,7 @@ public class PostController {
     }
 
 
-    /*
-     * 플렌테리어 통합 검색
-     * @Example : /search-post/plantria?keyword=
-     */
-    @GetMapping("/search-post/integrate/plantria")
-    public ResponseEntity<?> integrateSearchPlantria(@RequestParam(name = "keyword",required = false) String keyword){
 
-        return ResponseEntity.status(HttpStatus.OK).body(postService.integrateSearchPlantria(keyword));
-    }
-    /*
-     * 플렌테리어 통합 검색 - 사진
-     */
-    @GetMapping("/search-post/photo/plantria")
-    public ResponseEntity<?> photoSearchPlantria(@RequestParam(name = "keyword",required = false) String keyword,
-                                                 @RequestParam(name = "plantPlaceCode",required = false) String plantPlaceCode
-    ) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(postService.photoSearchPlantria(keyword,plantPlaceCode));
-    }
-    /*
-     * 플렌테리어 통합 검색 - 식물도감
-     */
-    @GetMapping("/search-post/dictionary/plantria")
-    public ResponseEntity<?> dictionarySearchPlantria(@RequestParam(name = "keyword",required = false) String keyword) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(postService.dictionarySearchPlantria(keyword));
-    }
 
     // 게시글 작성
     @PostMapping("/write-post")
