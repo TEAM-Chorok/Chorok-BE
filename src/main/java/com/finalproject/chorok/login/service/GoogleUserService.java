@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.finalproject.chorok.login.dto.GoogleUserInfoDto;
 import com.finalproject.chorok.login.dto.GoogleUserResponseDto;
+import com.finalproject.chorok.login.model.Labeling;
 import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.login.repository.LabelingRepository;
 import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.security.GoogleOAuthRequest;
 import com.finalproject.chorok.security.GoogleOAuthResponse;
@@ -36,11 +38,13 @@ public class GoogleUserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final LabelingRepository labelingRepository;
 
     @Autowired
-    public GoogleUserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public GoogleUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.labelingRepository = labelingRepository;
     }
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -171,7 +175,10 @@ public class GoogleUserService {
                 String email = googleUserInfoDto.getEmail();
                 String profileImage = googleUserInfoDto.getProfileImage();
 
-                googleUser = new User(email, encodedPassword, nickname, null, googleUserId, profileImage); }
+                googleUser = new User(email, encodedPassword, nickname, null, googleUserId, profileImage);
+                Labeling defaultLabeling = new Labeling(googleUser);
+                labelingRepository.save(defaultLabeling);
+            }
             userRepository.save(googleUser); }
         return googleUser; }
 

@@ -160,7 +160,6 @@ public class UserController {
     public List<LabelingResponseDto> getLabelingResults(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         System.out.println("컨트롤러 들어오나");
         return userService.getLabelingResults(userDetails);
-
     }
 
 }
