@@ -45,10 +45,16 @@ public class MyPlantController {
             @RequestParam(value = "myPlantPlaceCode") String myPlantPlaceCode,
             @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
             @RequestParam("myPlantName") String myPlantName,
-            @RequestParam(value = "startDay", required = false) String startDay,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
-        String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
+        System.out.println(myPlantPlaceCode);
+        System.out.println(plantNo);
+        System.out.println(myPlantName);
+        System.out.println(multipartFile);
+        String myPlantImgUrl = "";
+        if (multipartFile!=null) {
+             myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
+        }
 
         MyPlantRequestDto myPlantRequestDto = new MyPlantRequestDto(plantNo, myPlantPlaceCode, myPlantImgUrl, myPlantName);
         String plantPlace = plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace();
@@ -62,13 +68,13 @@ public class MyPlantController {
     public ResponseEntity<?> updateMyPlant(@PathVariable Long myPlantNo,
                                            @RequestParam("plantNo") String plantNo,
                                            @RequestParam("myPlantName") String myPlantName,
-                                           @RequestParam("myPlantPlace") String myPlantPlace,
+                                           @RequestParam("myPlantPlaceCode") String myPlantPlaceCode,
                                            @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
                                            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
 
         String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
-        MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(plantNo, myPlantName, myPlantPlace, myPlantImgUrl);
+        MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(plantNo, myPlantName, myPlantPlaceCode, myPlantImgUrl);
         myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
         return ResponseEntity.status(HttpStatus.OK).body(myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails));
     }
