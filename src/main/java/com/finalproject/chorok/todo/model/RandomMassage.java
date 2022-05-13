@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Table(name = "random")
 public class RandomMassage {
     @Id
-    @Column(name = "message_no",unique = true,nullable = false)
+    @Column
     private int massageNo;
     @Column
     private String massage;

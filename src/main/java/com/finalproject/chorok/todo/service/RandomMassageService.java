@@ -14,7 +14,7 @@ public class RandomMassageService {
 //랜덤메세지 출력
     public String getRandomMassege() {
         Random random = new Random();
-        RandomMassage randomMassage = randomMassageRepository.findByMassageNo(random.nextInt(16));
+        RandomMassage randomMassage = randomMassageRepository.findByMassageNo(random.nextInt(31));
         return randomMassage.getMassage();
 
     }
