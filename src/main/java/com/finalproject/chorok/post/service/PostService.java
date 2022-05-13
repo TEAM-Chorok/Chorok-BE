@@ -77,44 +77,45 @@ public class PostService {
 
     // 2. 초록톡 전체 게시물조회 (postTypeCode로 필터링) - 로그인 시
     public List<CommunityResponseDto> readPostsCommunity(User user,String postTypeCode) {
-        List<CommunityResponseDto> communityResponseDtoList = new ArrayList<>();
 
-        for(Post communityPost : readPostsCommunityQuery(postTypeCode)){
-            CommunityResponseDto communityResponseDto = new CommunityResponseDto(
-                    communityPost,
-                    commUtils.LikePostChk(communityPost.getPostId(),user),
-                    commUtils.BookMarkPostChk(communityPost.getPostId(),user)
-            );
-            communityResponseDtoList.add(communityResponseDto);
-        }
+        List<CommunityResponseDto> communityResponseDtoList = postRepository.chorokTalkList(user.getUserId(),postTypeCode);
+
+//        for(Post communityPost : readPostsCommunityQuery(postTypeCode)){
+//            CommunityResponseDto communityResponseDto = new CommunityResponseDto(
+//                    communityPost,
+//                    commUtils.LikePostChk(communityPost.getPostId(),user),
+//                    commUtils.BookMarkPostChk(communityPost.getPostId(),user)
+//            );
+//            communityResponseDtoList.add(communityResponseDto);
+//        }
         return communityResponseDtoList;
     }
 
 
     // 3. 초록톡 전체 게시물조회 (postTypeCode로 필터링) - 비로그인 시
     public List<CommunityResponseDto> nonLoginReadPostsCommunity(String postTypeCode) {
-        List<CommunityResponseDto> communityResponseDtoList = new ArrayList<>();
+        List<CommunityResponseDto> communityResponseDtoList = postRepository.non_login_chorokTalkList(postTypeCode);
 
-        for(Post communityPost : readPostsCommunityQuery(postTypeCode)){
-            CommunityResponseDto communityResponseDto = new CommunityResponseDto(
-                    communityPost
-            );
-            communityResponseDtoList.add(communityResponseDto);
-        }
+//        for(Post communityPost : readPostsCommunityQuery(postTypeCode)){
+//            CommunityResponseDto communityResponseDto = new CommunityResponseDto(
+////                    communityPost
+//            );
+//            communityResponseDtoList.add(communityResponseDto);
+//        }
         return communityResponseDtoList;
     }
 
-    // 2-2,3-2. 초록톡 전체 게시물 조회 - 쿼리
-    public List<Post> readPostsCommunityQuery(String postTypeCode){
-
-        List<Post> communityList = new ArrayList<>();
-        if(postTypeCode == null || postTypeCode.equals("")){
-            communityList =postRepository.findByPostTypePostTypeCodeInOrderByCreatedAt(commUtils.getAllCommunityCode());
-        }else{
-            communityList =postRepository.findByPostTypePostTypeCodeInOrderByCreatedAt(commUtils.getCommunityCode(postTypeCode));
-        }
-        return communityList;
-    }
+//    // 2-2,3-2. 초록톡 전체 게시물 조회 - 쿼리
+//    public List<Post> readPostsCommunityQuery(String postTypeCode){
+//
+//        List<Post> communityList = new ArrayList<>();
+//        if(postTypeCode == null || postTypeCode.equals("")){
+//            communityList =postRepository.findByPostTypePostTypeCodeInOrderByCreatedAt(commUtils.getAllCommunityCode());
+//        }else{
+//            communityList =postRepository.findByPostTypePostTypeCodeInOrderByCreatedAt(commUtils.getCommunityCode(postTypeCode));
+//        }
+//        return communityList;
+//    }
 
 
     // 4. 게시글 상세조회
@@ -178,47 +179,47 @@ public class PostService {
 
     // 8. 게시글 좋아요
     @Transactional
-    public Boolean likePost(Long postId,User user) {
+    public HashMap<String, String> likePost(Long postId, User user) {
 
         if(commUtils.getLikePost(postId,user)!=null){
             // 좋아요 삭제
             postLikeRepository.deleteByUser_UserIdAndPost_PostId(user.getUserId(),postId);
-            return false;
+            return commUtils.toggleResponseHashMap(false);
         }else{
             // 좋아요 추가
             postLikeRepository.save(new PostLike(commUtils.getPost(postId),user));
-            return true;
+            return commUtils.toggleResponseHashMap(true);
         }
 
     }
     // 9. 게시글 북마크
     @Transactional
-    public Boolean bookMarkPost(Long postId, User user) {
+    public HashMap<String, String> bookMarkPost(Long postId, User user) {
 
         if(commUtils.getBookMarkPost(postId,user)!=null){
             // 북마크 삭제
             postBookMarkRepository.deleteByUserBookMarkQuery(user.getUserId(),postId);
-            return false;
+            return commUtils.toggleResponseHashMap(false);
 
         }else{
             // 북마크 추가
             postBookMarkRepository.save(new PostBookMark(commUtils.getPost(postId),user));
-            return true;
+            return commUtils.toggleResponseHashMap(true);
         }
 
     }
 
     // 10. 플랜테리어 통합검색
     @Transactional
-    public PostSearchResponseDto integrateSearchPlanterior(String keyword) {
+    public PostSearchResponseDto integrateSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto) {
         // 플랜테이어 검색 - 갯수
-        Long planteriorCount =  postRepository.integrateSearchPlanteriorCount(keyword);
+        Long planteriorCount =  postRepository.integrateSearchPlanteriorCount(postSearchRequestDto);
         // 플랜테이어 검색(제목,내용)
-        List<PlantriaSearchResponseDto> planteriorSearchList = postRepository.integrateSearchPlanterior(keyword);
+        List<PlantriaSearchResponseDto> planteriorSearchList = postRepository.integrateSearchPlanterior(postSearchRequestDto);
         // 식물도감 검색 - 갯수
-        Long plantDictionaryCount = postRepository.plantDictionaryListCount(keyword);
+        Long plantDictionaryCount = postRepository.plantDictionaryListCount(postSearchRequestDto);
         // 식물도감 검색 (이름)
-        List<PlantImg> plantDictionaryList =postRepository.plantDictionaryList(keyword);
+        List<PlantImg> plantDictionaryList =postRepository.integratePlantDictionaryList(postSearchRequestDto);
 
         PostSearchResponseDto postSearchResponseDto = new PostSearchResponseDto(
                 planteriorCount,
@@ -261,7 +262,7 @@ public class PostService {
     // 11. 플랜테이어 통합 검색 결과 -  사진
     public PlantriaPhotoResponseDto photoSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto) {
         List<PostResponseDto> responseDtoList = postRepository.plantriaReadPosts(postSearchRequestDto);
-        int planteriorCount  = Math.toIntExact(postRepository.integrateSearchPlanteriorCount(postSearchRequestDto.getKeyword()));
+        int planteriorCount  = Math.toIntExact(postRepository.integrateSearchPlanteriorCount(postSearchRequestDto));
 
 
 /*        if(plantPlaceCode == null || plantPlaceCode.equals("")){
@@ -289,20 +290,20 @@ public class PostService {
     }
 
     // 식물 도감 검색
-    public PlantariaDictionaryResponseDto dictionarySearchPlantria(String keyword) {
+    public PlantariaDictionaryResponseDto dictionarySearchPlantria(DictionaryFilterDto dictionaryFilterDto) {
 
         List<PlantDictionaryResponseDto> responseDtoList = new ArrayList<>();
         // 식물도감검색
-        List<PlantImg> plantDictionaryList = plantImgRepository.plantSearchToPlantNameQuery(keyword);
+        List<PlantDictionaryResponseDto> plantDictionaryList = postRepository.plantDictionaryList(dictionaryFilterDto);
         PlantDictionaryResponseDto responseDto;
 
-        for(PlantImg plantImg : plantDictionaryList){
-            responseDto= new  PlantDictionaryResponseDto(
-                    plantImg.getPlantNo(),
-                    plantImg.getPlantName(),
-                    plantUtils.getPlantThumbImg(plantImg.getPlantNo()));
-            responseDtoList.add(responseDto);
-        }
+//        for(PlantImg plantImg : plantDictionaryList){
+//            responseDto= new  PlantDictionaryResponseDto(
+//                    plantImg.getPlantNo(),
+//                    plantImg.getPlantName(),
+//                    plantUtils.getPlantThumbImg(plantImg.getPlantNo()));
+//            responseDtoList.add(responseDto);
+//        }
         return new PlantariaDictionaryResponseDto(plantDictionaryList.size(),responseDtoList);
     }
 }
