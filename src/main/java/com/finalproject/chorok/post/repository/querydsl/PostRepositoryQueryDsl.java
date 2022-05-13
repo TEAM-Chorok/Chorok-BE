@@ -1,9 +1,7 @@
 package com.finalproject.chorok.post.repository.querydsl;
 
 import com.finalproject.chorok.plant.model.PlantImg;
-import com.finalproject.chorok.post.dto.PlantriaFilterRequestDto;
-import com.finalproject.chorok.post.dto.PlantriaSearchResponseDto;
-import com.finalproject.chorok.post.dto.PostResponseDto;
+import com.finalproject.chorok.post.dto.*;
 
 import java.util.List;
 
@@ -14,15 +12,20 @@ public interface PostRepositoryQueryDsl {
 
     // [플렌테리어 통합검색]
     // 1. 플랜테리어 통합 검색 - 사진 6개 조회
-    List<PlantriaSearchResponseDto> integrateSearchPlanterior(String keyword);
+    List<PlantriaSearchResponseDto> integrateSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto);
     // 2. 플랜테리어 통합 검색 count
-    Long integrateSearchPlanteriorCount(String keyword);
+    Long integrateSearchPlanteriorCount(PlantriaFilterRequestDto postSearchRequestDto);
     // 3. 플랜테리어 통합 검색 - 식물도감
-    List<PlantImg> plantDictionaryList(String keyword);
+    List<PlantImg>  integratePlantDictionaryList(PlantriaFilterRequestDto postSearchRequestDto);
     // 4. 플랜테리어 통합 검색 - 식물도감 count
-    Long plantDictionaryListCount(String keyword);
+    Long plantDictionaryListCount(PlantriaFilterRequestDto postSearchRequestDto);
     // [플랜테리어 검색- 식물도감]
+    List<PlantDictionaryResponseDto> plantDictionaryList(DictionaryFilterDto dictionaryFilterDto);
 
-    // 초록톡 전체 게시물 조회(postTypeCode 필터링)
+    // [초록톡]
+    // 초록톡 전체 게시물 조회(postTypeCode 필터링)-  로그인
+    List<CommunityResponseDto> chorokTalkList(Long userId, String postTypeCode);
 
+    // 초록톡 전체 게시물 조회(postTypeCode 필터링) - 비로그인
+    List<CommunityResponseDto> non_login_chorokTalkList(String postTypeCode);
 }

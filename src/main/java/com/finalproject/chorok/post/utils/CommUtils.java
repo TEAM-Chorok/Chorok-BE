@@ -76,6 +76,14 @@ public class CommUtils {
         hs.put("msg","성공적으로 완료되었습니다");
         return hs;
     }
+    // 좋아요 북마크 반환값
+    public HashMap<String,String> toggleResponseHashMap(Boolean result){
+        HashMap<String,String> hs = new HashMap<>();
+
+        hs.put("result",String.valueOf(result));
+        hs.put("msg","성공적으로 완료되었습니다");
+        return hs;
+    }
 
     // 게시글 좋아요 값 유무 확인
     public Boolean LikePostChk(Long postId, User user){

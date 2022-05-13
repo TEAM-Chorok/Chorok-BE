@@ -1,5 +1,6 @@
 package com.finalproject.chorok.post.controller;
 
+import com.finalproject.chorok.post.dto.DictionaryFilterDto;
 import com.finalproject.chorok.post.dto.PlantriaFilterRequestDto;
 import com.finalproject.chorok.post.dto.PostRequestDto;
 import com.finalproject.chorok.post.dto.PostWriteRequestDto;
@@ -41,7 +42,7 @@ public class PostController {
      * @Example : read-posts?postTypecode = postType01
      */
     @GetMapping("/read-posts")
-    public ResponseEntity<?> readPosts(@Valid PlantriaFilterRequestDto postSearchRequestDto){
+    public ResponseEntity<?> readPosts(PlantriaFilterRequestDto postSearchRequestDto){
         return ResponseEntity.status(HttpStatus.OK).body(postRepository.plantriaReadPosts(postSearchRequestDto));
     }
     /*
@@ -49,26 +50,24 @@ public class PostController {
      * @Example : /search-post/planterior?keyword=
      */
     @GetMapping("/search-post/integrate/planterior")
-    public ResponseEntity<?> integrateSearchPlanterior(@RequestParam(name = "keyword",required = false) String keyword){
-
-        return ResponseEntity.status(HttpStatus.OK).body(postService.integrateSearchPlanterior(keyword));
+    public ResponseEntity<?> integrateSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto){
+        return ResponseEntity.status(HttpStatus.OK).body(postService.integrateSearchPlanterior(postSearchRequestDto));
     }
     /*
      * 플렌테리어 통합 검색 - 사진
      */
     @GetMapping("/search-post/photo/planterior")
-    public ResponseEntity<?> photoSearchPlanterior(@Valid PlantriaFilterRequestDto postSearchRequestDto
+    public ResponseEntity<?> photoSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto
     ) {
-
         return ResponseEntity.status(HttpStatus.OK).body(postService.photoSearchPlanterior(postSearchRequestDto));
     }
     /*
      * 플렌테리어 통합 검색 - 식물도감
+     * 식물도감 조회
      */
-    @GetMapping("/search-post/dictionary/plantria")
-    public ResponseEntity<?> dictionarySearchPlanterior(@RequestParam(name = "keyword",required = false) String keyword) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(postService.dictionarySearchPlantria(keyword));
+    @GetMapping("/search-post/dictionary/planterior")
+    public ResponseEntity<?> dictionarySearchPlanterior(DictionaryFilterDto dictionaryFilterDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.dictionarySearchPlantria(dictionaryFilterDto));
     }
 
     /*
@@ -78,7 +77,9 @@ public class PostController {
     @GetMapping("/read-posts/community")
     public ResponseEntity<?> readPostsCommunity(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam(name = "postTypeCode",required = false) String postTypeCode) {
+            @RequestParam(name = "postTypeCode",required = false) String postTypeCode,
+            @RequestParam(name="keyword", required = false)  String keyword
+    )  {
 
         return ResponseEntity.status(HttpStatus.OK).body(postService.readPostsCommunity(userDetails.getUser(),postTypeCode));
     }
@@ -127,14 +128,15 @@ public class PostController {
     }
 
     // 게시글 좋아요 기능
-    @PostMapping("like-post/{postId}")
+    @GetMapping("like-post/{postId}")
     public ResponseEntity<?> likePost(@Valid @PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         return ResponseEntity.status(HttpStatus.OK).body(postService.likePost(postId,userDetails.getUser()));
+
     }
 
     // 게시글 북마크 기능
-    @PostMapping("bookmark-post/{postId}")
+    @GetMapping("bookmark-post/{postId}")
     public ResponseEntity<?> bookMarkPost(@Valid @PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         return ResponseEntity.status(HttpStatus.OK).body(postService.bookMarkPost(postId,userDetails.getUser()));

@@ -35,26 +35,27 @@ public class CommunityResponseDto {
 //        this.postContent = communityPost.getPostContent();
 //        this.postType = communityPost.getPostType().getPostType();
 //        this.postImgUrl=communityPost.getPostImgUrl();
-////        this.postLikeCount= communityPost.getPostLike().size();
-////        this.commentCount=communityPost.getCommentList().size();
+//        this.postLikeCount= communityPost.getPostLike().size();
+//        this.commentCount=communityPost.getCommentList().size();
 //        this.postLike = likePostChk;
 //        this.postBookMark = bookMarkPostChk;
 //        this.postRecentTime= CaluateTime.calculateTime(Timestamp.valueOf(communityPost.getCreatedAt()));
 //
 //    }
-//
-//    public CommunityResponseDto(Post communityPost) {
-//        this.postId = communityPost.getPostId();
-//        this.nickname = communityPost.getUser().getNickname();
-//        this.profileImgUrl = communityPost.getUser().getProfileImageUrl();
-//        this.postContent = communityPost.getPostContent();
-//        this.postType = communityPost.getPostType().getPostType();
-//        this.postImgUrl=communityPost.getPostImgUrl();
-////        this.postLikeCount= communityPost.getPostLike().size();
-////        this.commentCount=communityPost.getCommentList().size();
-//        this.postRecentTime= CaluateTime.calculateTime(Timestamp.valueOf(communityPost.getCreatedAt()));
-//    }
+    public CommunityResponseDto(Post communityPost) {
+        this.postId = communityPost.getPostId();
+        this.nickname = communityPost.getUser().getNickname();
+        this.profileImgUrl = communityPost.getUser().getProfileImageUrl();
+        this.postContent = communityPost.getPostContent();
+        this.postType = communityPost.getPostType().getPostType();
+        this.postImgUrl=communityPost.getPostImgUrl();
+//        this.postLikeCount= communityPost.getPostLike().size();
+//        this.commentCount=communityPost.getCommentList().size();
+        this.postRecentTime= CaluateTime.calculateTime(Timestamp.valueOf(communityPost.getCreatedAt()));
+    }
 
+
+    // querydsl -  초록톡 전체 조회 - 로그인
     public CommunityResponseDto(Long postId, String nickname, String profileImgUrl, String postType, String postImgUrl, String postContent,
                                 Long postLikeCount,
                                 Long commentCount,
@@ -80,13 +81,19 @@ public class CommunityResponseDto {
     }
 
 
-    public CommunityResponseDto(Long postId, String nickname, String profileImgUrl, String postType, String postImgUrl, String postContent, LocalDateTime postRecentTime) {
+
+    // querydsl -  초록톡 전체 조회 - 비로그인
+    public CommunityResponseDto(Long postId, String nickname, String profileImgUrl, String postType, String postImgUrl, String postContent, Long postLikeCount, Long commentCount, LocalDateTime postRecentTime) {
         this.postId = postId;
         this.nickname = nickname;
         this.profileImgUrl = profileImgUrl;
         this.postType = postType;
         this.postImgUrl = postImgUrl;
         this.postContent = postContent;
-        this.postRecentTime= CaluateTime.calculateTime(Timestamp.valueOf(postRecentTime));
+        this.postLikeCount = postLikeCount;
+        this.commentCount = commentCount;
+        this.postLike = false;
+        this.postBookMark =false;
+        this.postRecentTime = CaluateTime.calculateTime(Timestamp.valueOf(postRecentTime));
     }
 }
