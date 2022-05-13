@@ -136,7 +136,8 @@ public class PostService {
                     post,
                     commUtils.LikePostChk(postId,user),
                     commUtils.BookMarkPostChk(postId,user),
-                    commentResponseDtos);
+                    commentResponseDtos
+            );
         }
         // 식물 장소
         PlantPlace plantPlace = commUtils.getPlantPlace(post.getPlantPlaceCode());
@@ -147,7 +148,8 @@ public class PostService {
                 plantPlace,
                 commUtils.LikePostChk(postId,user),
                 commUtils.BookMarkPostChk(postId,user),
-                commentResponseDtos);
+                commentResponseDtos
+        );
     }
 
     // 5. 게시글 작성하기
@@ -292,10 +294,10 @@ public class PostService {
     // 식물 도감 검색
     public PlantariaDictionaryResponseDto dictionarySearchPlantria(DictionaryFilterDto dictionaryFilterDto) {
 
-        List<PlantDictionaryResponseDto> responseDtoList = new ArrayList<>();
+        //List<PlantDictionaryResponseDto> responseDtoList = new ArrayList<>();
         // 식물도감검색
         List<PlantDictionaryResponseDto> plantDictionaryList = postRepository.plantDictionaryList(dictionaryFilterDto);
-        PlantDictionaryResponseDto responseDto;
+    //    PlantDictionaryResponseDto responseDto;
 
 //        for(PlantImg plantImg : plantDictionaryList){
 //            responseDto= new  PlantDictionaryResponseDto(
@@ -304,6 +306,6 @@ public class PostService {
 //                    plantUtils.getPlantThumbImg(plantImg.getPlantNo()));
 //            responseDtoList.add(responseDto);
 //        }
-        return new PlantariaDictionaryResponseDto(plantDictionaryList.size(),responseDtoList);
+        return new PlantariaDictionaryResponseDto(plantDictionaryList.size(),plantDictionaryList);
     }
 }
