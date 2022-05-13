@@ -11,11 +11,11 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 public class CalendarTodoResponseDto {
-String workType;
+    String workType;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     LocalDate toDoTime;
 
-    public CalendarTodoResponseDto (String workType, LocalDate toDoTime){
+    public CalendarTodoResponseDto(String workType, LocalDate toDoTime) {
         this.workType = workType;
         this.toDoTime = toDoTime;
     }

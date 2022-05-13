@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlantGrowthShapeRepository extends JpaRepository<PlantGrowthShape,String> {
+    PlantGrowthShape findByPlantGrowthShapeCode(String plantGrowthShapeCode);
 }

@@ -55,7 +55,6 @@ public class MyPlantController {
 
         MyPlantRequestDto myPlantRequestDto = new MyPlantRequestDto(plantNo, myPlantPlaceCode, myPlantImgUrl, myPlantName);
         String plantPlace = plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace();
-        myPlantService.addMyPlant(myPlantRequestDto, plantPlace, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(myPlantService.addMyPlant(myPlantRequestDto, plantPlace, userDetails.getUser()));
     }
@@ -86,6 +85,13 @@ public class MyPlantController {
     @GetMapping("/myplant/all")
     public ResponseEntity<?> myAllPlantDetailResponseDtos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(myPlantService.getAllMyPlantDetail(userDetails));
+    }
+
+    //식물 장소별로 보기
+    @GetMapping("/myplant/place")
+    public ResponseEntity<?> myAllPlantForPlace(@AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.getMyPlantsforPlace(userDetails));
     }
 
     //식물 죽은날 설정하기

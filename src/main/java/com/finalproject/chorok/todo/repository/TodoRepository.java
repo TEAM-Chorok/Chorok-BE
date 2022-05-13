@@ -23,7 +23,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
 
     List<Todo> findAllByUserAndTodoTime(User user, LocalDate toDoTime);
 
-    Todo findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(User user, MyPlant myPlant, boolean status, String workType);
+    Optional<Todo> findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(User user, MyPlant myPlant, boolean status, String workType);
 
     List<Todo> findByTodoTimeAndWorkType(LocalDate toDoTime, String workType);
 
@@ -33,5 +33,8 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
 
     List<Todo> findAllByUserAndMyPlantAndStatusAndTodoTimeBetween(User user, MyPlant myPlant, boolean status, LocalDate start, LocalDate end );
 
-    List<Todo> findAllByUserAndMyPlantAndWorkTypeAndStatusAndTodoTimeBetween(User user, MyPlant myPlant, String workType, boolean b, LocalDate start, LocalDate end);
+
+    Todo findFirstByUserOrderByTodoNoAsc(User user);
+
+    Todo findByUserAndTodoTimeAndWorkTypeAndMyPlant_MyPlantNo(User user, LocalDate todoTime, String workType, Long myPlantNo);
 }

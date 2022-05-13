@@ -1,13 +1,9 @@
 package com.finalproject.chorok.myPlant.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.finalproject.chorok.todo.dto.TodoOnlyResponseDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.util.List;
 
 
 @Setter
