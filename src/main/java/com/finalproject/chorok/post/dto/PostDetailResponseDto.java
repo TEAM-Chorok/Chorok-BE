@@ -42,7 +42,9 @@ public class PostDetailResponseDto {
     private int postLikeCount;
     // 북마크
     private Boolean postBookMark;
+
     // 댓글 - Comment
+    private int commentCount;
     List<CommentResponseDto> commentList;
 
 
@@ -62,6 +64,7 @@ public class PostDetailResponseDto {
         // 내가 게시글에 북마크를 눌렀는지 확인
         this.postBookMark=bookMarkPostChk;
         this.postLikeCount=post.getPostLike().size();
+        this.commentCount = commentResponseDtos.size();
         this.commentList=commentResponseDtos;
 
     }
@@ -81,6 +84,8 @@ public class PostDetailResponseDto {
         // 내가 게시글에 북마크를 눌렀는지 확인
         this.postBookMark=bookMarkPostChk;
         this.postLikeCount=post.getPostLike().size();
+        // 댓글
+        this.commentCount = commentResponseDtos.size();
         this.commentList=commentResponseDtos;
     }
 }
