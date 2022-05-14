@@ -198,7 +198,7 @@ public class KakaoUserService {
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
 //        headers.add("Authorization", "Bearer " + accessToken);
-        headers.add("Authorization", "KakaoAK 107366ef2c59a9da329a3f868930fa27");
+        headers.add("Authorization", "KakaoAK 107366ef2c59a9da329a3f868930fa27"); //현정님 어드민키 넣어야함
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
         System.out.println("헤더");
         String kakaoIdString = String.valueOf(kakaoId);
