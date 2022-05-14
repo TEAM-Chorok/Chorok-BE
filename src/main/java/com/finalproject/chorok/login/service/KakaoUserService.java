@@ -11,6 +11,7 @@ import com.finalproject.chorok.login.repository.LabelingRepository;
 import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.security.jwt.JwtTokenUtils;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -190,5 +191,30 @@ public class KakaoUserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return JwtTokenUtils.generateJwtToken(userDetails);
+    }
+
+    public String kakaoLogout(Long kakaoId) throws JsonProcessingException {
+        System.out.println("카카오 서비스단으로 이동하나");
+        // HTTP Header 생성
+        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Authorization", "KakaoAK 107366ef2c59a9da329a3f868930fa27");
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        System.out.println("헤더");
+        String kakaoIdString = String.valueOf(kakaoId);
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("target_id_type", "user_id");
+        map.add("target_id", kakaoIdString);
+        System.out.println("파라미터");
+        // HTTP 요청 보내기
+        HttpEntity<MultiValueMap<String, String>> kakaoLogoutRequest = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+        RestTemplate rt = new RestTemplate();
+        ResponseEntity<String> response = rt.exchange("https://kapi.kakao.com/v1/user/logout", HttpMethod.POST, kakaoLogoutRequest, String.class);
+        System.out.println("요청 잘 들어갔나");
+        System.out.println(response);
+
+        return response.getBody();
+
+
     }
 }

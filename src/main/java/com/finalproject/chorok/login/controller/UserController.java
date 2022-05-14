@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.common.utils.StatusMessage;
 import com.finalproject.chorok.login.dto.*;
+import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.login.service.GoogleUserService;
 import com.finalproject.chorok.login.service.KakaoUserService;
 import com.finalproject.chorok.login.service.UserService;
@@ -162,4 +163,16 @@ public class UserController {
         return userService.getLabelingResults(userDetails);
     }
 
+    // 모든 로그인 로그아웃
+    @GetMapping("/auth/AllLogOut/")
+    public String allLogOut(@AuthenticationPrincipal UserDetailsImpl userDetails) throws JsonProcessingException {
+        System.out.println("올아웃 컨트롤러 들어오나");
+        User user = userDetails.getUser();
+        if(user.getKakaoId()!=null){
+            System.out.println("카카오아이디 이프문 통과하나");
+            return kakaoUserService.kakaoLogout(user.getKakaoId());
+        }
+        else {}
+        return "일반 로그아웃";
+    }
 }
