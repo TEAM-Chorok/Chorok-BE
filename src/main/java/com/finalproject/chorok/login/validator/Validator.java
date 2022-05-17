@@ -58,30 +58,9 @@ public class Validator {
         }
     }
 
-
-
-
+    public void passwordCheck(String password) throws IllegalArgumentException {
+        if(!Pattern.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$", password)){
+            throw new IllegalArgumentException("비밀번호에 대소문자, 숫자를 포함하여 8~20자로 입력해주세요.");
+        }
+    }
 }
-
-//
-//    // 회원가입 시, 유효성 체크
-//    public Map<String, String> validateHandling(Errors errors) {
-//        Map<String, String> validatorResult = new HashMap<>();
-//
-//        for (FieldError error : errors.getFieldErrors()) {
-//            String validKeyName = "message";
-//            validatorResult.put(validKeyName, error.getDefaultMessage());
-//        }
-//        return validatorResult;
-//    }
-//
-//    public Page<PostListDto> overPages(List<PostListDto> postList, int start, int end, Pageable pageable, int page) {
-//        Page<PostListDto> pages = new PageImpl<>(postList.subList(start, end), pageable, postList.size());
-//        if(page > pages.getTotalPages()){
-//            throw new IllegalArgumentException("요청할 수 없는 페이지 입니다.");
-//        }
-//        return pages;
-//    }
-
-
-//}

@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -54,6 +51,13 @@ public class MypageController {
     @GetMapping("/mypage/myplant")
     public ResponseEntity<List<MyAllPlantDetailResponseDto>> myAllPlantDetailResponseDtos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.getAllMyPlantDetail(userDetails));
+    }
+
+    //비밀번호 수정하기
+    @PatchMapping("/user/update/password")
+    public ResponseEntity<HashMap<String, String>> updatePassword(@RequestParam(name = "password") String password, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updatePassword(password, userDetails));
     }
 }
 

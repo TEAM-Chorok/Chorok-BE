@@ -6,11 +6,13 @@ import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.common.utils.StatusMessage;
 import com.finalproject.chorok.login.dto.*;
 import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.login.service.GoogleUserService;
 import com.finalproject.chorok.login.service.KakaoUserService;
 import com.finalproject.chorok.login.service.UserService;
 import com.finalproject.chorok.plant.service.PlantFilterService;
 import com.finalproject.chorok.login.dto.LabelingResponseDto;
+import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import javax.activity.InvalidActivityException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -35,14 +38,19 @@ public class UserController {
     private final GoogleUserService googleUserService;
     private final S3Uploader s3Uploader;
     private final PlantFilterService plantFilterService;
+    private final UserRepository userRepository;
+    private final CommUtils commUtils;
+
 
     @Autowired
-    public UserController(UserService userService, KakaoUserService kakaoUserService, GoogleUserService googleUserService, S3Uploader s3Uploader, PlantFilterService plantFilterService) {
+    public UserController(UserService userService, KakaoUserService kakaoUserService, GoogleUserService googleUserService, S3Uploader s3Uploader, PlantFilterService plantFilterService, UserRepository userRepository, CommUtils commUtils) {
         this.userService = userService;
         this.kakaoUserService  = kakaoUserService;
         this.googleUserService = googleUserService;
         this.s3Uploader = s3Uploader;
         this.plantFilterService = plantFilterService;
+        this.userRepository = userRepository;
+        this.commUtils = commUtils;
     }
 
     //아이디 중복 체크

@@ -82,7 +82,7 @@ public class User {
         this.profileImageUrl = profileImage;
     }
 
-    public void changeTempPassword(String tempPassword) {
+    public void changePassword(String tempPassword) {
         this.password = tempPassword;
         System.out.println("유저 비밀번호 임시비밀번호로 바꾸기");
     }
