@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 
-public interface PlantRepository extends JpaRepository<Plant,String> {
+public interface PlantRepository extends JpaRepository<Plant,Long> {
     Plant findByPlantNo(Long plantNo);
     //레이블링
 

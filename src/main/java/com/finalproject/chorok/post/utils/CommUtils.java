@@ -3,12 +3,15 @@ package com.finalproject.chorok.post.utils;
 import com.finalproject.chorok.common.Image.ImageRepository;
 import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.mypage.model.PlantBookMark;
+import com.finalproject.chorok.mypage.repository.PlantBookMarkRepository;
+import com.finalproject.chorok.plant.model.Plant;
+import com.finalproject.chorok.plant.repository.PlantRepository;
 import com.finalproject.chorok.post.dto.comment.CommentResponseDto;
 import com.finalproject.chorok.post.model.*;
 import com.finalproject.chorok.post.repository.*;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import com.finalproject.chorok.plant.repository.PlantPlaceRepository;
-import com.finalproject.chorok.security.jwt.JwtDecoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -21,6 +24,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class CommUtils {
+    private final PlantRepository plantRepository;
     private final PlantPlaceRepository plantPlaceRepository;
     private final PostTypeRepository postTypeRepository;
     private final PostRepository postRepository;
@@ -28,6 +32,7 @@ public class CommUtils {
     private final CommentRepository commentRepository;
     private final PostBookMarkRepository postBookMarkRepository;
     private final ImageRepository imageRepository;
+    private final PlantBookMarkRepository plantBookMarkRepository;
     private final S3Uploader s3Uploader;
 
 
@@ -44,7 +49,12 @@ public class CommUtils {
                 () -> new NullPointerException("해당 게시글 타입이 존재하지 않습니다.")
         );
     }
-
+    // 식물번호로 식물 조회
+    public Plant getPlant(Long plantNo){
+        return plantRepository.findById(plantNo).orElseThrow(
+                () -> new NullPointerException("해당 식물 아이디가 존재하지 않습니다.")
+        );
+    }
     // 게시글 번호로 게시글 조회
     public Post getPost(Long postId){
         return postRepository.findById(postId).orElseThrow(
@@ -73,6 +83,14 @@ public class CommUtils {
         return postBookMarkRepository.findUserBookMarkQuery(user.getUserId(),postId);
 
     }
+
+    // 식물 북마크 조회
+    public PlantBookMark getPlantBookMark(User user, Long plantNo){
+
+        return plantBookMarkRepository.findUserPlantBookMarkQuery(user.getUserId(),plantNo);
+
+    }
+
     // 반환값 없는 API 반환값 설정
     public HashMap<String,String> responseHashMap(HttpStatus httpCode){
         HashMap<String,String> hs = new HashMap<>();
