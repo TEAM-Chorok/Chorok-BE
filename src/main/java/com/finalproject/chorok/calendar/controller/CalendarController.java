@@ -2,18 +2,14 @@ package com.finalproject.chorok.calendar.controller;
 
 import com.finalproject.chorok.calendar.Dto.CalendarResponseDto;
 import com.finalproject.chorok.calendar.service.CalendarService;
-import com.finalproject.chorok.login.model.User;
-import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
 import com.finalproject.chorok.security.UserDetailsImpl;
-import com.finalproject.chorok.todo.repository.TodoRepository;
+import com.finalproject.chorok.todo.dto.SprayingDayResponstDto;
+import com.finalproject.chorok.todo.model.Todo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
@@ -22,8 +18,7 @@ import java.time.LocalDate;
 public class CalendarController {
 
     private final CalendarService calendarService;
-    private final TodoRepository todoRepository;
-    private final MyPlantRepository myPlantRepository;
+
 
 
     @GetMapping("/calendar/{yearmonth}/{myPlantNo}")
@@ -38,17 +33,36 @@ public class CalendarController {
     }
 
     @PatchMapping("/calendar/{yearmonthday}/{myPlantNo}/{workType}")
-    public ResponseEntity<?> checkTodoOkInCalendar(@PathVariable String yearmonthday, @PathVariable String workType, @PathVariable Long myPlantNo, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<Todo> checkTodoOkInCalendar(@PathVariable String yearmonthday, @PathVariable String workType, @PathVariable Long myPlantNo, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         String year = yearmonthday.substring(0, 4);
-        System.out.println("year = " + year);
-        String month = yearmonthday.substring(4,6);
-        System.out.println("month = " + month);
+        String month = yearmonthday.substring(4, 6);
         String day = yearmonthday.substring(6);
-        System.out.println("day = " + day);
+        String date = year + "-" + month + "-" + day;
+        LocalDate thatDay = LocalDate.parse(date);
+
+        return ResponseEntity.status(HttpStatus.OK).body(calendarService.checkTodoInCalendar(thatDay, workType, myPlantNo, userDetails));
+
+    }
+    @PostMapping("/calendar/spraying/{yearmonthday}/{myPlantNo}")
+    public ResponseEntity<SprayingDayResponstDto> checkSpraying(@PathVariable String yearmonthday, @PathVariable Long myPlantNo, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        String year = yearmonthday.substring(0, 4);
+        String month = yearmonthday.substring(4, 6);
+        String day = yearmonthday.substring(6);
+        String date = year + "-" + month + "-" + day;
+        LocalDate thatDay = LocalDate.parse(date);
+        return ResponseEntity.status(HttpStatus.OK).body(calendarService.checkSprayingInCalendar(myPlantNo, thatDay,userDetails));
+    }
+
+    @DeleteMapping("/calendar/spraying/{yearmonthday}/{myPlantNo}")
+    public ResponseEntity<?> deleteBloomingDay(@PathVariable Long myPlantNo,@PathVariable String yearmonthday, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        String year = yearmonthday.substring(0, 4);
+        String month = yearmonthday.substring(4,6);
+        String day = yearmonthday.substring(6);
         String date = year + "-"+month+"-"+day;
         LocalDate thatDay = LocalDate.parse(date);
 
-        return ResponseEntity.status(HttpStatus.OK).body(calendarService.checkTodoInCalendar(thatDay,workType,myPlantNo, userDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(calendarService.delSprayingDay(myPlantNo,thatDay,userDetails));
 
     }
+
 }

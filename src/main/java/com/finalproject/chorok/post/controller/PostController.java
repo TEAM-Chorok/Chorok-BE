@@ -43,6 +43,7 @@ public class PostController {
      */
     @GetMapping("/read-posts")
     public ResponseEntity<?> readPosts(PlantriaFilterRequestDto postSearchRequestDto){
+
         return ResponseEntity.status(HttpStatus.OK).body(postRepository.plantriaReadPosts(postSearchRequestDto));
     }
     /*

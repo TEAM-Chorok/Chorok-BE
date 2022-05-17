@@ -13,7 +13,7 @@ public class RandomMassageController {
     private final RandomMassageService randomMassageService;
 
     @GetMapping("/random")
-    public ResponseEntity<?> getRandomMassage(){
+    public ResponseEntity<String> getRandomMassage(){
         return ResponseEntity.status(HttpStatus.OK).body(randomMassageService.getRandomMassege());
 
     }

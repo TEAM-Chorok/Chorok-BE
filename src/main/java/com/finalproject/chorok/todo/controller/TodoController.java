@@ -25,14 +25,16 @@ public class TodoController {
     private final TodoRepository todoRepository;
 //투두 만들기
     @PostMapping("/todo/{myPlantNo}")
-    public Todo createTodo (@PathVariable Long myPlantNo, @RequestBody TodoRequestDto todoRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-       return todoService.createTodo(myPlantNo,todoRequestDto, userDetails);
+    public ResponseEntity<Todo> createTodo (@PathVariable Long myPlantNo, @RequestBody TodoRequestDto todoRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+       return ResponseEntity.status(HttpStatus.OK)
+               .body(todoService.createTodo(myPlantNo,todoRequestDto, userDetails));
     }
 
     //todo보기->나중에 캘린더에서도 써먹을 수 있을까?
     @GetMapping("/todo")
-    public List<MyPlantResponseDto> mytodo (@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return myPlantService.getMyPlantForTodo(userDetails);
+    public ResponseEntity<List<MyPlantResponseDto>> mytodo (@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(myPlantService.getMyPlantForTodo(userDetails));
     }
 //투두완료체크
     @PatchMapping("/todo/ok/{todoNo}")
