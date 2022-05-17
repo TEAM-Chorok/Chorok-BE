@@ -46,7 +46,7 @@ public class UserController {
     }
 
     //아이디 중복 체크
-    @PostMapping("/auth/usernameCheck")
+    @PostMapping("/auth/emailCheck")
     private ResponseEntity<StatusMessage> usernameDupliChk(@RequestBody DuplicateChkDto duplicateChkDto) {
         StatusMessage statusMessage = new StatusMessage();
         String msg = userService.usernameDuplichk(duplicateChkDto);
@@ -164,7 +164,7 @@ public class UserController {
     }
 
     // 모든 로그인 로그아웃
-    @GetMapping("/auth/AllLogOut/")
+    @GetMapping("/user/allLogOut")
     public String allLogOut(@AuthenticationPrincipal UserDetailsImpl userDetails) throws JsonProcessingException {
         System.out.println("올아웃 컨트롤러 들어오나");
         User user = userDetails.getUser();

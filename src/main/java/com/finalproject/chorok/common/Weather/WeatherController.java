@@ -45,7 +45,6 @@ public class WeatherController {
             while ((line = rd.readLine()) != null) {
                 result.append(line);
             }
-
             rd.close();
             System.out.println(result);
 
@@ -53,6 +52,7 @@ public class WeatherController {
             Map<String, Object> mainMap = jsonToMap(respMap.get("main").toString());
             Map<String, Object> windMap = jsonToMap(respMap.get("wind").toString());
             apiResult = result.toString();
+            apiResult = apiResult.replaceFirst(".$",",\"weather_KR\":\"맑음\"}");
 
 
         } catch (IOException e) {
