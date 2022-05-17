@@ -45,7 +45,6 @@ public class WeatherController {
             while ((line = rd.readLine()) != null) {
                 result.append(line);
             }
-
             rd.close();
             System.out.println(result);
 

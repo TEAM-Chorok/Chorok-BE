@@ -46,6 +46,7 @@ public class PostController {
     @GetMapping("/read-posts")
     public ResponseEntity<List<PostResponseDto>> readPosts(@Valid PlantriaFilterRequestDto postSearchRequestDto){
         return ResponseEntity.status(HttpStatus.OK).body(postRepository.planteriorReadPosts(postSearchRequestDto));
+  
     }
 
     /*

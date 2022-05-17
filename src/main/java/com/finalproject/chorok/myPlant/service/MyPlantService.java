@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -140,9 +141,7 @@ public class MyPlantService {
         );
         todoOnlyResponseDtos.add(todoOnlyResponseDto);
     }
-        for(
-    MyPlant myPlant :myPlants)
-
+        for(MyPlant myPlant :myPlants)
     {
         MyPlantResponseDto myPlantResponseDto = new MyPlantResponseDto(
                 myPlant.getMyPlantNo(),
@@ -210,7 +209,6 @@ public class MyPlantService {
                     myPlants.get(j).getMyPlantName()
             );
             myPlantForPlaceListResponseDtos.add(myPlantForPlaceListResponseDto);
-
         }
         MyPlantForPlaceResponseDto myPlantForPlaceResponseDto = new MyPlantForPlaceResponseDto(
                 myPlantForPlaceListResponseDtos.stream().filter(h -> h.getMyPlantPlace().equals(placeList.get(0))).collect(Collectors.toList()),
