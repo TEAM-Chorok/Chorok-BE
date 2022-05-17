@@ -1,8 +1,12 @@
 package com.finalproject.chorok.mypage.service;
 
 import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.myPlant.dto.MyAllPlantDetailResponseDto;
+import com.finalproject.chorok.myPlant.model.MyPlant;
+import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
 import com.finalproject.chorok.mypage.model.PlantBookMark;
 import com.finalproject.chorok.mypage.repository.PlantBookMarkRepository;
+import com.finalproject.chorok.plant.repository.PlantRepository;
 import com.finalproject.chorok.post.model.PostBookMark;
 import com.finalproject.chorok.post.repository.PostRepository;
 import com.finalproject.chorok.post.utils.CommUtils;
@@ -10,7 +14,9 @@ import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +24,8 @@ public class MypageService {
     private final PlantBookMarkRepository plantBookMarkRepository;
     private final CommUtils commUtils;
     private final PostRepository postRepository;
+    private final MyPlantRepository myPlantRepository;
+    private final PlantRepository plantRepository;
 
     // 식물 북마크
     public HashMap<String, String> plantBookMark(Long plantNo, User user) {
@@ -38,6 +46,25 @@ public class MypageService {
     }
 
     public void myPhoto(UserDetailsImpl userDetails) {
+    }
+
+    public List<MyAllPlantDetailResponseDto> getAllMyPlantDetail(UserDetailsImpl userDetails) {
+        List<MyPlant> myPlants = myPlantRepository.findAllByUser(userDetails.getUser());
+        List<MyAllPlantDetailResponseDto> myAllPlantDetailResponseDtos = new ArrayList<>();
+        for (MyPlant myPlant : myPlants) {
+            MyAllPlantDetailResponseDto myAllPlantDetailResponseDto = new MyAllPlantDetailResponseDto(
+                    myPlant.getMyPlantNo(),
+                    myPlant.getMyPlantImgUrl(),
+                    myPlant.getMyPlantPlace(),
+                    myPlant.getMyPlantName(),
+                    plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName(),
+                    myPlant.getStartDay(),
+                    myPlant.getEndDay()
+            );
+            myAllPlantDetailResponseDtos.add(myAllPlantDetailResponseDto);
+        }
+
+        return myAllPlantDetailResponseDtos;
     }
 
 

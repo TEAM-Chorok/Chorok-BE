@@ -1,5 +1,7 @@
 package com.finalproject.chorok.mypage.controller;
 
+import com.finalproject.chorok.myPlant.dto.MyAllPlantDetailResponseDto;
+import com.finalproject.chorok.myPlant.service.MyPlantService;
 import com.finalproject.chorok.mypage.service.MypageService;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -13,11 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class MypageController {
     private final MypageService mypageService;
+    private final MyPlantService myPlantService;
 
     // 추후에 옮길예정
     @PostMapping("/plantBookMark/{plantNo}")
@@ -45,5 +49,11 @@ public class MypageController {
 
 
     // 내가 북마크한 식물들
+
+    //내 식물 보기
+    @GetMapping("/mypage/myplant")
+    public ResponseEntity<List<MyAllPlantDetailResponseDto>> myAllPlantDetailResponseDtos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.getAllMyPlantDetail(userDetails));
+    }
 }
 

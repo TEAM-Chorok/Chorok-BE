@@ -158,24 +158,7 @@ public class MyPlantService {
         return myPlantResponseDtos;
 }
 
-    public List<MyAllPlantDetailResponseDto> getAllMyPlantDetail(UserDetailsImpl userDetails) {
-        List<MyPlant> myPlants = myPlantRepository.findAllByUser(userDetails.getUser());
-        List<MyAllPlantDetailResponseDto> myAllPlantDetailResponseDtos = new ArrayList<>();
-        for (MyPlant myPlant : myPlants) {
-            MyAllPlantDetailResponseDto myAllPlantDetailResponseDto = new MyAllPlantDetailResponseDto(
-                    myPlant.getMyPlantNo(),
-                    myPlant.getMyPlantImgUrl(),
-                    myPlant.getMyPlantPlace(),
-                    myPlant.getMyPlantName(),
-                    plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName(),
-                    myPlant.getStartDay(),
-                    myPlant.getEndDay()
-            );
-            myAllPlantDetailResponseDtos.add(myAllPlantDetailResponseDto);
-        }
 
-        return myAllPlantDetailResponseDtos;
-    }
 
     //나의 식물 수정하기
     public MyPlant updateMyPlant(MyPlantUpdateRequestDto myPlantUpdateRequestDto, Long myPlantNo, UserDetailsImpl userDetails) {

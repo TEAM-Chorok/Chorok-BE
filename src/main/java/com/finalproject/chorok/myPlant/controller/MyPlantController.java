@@ -74,11 +74,6 @@ public class MyPlantController {
                 .body(myPlantService.getAllMyPlant(userDetails));
     }
 
-    //내 식물 디테일까지 전체보기
-    @GetMapping("/myplant/all")
-    public ResponseEntity<List<MyAllPlantDetailResponseDto>> myAllPlantDetailResponseDtos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.getAllMyPlantDetail(userDetails));
-    }
 
     //식물 장소별로 보기
     @GetMapping("/myplant/place")
