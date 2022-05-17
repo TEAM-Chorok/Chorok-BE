@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.common.utils.StatusMessage;
 import com.finalproject.chorok.login.dto.*;
+import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.login.service.GoogleUserService;
 import com.finalproject.chorok.login.service.KakaoUserService;
 import com.finalproject.chorok.login.service.UserService;
@@ -45,7 +46,7 @@ public class UserController {
     }
 
     //아이디 중복 체크
-    @PostMapping("/auth/usernameCheck")
+    @PostMapping("/auth/emailCheck")
     private ResponseEntity<StatusMessage> usernameDupliChk(@RequestBody DuplicateChkDto duplicateChkDto) {
         StatusMessage statusMessage = new StatusMessage();
         String msg = userService.usernameDuplichk(duplicateChkDto);
@@ -77,17 +78,16 @@ public class UserController {
     }
 
     // 회원 가입 요청 처리
-    @PostMapping("auth/signUp")
+    @PostMapping("/auth/signUp")
     public String registerUser(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
-            @RequestParam("nickname") String nickname,
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "password") String password,
+            @RequestParam(value = "nickname") String nickname,
             @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile
             ) throws IOException {
-        System.out.println("실행");
+
         String profileImgUrl = null;
 
-        System.out.println(multipartFile);
         if(!multipartFile.isEmpty()){
         profileImgUrl = s3Uploader.upload(multipartFile, "static");}
         SignupRequestDto signupRequestDto = new SignupRequestDto(username, password, nickname, profileImgUrl);
@@ -162,4 +162,16 @@ public class UserController {
         return userService.getLabelingResults(userDetails);
     }
 
+    // 모든 로그인 로그아웃
+    @GetMapping("/user/allLogOut")
+    public String allLogOut(@AuthenticationPrincipal UserDetailsImpl userDetails) throws JsonProcessingException {
+        System.out.println("올아웃 컨트롤러 들어오나");
+        User user = userDetails.getUser();
+        if(user.getKakaoId()!=null){
+            System.out.println("카카오아이디 이프문 통과하나");
+            return kakaoUserService.kakaoLogout(user.getKakaoId());
+        }
+        else {}
+        return "일반 로그아웃";
+    }
 }

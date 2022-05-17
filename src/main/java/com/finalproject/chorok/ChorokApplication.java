@@ -7,6 +7,8 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import java.time.LocalDateTime;
+
 @ServletComponentScan("lecturer")
 @EnableJpaAuditing
 @SpringBootApplication
@@ -20,14 +22,8 @@ public class ChorokApplication {
         new SpringApplicationBuilder(ChorokApplication.class)
                 .properties(APPLICATION_LOCATIONS)
                 .run(args);
+        System.out.println("current time : " + LocalDateTime.now());
 
     }
 
 }
-//@ServletComponentScan("lecturer")
-//@SpringBootApplication
-//public class ChorokApplication {
-//    public static void main(String[] args) {
-//        SpringApplication.run(ChorokApplication.class, args);
-//    }
-//}
