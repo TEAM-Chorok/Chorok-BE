@@ -8,7 +8,7 @@ import java.util.List;
 public interface PostRepositoryQueryDsl {
     // 1. 플렌테리어 전체 조회
     // 2. plantPlaceCode를 입력받으면 해당 장소로 필터링함
-    List<PostResponseDto> plantriaReadPosts(PlantriaFilterRequestDto postSearchRequestDto);
+    List<PostResponseDto> planteriorReadPosts(PlantriaFilterRequestDto postSearchRequestDto);
 
     // [플렌테리어 통합검색]
     // 1. 플랜테리어 통합 검색 - 사진 6개 조회
@@ -16,6 +16,7 @@ public interface PostRepositoryQueryDsl {
     // 2. 플랜테리어 통합 검색 count
     Long integrateSearchPlanteriorCount(PlantriaFilterRequestDto postSearchRequestDto);
     // 3. 플랜테리어 통합 검색 - 식물도감
+    List<PlantDictionaryResponseDto> planteriorDictionaryList(PlantriaFilterRequestDto postSearchRequestDto);
     List<PlantImg>  integratePlantDictionaryList(PlantriaFilterRequestDto postSearchRequestDto);
     // 4. 플랜테리어 통합 검색 - 식물도감 count
     Long plantDictionaryListCount(PlantriaFilterRequestDto postSearchRequestDto);

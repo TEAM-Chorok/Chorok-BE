@@ -5,6 +5,7 @@ import com.finalproject.chorok.post.model.Post;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * [Dto] - 게시판 조회 responseDto
@@ -18,7 +19,9 @@ import lombok.NoArgsConstructor;
  *  --------   --------    ---------------------------
  *
  */
-@Data
+@Getter
+@NoArgsConstructor
+@Setter
 public class PostResponseDto {
     private Long postId;
     private String postTitle;
