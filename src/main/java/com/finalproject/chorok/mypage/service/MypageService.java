@@ -1,6 +1,8 @@
 package com.finalproject.chorok.mypage.service;
 
 import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.login.repository.UserRepository;
+import com.finalproject.chorok.login.validator.Validator;
 import com.finalproject.chorok.myPlant.dto.MyAllPlantDetailResponseDto;
 import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
@@ -12,6 +14,8 @@ import com.finalproject.chorok.post.repository.PostRepository;
 import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +30,11 @@ public class MypageService {
     private final PostRepository postRepository;
     private final MyPlantRepository myPlantRepository;
     private final PlantRepository plantRepository;
+    private final Validator validator;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+
+
 
     // 식물 북마크
     public HashMap<String, String> plantBookMark(Long plantNo, User user) {
@@ -67,5 +76,14 @@ public class MypageService {
         return myAllPlantDetailResponseDtos;
     }
 
+    //비밀번호 수정
+    public HashMap<String, String> updatePassword(String password, UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        validator.passwordCheck(password);
+        String encodedPassword = passwordEncoder.encode(password);
+        user.changePassword(encodedPassword);
+        userRepository.save(user);
+        return commUtils.responseHashMap(HttpStatus.OK);
+    }
 
 }

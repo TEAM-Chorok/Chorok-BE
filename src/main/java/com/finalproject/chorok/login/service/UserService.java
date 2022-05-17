@@ -104,7 +104,7 @@ public class UserService {
 
         String tempEncPassword = passwordEncoder.encode(tempPassword); // 암호화
         System.out.println("암호화"+tempEncPassword);
-        findUser.changeTempPassword(tempEncPassword);
+        findUser.changePassword(tempEncPassword);
 
         sendTempPasswordConfirmEmail(findUser, tempPassword);
         System.out.println("작업완료");
