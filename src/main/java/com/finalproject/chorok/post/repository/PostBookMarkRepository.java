@@ -13,4 +13,5 @@ public interface PostBookMarkRepository extends JpaRepository<PostBookMark,Long>
     @Modifying
     @Query(value = "DELETE FROM post_book_mark WHERE user_id=:userId And post_id=:postId",nativeQuery = true)
     void deleteByUserBookMarkQuery(@Param("userId") Long userId, @Param("postId") Long postId);
+
 }
