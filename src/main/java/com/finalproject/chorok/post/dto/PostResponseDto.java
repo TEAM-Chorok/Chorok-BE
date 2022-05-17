@@ -53,7 +53,6 @@ public class PostResponseDto {
     }
 
     //Test
-
     public PostResponseDto(Long postId, String postTitle, String postImgUrl, String postContent, String nickname, Long userId, String profileImgUrl) {
         this.postId = postId;
         this.postTitle = postTitle;

@@ -29,4 +29,7 @@ public interface PostRepositoryQueryDsl {
 
     // 초록톡 전체 게시물 조회(postTypeCode 필터링) - 비로그인
     List<CommunityResponseDto> non_login_chorokTalkList(String postTypeCode);
+
+    // [마이페이지]
+    // 내가 북마크한 게시물
 }
