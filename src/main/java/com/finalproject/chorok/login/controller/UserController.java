@@ -78,17 +78,16 @@ public class UserController {
     }
 
     // 회원 가입 요청 처리
-    @PostMapping("auth/signUp")
+    @PostMapping("/auth/signUp")
     public String registerUser(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
-            @RequestParam("nickname") String nickname,
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "password") String password,
+            @RequestParam(value = "nickname") String nickname,
             @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile
             ) throws IOException {
-        System.out.println("실행");
+
         String profileImgUrl = null;
 
-        System.out.println(multipartFile);
         if(!multipartFile.isEmpty()){
         profileImgUrl = s3Uploader.upload(multipartFile, "static");}
         SignupRequestDto signupRequestDto = new SignupRequestDto(username, password, nickname, profileImgUrl);
