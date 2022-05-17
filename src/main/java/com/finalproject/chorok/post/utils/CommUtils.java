@@ -1,5 +1,7 @@
 package com.finalproject.chorok.post.utils;
 
+import com.finalproject.chorok.common.Image.ImageRepository;
+import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.post.dto.comment.CommentResponseDto;
 import com.finalproject.chorok.post.model.*;
@@ -10,7 +12,9 @@ import com.finalproject.chorok.security.jwt.JwtDecoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,7 +27,8 @@ public class CommUtils {
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
     private final PostBookMarkRepository postBookMarkRepository;
-    private final JwtDecoder jwtDecoder;
+    private final ImageRepository imageRepository;
+    private final S3Uploader s3Uploader;
 
 
     // 식물장소코드로 식물장소 검색
@@ -105,11 +110,28 @@ public class CommUtils {
         return postTypeRepository.findAllByPostTypeCodeQuery(postTypeCode);
     }
 
-    // JWT token 으로 username 뽑기
-    public String getUsernameToToken(String token){
-        System.out.println(token.split(" ")[1]);
-        return jwtDecoder.decodeUsername(token.split(" ")[1]);
-
+    // 게시글에 사진 있는지 확인하고 있으면 삭제
+    public void postPhotoDelete(Long postId) {
+        Post post = getPost(postId);
+        if(!post.getPostImgUrl().isEmpty() || post.getPostImgUrl() == null){
+            imageRepository.deleteByImageUrl(post.getPostImgUrl());
+        }
     }
+    // 사진 저장
+    public String postPhotoSave(MultipartFile file) throws IOException {
+
+        if(!file.isEmpty()){
+            return s3Uploader.upload(file, "static");
+        }
+        return null;
+    }
+    // 플랜테리어 사진 유무 체크
+    public void planteriorFileChk(String postTypeCode, MultipartFile file){
+        if(postTypeCode.equals("postType01") || postTypeCode == "postType01"){
+            if(file.isEmpty() || file ==null)
+                throw new NullPointerException("플랜테이어는 사진이 필수조건입니다.");
+        }
+    }
+
 }
 

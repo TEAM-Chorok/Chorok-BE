@@ -66,20 +66,20 @@ public class Post extends Timestamped {
     private String postImgUrl;
 
     // 게시글 등록
-    public Post(PostWriteRequestDto post, User user, PostType postType) {
+    public Post(PostWriteRequestDto post, User user, PostType postType, String postImgUrl) {
         this.user = user;
         this.postTitle=post.getPostTitle();
         this.postContent=post.getPostContent();
         this.postType = postType;
-        this.postImgUrl = post.getPostImgUrl();
+        this.postImgUrl =postImgUrl;
         this.plantPlaceCode=post.getPlantPlaceCode();
     }
 
-
-    public void update(PostRequestDto postRequestDto) {
+    // update
+    public void update(PostWriteRequestDto postRequestDto, String postImgUrl) {
         this.postTitle=postRequestDto.getPostTitle();
         this.postContent=postRequestDto.getPostContent();
-        this.postImgUrl=postRequestDto.getPostImgUrl();
+        this.postImgUrl=postImgUrl;
         this.plantPlaceCode=postRequestDto.getPlantPlaceCode();
     }
 }

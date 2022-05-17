@@ -1,5 +1,6 @@
 package com.finalproject.chorok.post.service;
 
+import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.common.utils.PlantUtils;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.plant.model.PlantImg;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,7 @@ public class PostService {
     private final PlantRepository plantRepository;
     private final PlantImgRepository plantImgRepository;
     private final PlantUtils plantUtils;
+    private final S3Uploader s3Uploader;
 
 
     /*//1. 플랜테리어 전체 게시물 조회 - 로그인, 비로그인 상관없을거 같음
@@ -154,17 +157,25 @@ public class PostService {
 
     // 5. 게시글 작성하기
     @Transactional
-    public HashMap<String, String> writePost(PostWriteRequestDto post, User user) {
+    public PostResponseDto writePost(PostWriteRequestDto post, User user) throws IOException {
 
+        // 플랜테리어 사진 유무 체크
+        commUtils.planteriorFileChk(post.getPostTypeCode(),post.getPostImgUrl());
+        // 사진 저장
+        String postImgUrl = commUtils.postPhotoSave(post.getPostImgUrl());
         PostType postType = commUtils.getPostType(post.getPostTypeCode());
-        Post writePost = new Post(post,user,postType);
-        postRepository.save(writePost);
-        return commUtils.responseHashMap(HttpStatus.OK);
+
+        Post writePost =  postRepository.save(new Post(post,user,postType,postImgUrl));
+
+        return new PostResponseDto(writePost);
     }
 
     // 6. 게시글 삭제
     @Transactional
     public HashMap<String, String> deletePost(Long postId) {
+        // 게시글에 사진 있는지 확인하고 있으면 삭제
+        commUtils.postPhotoDelete(postId);
+        // 게시글 삭제
         postRepository.deleteById(postId);
         return commUtils.responseHashMap(HttpStatus.OK);
 
@@ -172,11 +183,18 @@ public class PostService {
 
     // 7. 게시글 수정
     @Transactional
-    public HashMap<String, String> updatePost(Long postId, PostRequestDto postRequestDto) {
-        Post post =  commUtils.getPost(postId);
-        post.update(postRequestDto);
-        return commUtils.responseHashMap(HttpStatus.OK);
+    public PostResponseDto updatePost(Long postId, PostWriteRequestDto postRequestDto) throws IOException {
 
+        // 게시글에 사진 있는지 확인하고 있으면 삭제
+        commUtils.postPhotoDelete(postId);
+        // 플랜테리어 사진 유무 체크
+        commUtils.planteriorFileChk(postRequestDto.getPostTypeCode(),postRequestDto.getPostImgUrl());
+        // 사진 저장
+        String postImgUrl = commUtils.postPhotoSave(postRequestDto.getPostImgUrl());
+
+        Post post =  commUtils.getPost(postId);
+        post.update(postRequestDto,postImgUrl);
+        return new PostResponseDto(post);
     }
 
     // 8. 게시글 좋아요
@@ -221,13 +239,15 @@ public class PostService {
         // 식물도감 검색 - 갯수
         Long plantDictionaryCount = postRepository.plantDictionaryListCount(postSearchRequestDto);
         // 식물도감 검색 (이름)
-        List<PlantImg> plantDictionaryList =postRepository.integratePlantDictionaryList(postSearchRequestDto);
+       // List<PlantImg> plantDictionaryList =postRepository.integratePlantDictionaryList(postSearchRequestDto);
+        List<PlantDictionaryResponseDto> planteriorDictionaryList = postRepository.planteriorDictionaryList(postSearchRequestDto);
 
         PostSearchResponseDto postSearchResponseDto = new PostSearchResponseDto(
                 planteriorCount,
                 planteriorSearchList,
                 plantDictionaryCount,
-                getPlantDictionarySearchList(plantDictionaryList)
+               // getPlantDictionarySearchList(plantDictionaryList)
+                planteriorDictionaryList
         );
 
         return postSearchResponseDto;
@@ -246,24 +266,24 @@ public class PostService {
         return responseDtoList;
     }*/
 
-    // 10-2. 식물도감 검색 결과 DTO
-    public List<PlantDictionaryResponseDto> getPlantDictionarySearchList( List<PlantImg> plantDictionaryList){
-        List<PlantDictionaryResponseDto> responseDtoList = new ArrayList<>();
-        PlantDictionaryResponseDto responseDto;
-
-        for(PlantImg plantImg : plantDictionaryList){
-            responseDto= new  PlantDictionaryResponseDto(
-                    plantImg.getPlantNo(),
-                    plantImg.getPlantName(),
-                    plantUtils.getPlantThumbImg(plantImg.getPlantNo()));
-            responseDtoList.add(responseDto);
-        }
-        return responseDtoList;
-    }
+//    // 10-2. 식물도감 검색 결과 DTO
+//    public List<PlantDictionaryResponseDto> getPlantDictionarySearchList( List<PlantImg> plantDictionaryList){
+//        List<PlantDictionaryResponseDto> responseDtoList = new ArrayList<>();
+//        PlantDictionaryResponseDto responseDto;
+//
+//        for(PlantImg plantImg : plantDictionaryList){
+//            responseDto= new  PlantDictionaryResponseDto(
+//                    plantImg.getPlantNo(),
+//                    plantImg.getPlantName(),
+//                    plantUtils.getPlantThumbImg(plantImg.getPlantNo()));
+//            responseDtoList.add(responseDto);
+//        }
+//        return responseDtoList;
+//    }
 
     // 11. 플랜테이어 통합 검색 결과 -  사진
     public PlantriaPhotoResponseDto photoSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto) {
-        List<PostResponseDto> responseDtoList = postRepository.plantriaReadPosts(postSearchRequestDto);
+        List<PostResponseDto> responseDtoList = postRepository.planteriorReadPosts(postSearchRequestDto);
         int planteriorCount  = Math.toIntExact(postRepository.integrateSearchPlanteriorCount(postSearchRequestDto));
 
 

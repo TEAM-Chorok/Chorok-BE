@@ -32,7 +32,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
 
     // 플랜테리어 전체조회(postType01,plantPlaceCode,keyword)
     @Override
-    public List<PostResponseDto> plantriaReadPosts(PlantriaFilterRequestDto postSearchRequestDto) {
+    public List<PostResponseDto> planteriorReadPosts(PlantriaFilterRequestDto postSearchRequestDto) {
         return queryFactory
                 .select(
                         Projections.constructor(PostResponseDto.class,
@@ -46,13 +46,15 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                 .from(post)
                 .leftJoin(post.user, user)
                 .where(
-                        postTypeCode("postType01"),
+                        postTypeCode(postSearchRequestDto.getPostTypeCode()),
                         postPlaceCode(postSearchRequestDto.getPlantPlaceCode()),
                         searchKeyword(postSearchRequestDto.getKeyword())
                 )
                 .orderBy(post.createdAt.desc())
                 .fetch();
     }
+
+
     // 플렌태리어 - 통합검색 - 사진
     @Override
     public List<PlantriaSearchResponseDto> integrateSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto) {
@@ -101,6 +103,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                 .limit(2)
                 .fetch();
     }
+
     // 플랜테리어 - 통합검색 - 식물도감갯수
     @Override
     public Long plantDictionaryListCount(PlantriaFilterRequestDto postSearchRequestDto) {
@@ -132,9 +135,29 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                         containPlantType(dictionaryFilterDto.getPlantTypeCode()),
                         containPlantLevel(dictionaryFilterDto.getPlantLevelCode())
                 )
+                .orderBy(plantImg.plantName.asc())
                 .fetch();
     }
-
+    //플랜테리어 - 통합검색 - 식물도감
+    @Override
+    public List<PlantDictionaryResponseDto> planteriorDictionaryList(PlantriaFilterRequestDto postSearchRequestDto) {
+        return queryFactory
+                .select(
+                        Projections.constructor(PlantDictionaryResponseDto.class,
+                                plantImg.plantNo,
+                                plantImg.plantName,
+                                plantImg.plantImgPrefix,
+                                plantImg.plantImgName
+                        )
+                )
+                .from(plant, plantImg)
+                .where(
+                        plant.plantNo.eq(plantImg.plantNo),
+                        searchPlantNameKeyword(postSearchRequestDto.getKeyword())
+                )
+                .orderBy(plantImg.plantName.asc()).limit(2)
+                .fetch();
+    }
 
 
     // 초록톡 전체게시물 조회 - 로그인시
@@ -229,7 +252,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
 
     /* 공통  */
     private BooleanExpression communityList(String postTypeCode) {
-        return postTypeCode == null ? post.postType.postTypeCode.in("postType02", "postType03", "postType04") : post.postType.postTypeCode.eq(postTypeCode);
+        return postTypeCode == null  ? post.postType.postTypeCode.in("postType02", "postType03", "postType04") : post.postType.postTypeCode.eq(postTypeCode);
     }
     private BooleanExpression postTypeCode(String postTypeCode) {
         return postTypeCode == null ? null : post.postType.postTypeCode.eq(postTypeCode);
