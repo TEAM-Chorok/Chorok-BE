@@ -30,17 +30,9 @@ public class MyPlantController {
     private final PlantPlaceRepository plantPlaceRepository;
 
 
-    //내식물 등록하기
-//    @PostMapping("/myplant")
-//    public ResponseEntity<?> createMyPlant(@RequestBody MyPlantRequestDto myPlantRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        String myPlantPlaceCode = myPlantRequestDto.getMyPlantPlaceCode();
-//        String plantPlace = plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace();
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.addMyPlant(myPlantRequestDto, plantPlace, userDetails.getUser()));
-//    }
     //내식물 이미지포함 등록하기
     @PostMapping("/myplant")
-    public ResponseEntity<?> createMyPlant(
+    public ResponseEntity<MyPlant> createMyPlant(
             @RequestParam("plantNo") String plantNo,
             @RequestParam(value = "myPlantPlaceCode") String myPlantPlaceCode,
             @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
@@ -49,8 +41,8 @@ public class MyPlantController {
     ) throws IOException {
 
         String myPlantImgUrl = "";
-        if (multipartFile!=null) {
-             myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
+        if (multipartFile != null) {
+            myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
         }
 
         MyPlantRequestDto myPlantRequestDto = new MyPlantRequestDto(plantNo, myPlantPlaceCode, myPlantImgUrl, myPlantName);
@@ -61,12 +53,12 @@ public class MyPlantController {
 
     //내식물 수정하기
     @PatchMapping("myplant/update/{myPlantNo}")
-    public ResponseEntity<?> updateMyPlant(@PathVariable Long myPlantNo,
-                                           @RequestParam("plantNo") String plantNo,
-                                           @RequestParam("myPlantName") String myPlantName,
-                                           @RequestParam("myPlantPlaceCode") String myPlantPlaceCode,
-                                           @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
-                                           @AuthenticationPrincipal UserDetailsImpl userDetails
+    public ResponseEntity<MyPlant> updateMyPlant(@PathVariable Long myPlantNo,
+                                                 @RequestParam("plantNo") String plantNo,
+                                                 @RequestParam("myPlantName") String myPlantName,
+                                                 @RequestParam("myPlantPlaceCode") String myPlantPlaceCode,
+                                                 @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
+                                                 @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
 
         String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
@@ -77,19 +69,20 @@ public class MyPlantController {
 
     //내 식물들 보기
     @GetMapping("/myplant")
-    public List<AllMyPlantResponseDto> myPlantInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return myPlantService.getAllMyPlant(userDetails);
+    public ResponseEntity<List<AllMyPlantResponseDto>> myPlantInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(myPlantService.getAllMyPlant(userDetails));
     }
 
     //내 식물 디테일까지 전체보기
     @GetMapping("/myplant/all")
-    public ResponseEntity<?> myAllPlantDetailResponseDtos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<List<MyAllPlantDetailResponseDto>> myAllPlantDetailResponseDtos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(myPlantService.getAllMyPlantDetail(userDetails));
     }
 
     //식물 장소별로 보기
     @GetMapping("/myplant/place")
-    public ResponseEntity<?> myAllPlantForPlace(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<MyPlantForPlaceResponseDto> myAllPlantForPlace(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         return ResponseEntity.status(HttpStatus.OK).body(myPlantService.getMyPlantsforPlace(userDetails));
     }
@@ -107,6 +100,5 @@ public class MyPlantController {
 
         }
     }
-
 
 }

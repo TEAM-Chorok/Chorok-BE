@@ -5,17 +5,25 @@ import com.finalproject.chorok.calendar.Dto.CalendarTodoResponseDto;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
+import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.todo.dto.BloomingDayResponstDto;
+import com.finalproject.chorok.todo.dto.SprayingDayRequestDto;
+import com.finalproject.chorok.todo.dto.SprayingDayResponstDto;
 import com.finalproject.chorok.todo.model.BloomingDay;
+import com.finalproject.chorok.todo.model.Spraying;
 import com.finalproject.chorok.todo.model.Todo;
 import com.finalproject.chorok.todo.repository.BloomingDayRepository;
+import com.finalproject.chorok.todo.repository.SprayingDayRepository;
 import com.finalproject.chorok.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,25 +33,9 @@ public class CalendarService {
     private final MyPlantRepository myPlantRepository;
     private final TodoRepository todoRepository;
     private final BloomingDayRepository bloomingDayRepository;
+    private final SprayingDayRepository sprayingDayRepository;
+    private final CommUtils commUtils;
 
-//    public List<CalendarTodoResponseDto> getMonthly(Long myPlantNo, LocalDate start, LocalDate end, UserDetailsImpl userDetails) {
-//        User user = userDetails.getUser();
-//        MyPlant myPlant = myPlantRepository.findByMyPlantNo(myPlantNo);
-//        //그달 어느날에 무엇을 했는지
-//        List<Todo> todos = todoRepository.findAllByUserAndMyPlantAndStatusAndTodoTimeBetween(user, myPlant, true, start, end);
-//
-//        List<CalendarTodoResponseDto> calendarTodoResponseDtos = new ArrayList<>();
-//        for (Todo todo : todos) {
-//            CalendarTodoResponseDto calendarTodoResponseDto = new CalendarTodoResponseDto(
-//                    todo.getWorkType(),
-//                    todo.getTodoTime()
-//            );
-//            calendarTodoResponseDtos.add(calendarTodoResponseDto);
-//        }
-//
-//        //워크타입별로 리스트 만들기
-//        return calendarTodoResponseDtos;
-//    }
 
     public CalendarResponseDto getMonthly(Long myPlantNo, LocalDate start, LocalDate end, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
@@ -52,8 +44,10 @@ public class CalendarService {
         List<Todo> todos = todoRepository.findAllByUserAndMyPlantAndStatusAndTodoTimeBetween(user, myPlant, true, start, end);
 
         List<BloomingDay> bloomingDays = bloomingDayRepository.findAllByUserAndMyPlantAndBloomingDayBetween(user, myPlant, start, end);
+        List<Spraying> sprayingDays = sprayingDayRepository.findAllByUserAndMyPlantAndAndSprayingDayBetween(user, myPlant, start, end);
 
         List<BloomingDayResponstDto> bloomingDayResponstDtos = new ArrayList<>();
+        List<SprayingDayResponstDto> sprayingDayResponstDtos = new ArrayList<>();
 
         for (BloomingDay bloomingDay : bloomingDays) {
             BloomingDayResponstDto bloomingDayResponstDto = new BloomingDayResponstDto(
@@ -61,7 +55,14 @@ public class CalendarService {
             );
             bloomingDayResponstDtos.add(bloomingDayResponstDto);
         }
+        for(Spraying spraying : sprayingDays){
+            SprayingDayResponstDto sprayingDayResponstDto = new SprayingDayResponstDto(
+                    spraying.getSprayingDay()
+            );
+            sprayingDayResponstDtos.add(sprayingDayResponstDto);
+        }
         List<CalendarTodoResponseDto> calendarTodoResponseDtos = new ArrayList<>();
+
         for (Todo todo : todos) {
             CalendarTodoResponseDto calendarTodoResponseDto = new CalendarTodoResponseDto(
                     todo.getWorkType(),
@@ -74,7 +75,9 @@ public class CalendarService {
                 calendarTodoResponseDtos.stream().filter(h -> h.getWorkType().equals("분갈이")).collect(Collectors.toList()),
                 calendarTodoResponseDtos.stream().filter(h -> h.getWorkType().equals("영양제")).collect(Collectors.toList()),
                 calendarTodoResponseDtos.stream().filter(h -> h.getWorkType().equals("잎닦기")).collect(Collectors.toList()),
-                bloomingDayResponstDtos
+                calendarTodoResponseDtos.stream().filter(h -> h.getWorkType().equals("환기")).collect(Collectors.toList()),
+                bloomingDayResponstDtos,
+                sprayingDayResponstDtos
         );
         return calendarResponseDto;
     }
@@ -86,6 +89,23 @@ public class CalendarService {
         todo.setStatus(true);
         todoRepository.save(todo);
         return todo;
+    }
+    //분무한 날 추가하기
+    public SprayingDayResponstDto checkSprayingInCalendar(Long myPlantNo, LocalDate thatDay, UserDetailsImpl userDetails){
+        User user = userDetails.getUser();
+        MyPlant myPlant = myPlantRepository.findById(myPlantNo).orElseThrow(
+                () -> new IllegalArgumentException("나의식물이 존재하지 않습니다.")
+        );
+        Spraying spraying = new Spraying(thatDay,myPlant,user);
+        sprayingDayRepository.save(spraying);
+        SprayingDayResponstDto sprayingDayResponstDto = new SprayingDayResponstDto(spraying.getSprayingDay());
+        return sprayingDayResponstDto;
+
+    }
+    @Transactional
+    public HashMap<String, String> delSprayingDay(Long myPlantNo, LocalDate thatDay, UserDetailsImpl userDetails) {
+        sprayingDayRepository.deleteSprayingBySprayingDayAndMyPlant_MyPlantNoAndUser(thatDay,myPlantNo, userDetails.getUser());
+        return commUtils.responseHashMap(HttpStatus.OK);
     }
 
 }

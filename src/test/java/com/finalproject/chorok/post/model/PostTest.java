@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import java.util.List;
 
@@ -132,14 +133,15 @@ class PostTest {
             System.out.println("plantImg = " + plantImg.getPlantName());
         }
     }
+
     @Test
-    public void plantDictionaryFilter(){
+    public void plantDictionaryFilter() {
         String keyword = "엽";
         String plantPlaceCode = "pp01";
-        String plantGrowthShapeCode ="pgs01";
+        String plantGrowthShapeCode = "pgs01";
         String plantTypeCode = "pt01";
         String plantLevelCode = "pl01";
-        List<PlantDictionaryResponseDto> result= queryFactory
+        List<PlantDictionaryResponseDto> result = queryFactory
                 .select(
                         Projections.constructor(PlantDictionaryResponseDto.class,
                                 plantImg.plantNo,
@@ -169,21 +171,20 @@ class PostTest {
     }
 
     private BooleanExpression containPlantLevel(String plantLevelCode) {
-        return plantLevelCode == null?null:plant.plantLevelCode.contains(plantLevelCode);
+        return plantLevelCode == null ? null : plant.plantLevelCode.contains(plantLevelCode);
     }
 
     private BooleanExpression containPlantType(String plantTypeCode) {
-        return plantTypeCode == null?null : plant.plantTypeCode.contains(plantTypeCode);
+        return plantTypeCode == null ? null : plant.plantTypeCode.contains(plantTypeCode);
     }
 
     private BooleanExpression containPlantGrowthShape(String plantGrowthShapeCode) {
-        return plantGrowthShapeCode == null?null:plant.plantGrowthShapeCode.contains(plantGrowthShapeCode);
+        return plantGrowthShapeCode == null ? null : plant.plantGrowthShapeCode.contains(plantGrowthShapeCode);
     }
 
     private BooleanExpression containPlantPlace(String plantPlaceCode) {
-        return plantPlaceCode==null?null: plant.plantPlaceCode.contains(plantPlaceCode);
+        return plantPlaceCode == null ? null : plant.plantPlaceCode.contains(plantPlaceCode);
     }
-
 
 
     // 커뮤니티 (초록톡 전체 조회)
@@ -198,7 +199,7 @@ class PostTest {
                                 post.postId,
                                 post.user.nickname,
                                 post.user.profileImageUrl.as("profileImgUrl"),
-                                post.postType.postType ,
+                                post.postType.postType,
                                 post.postImgUrl,
                                 post.postContent,
                                 ExpressionUtils.as(
