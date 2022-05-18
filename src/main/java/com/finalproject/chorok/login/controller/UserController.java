@@ -92,15 +92,17 @@ public class UserController {
             @RequestParam(value = "password") String password,
             @RequestParam(value = "nickname") String nickname,
             @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile
-            ) throws IOException {
+    ) throws IOException {
 
         String profileImgUrl = null;
 
-        if(!multipartFile.isEmpty()){
-        profileImgUrl = s3Uploader.upload(multipartFile, "static");}
+        if(multipartFile!=null){
+            profileImgUrl = s3Uploader.upload(multipartFile, "static");
+        }
         SignupRequestDto signupRequestDto = new SignupRequestDto(username, password, nickname, profileImgUrl);
         return userService.registerUser(signupRequestDto);
     }
+
 
     //카카오 로그인
     @GetMapping("/auth/kakao/callback")
