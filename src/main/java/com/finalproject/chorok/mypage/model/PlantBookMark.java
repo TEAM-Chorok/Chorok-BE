@@ -20,7 +20,7 @@ public class PlantBookMark {
     private Long plantBookMarkNo;
 
     @ManyToOne
-    @JoinColumn(name = "plant_id" ,referencedColumnName = "plant_id")
+    @JoinColumn(name = "plant_no" ,referencedColumnName = "plant_no")
     private Plant plant;
 
     @ManyToOne
