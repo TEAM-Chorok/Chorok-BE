@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import com.finalproject.chorok.common.Image.test.Post1;
 import com.finalproject.chorok.common.Image.test.PostRepository1;
+import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,17 +80,18 @@ public class S3Uploader {
         return upload(uploadFile, dirName);
     }
 
-//    // 프로필 수정 (이미지 파일 교체)
-//    private String profileImageUpdate(File uploadFile, String dirName, Long userId) {
-//        Post1 post = postRepository.findById(postId).orElseThrow(
-//                ()-> new IllegalArgumentException("게시물이 없습니다")
-//        );
-//        String imageUrl = post.getImageUrl();
-//        Image image = imageRepository.findByImageUrl(imageUrl);
-//        String fileName = image.getFilename();
-//        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
-//        return upload(uploadFile, dirName);
-//    }
+    //프로필 이미지 수정
+    public String updateProfileImage(MultipartFile multipartFile, String dirName, UserDetailsImpl userDetails)throws IOException{
+        File uploadFile = convert(multipartFile)
+                .orElseThrow(()->new IllegalArgumentException("error: MultipartFile -> File convert fail"));
+        String profileImgUrl = userDetails.getUser().getProfileImageUrl();
+        if(profileImgUrl!=null) {
+            Image image = imageRepository.findByImageUrl(userDetails.getUser().getProfileImageUrl());
+            String fileName = image.getFilename();
+            amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
+        }
+        return upload(uploadFile, dirName);
+    }
 
     // S3로 업로드
     private String putS3(File uploadFile, String fileName) {
