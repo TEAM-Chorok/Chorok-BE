@@ -1,5 +1,7 @@
 package com.finalproject.chorok.mypage.service;
 
+import com.finalproject.chorok.common.Image.S3Uploader;
+import com.finalproject.chorok.login.dto.DuplicateChkDto;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.login.validator.Validator;
@@ -17,7 +19,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +38,7 @@ public class MypageService {
     private final Validator validator;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final S3Uploader s3Uploader;
 
 
 
@@ -83,6 +89,29 @@ public class MypageService {
         String encodedPassword = passwordEncoder.encode(password);
         user.changePassword(encodedPassword);
         userRepository.save(user);
+        return commUtils.responseHashMap(HttpStatus.OK);
+    }
+
+    //프로필 닉네임, 사진 수정
+    @Transactional
+    public HashMap<String, String> updateProfile(String nickname, MultipartFile multipartFile, UserDetailsImpl userDetails) throws IOException {
+
+        String profileImgUrl = null;
+        User user = userDetails.getUser();
+
+        if (nickname != null) {
+            if (!nickname.equals(userDetails.getNickname())) {
+                validator.nickCheck(new DuplicateChkDto(nickname));
+                user.changeNickname(nickname);
+                userRepository.save(user);
+            }
+        }
+        if(multipartFile != null){
+            profileImgUrl = s3Uploader.updateProfileImage(multipartFile, "static", userDetails);
+            user.changeProfileImage(profileImgUrl);
+            userRepository.save(user);
+        }
+
         return commUtils.responseHashMap(HttpStatus.OK);
     }
 
