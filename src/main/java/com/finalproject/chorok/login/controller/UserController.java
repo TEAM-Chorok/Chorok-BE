@@ -114,9 +114,9 @@ public class UserController {
 
     //구글 로그인
     @GetMapping("/auth/google/callback")
-    public GoogleUserResponseDto googleLogin(@RequestParam String code) throws JsonProcessingException {
+    public GoogleUserResponseDto googleLogin(@RequestParam String accessToken) throws JsonProcessingException {
         System.out.println("구글로그인 시작");
-        return googleUserService.googleLogin(code);
+        return googleUserService.googleLogin(accessToken);
     }
 
 
