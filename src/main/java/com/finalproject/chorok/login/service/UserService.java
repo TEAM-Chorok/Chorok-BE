@@ -47,8 +47,8 @@ public class UserService {
 
     @Transactional
     public String registerUser(SignupRequestDto requestDto) {
-//        String msg = "회원가입 성공";
-        String msg = "회원인증 이메일 전송";
+        String msg = "회원가입 성공";
+//        String msg = "회원인증 이메일 전송";
 
         try {
             //회원가입 확인
@@ -69,7 +69,7 @@ public class UserService {
 
         User user = new User(username, password, nickname, emailCheckToken, profileImgUrl);
 
-//         //이메일 인증 코드부분
+         //이메일 인증 코드부분
 //        redisUtil.set(emailCheckToken, user, 2);
 //
 //        System.out.println(user+"4");
@@ -147,17 +147,13 @@ public class UserService {
         Context context = new Context();
         context.setVariable("link", path+"/auth/check-email-token?token=" + user.getEmailCheckToken() +
                 "&email=" + user.getUsername());
-        System.out.println("진행체크1");
         String message = templateEngine.process("email-link", context);
-        System.out.println("진행체크2");
         EmailMessage emailMessage = EmailMessage.builder()
                 .to(user.getUsername())
                 .subject("초록(Chorok), 회원 가입 인증 메일")
                 .message(message)
                 .build();
-        System.out.println("진행체크3");
         emailService.sendEmail(emailMessage);
-        System.out.println("진행체크4");
     }
 
     //로그인 확인
@@ -210,9 +206,6 @@ public class UserService {
 
         User findUser = (User)redisUtil.get(token);
 
-//        User findUser = userRepository.findByUsername(email).orElseThrow(
-//                () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
-//        );
         if (!findUser.isValidToken(token))
             throw new InvalidActivityException("유효하지 않는 토큰입니다.");
 
@@ -251,11 +244,7 @@ public class UserService {
 
     @Transactional
     public List<LabelingResponseDto> getLabelingResults(UserDetailsImpl userDetails) {
-        System.out.println("서비스 단으로 넘어오나??");
-//        Long temp = 6L;
-//        Optional<Labeling> labelingTested = labelingRepository.findByUserUserId(temp);
-        System.out.println(userDetails.getUser().getUserId());
-        System.out.println(userDetails.getUserId());
+
         Optional<Labeling> labelingTested = labelingRepository.findByUser_UserId(userDetails.getUserId());
         if(labelingTested.isPresent()){
         List<Plant> labeledPlants = plantRepository.searchThreePlantByLabeling(

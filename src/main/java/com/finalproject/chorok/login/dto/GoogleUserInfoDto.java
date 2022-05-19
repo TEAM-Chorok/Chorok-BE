@@ -9,7 +9,7 @@ import software.amazon.ion.Decimal;
 @Builder
 @AllArgsConstructor
 public class GoogleUserInfoDto {
-    Decimal googleId;
+    String googleId;
     String email;
     String nickname;
     String profileImage;

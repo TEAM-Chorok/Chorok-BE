@@ -41,8 +41,12 @@ public class User {
     private String emailCheckToken;
 
     @Setter
+    @Column(nullable = true)
     private Long kakaoId;
-    private Decimal googleId;
+
+    @Setter
+    @Column(nullable = true, length=1000)
+    private String googleId;
 
     @Builder
     public User(String username, String password, String nickname, String emailCheckToken, String profileImageUrl) {
@@ -65,7 +69,7 @@ public class User {
 
     }
 
-    public User(String username, String password, String nickname, Long kakaoId, Decimal googleId, String profileImage) {
+    public User(String username, String password, String nickname, Long kakaoId, String googleId, String profileImage) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
