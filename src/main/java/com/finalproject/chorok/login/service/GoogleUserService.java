@@ -28,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import software.amazon.ion.Decimal;
 
 import java.util.Map;
 import java.util.UUID;
@@ -54,12 +55,12 @@ public class GoogleUserService {
     private String clientSecret;
 
 
-    public GoogleUserResponseDto googleLogin(String code) throws JsonProcessingException {
+    public GoogleUserResponseDto googleLogin(String accessToken) throws JsonProcessingException {
         //HTTP Request를 위한 RestTemplate
         RestTemplate restTemplate = new RestTemplate();
 
-        // 1. "인가 코드"로 "액세스 토큰" 요청
-        String accessToken = getAccessToken(restTemplate, code);
+//        // 1. "인가 코드"로 "액세스 토큰" 요청
+//        String accessToken = getAccessToken(restTemplate, code);
         // 2. "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
         GoogleUserInfoDto snsUserInfoDto = getGoogleUserInfo(restTemplate, accessToken);
         // 3. "구글 사용자 정보"로 필요시 회원가입  및 이미 같은 이메일이 있으면 기존회원으로 로그인
@@ -119,33 +120,27 @@ public class GoogleUserService {
 
     private GoogleUserInfoDto getGoogleUserInfo(RestTemplate restTemplate, String accessToken) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-//        String requestUrl = UriComponentsBuilder.fromHttpUrl("https://oauth2.googleapis.com/tokeninfo")
         String requestUrl = UriComponentsBuilder.fromHttpUrl("https://www.googleapis.com/oauth2/v3/userinfo")
                 .queryParam("access_token", accessToken).encode().toUriString();
 
         String resultJson = restTemplate.getForObject(requestUrl, String.class);
 
         Map<String,String> userInfo = mapper.readValue(resultJson, new TypeReference<Map<String, String>>(){});
+        String googleId = userInfo.get("sub");
+        Decimal googleIdContainer = Decimal.valueOf(googleId);
 
-        GoogleUserInfoDto googleUserInfoDto = GoogleUserInfoDto.builder()
-                .googleId(userInfo.get("sub"))
+        return GoogleUserInfoDto.builder()
+                .googleId(googleIdContainer)
                 .email(userInfo.get("email"))
                 .nickname(userInfo.get("name"))
                 .profileImage(userInfo.get("picture"))
                 .build();
-
-        String nickname = userInfo.get("name");
-        String email = userInfo.get("email");
-        String googleId = userInfo.get("sub");
-        String profileImage = userInfo.get("picture");
-        System.out.println("구글 사용자 정보:  " + googleId + ", "+ nickname + ", " + email + ", " + profileImage);
-        return googleUserInfoDto;
     }
 
     private User registerGoogleIfNeeded(GoogleUserInfoDto googleUserInfoDto) {
 
         // DB 에 중복된 google Id 가 있는지 확인
-        String googleUserId = googleUserInfoDto.getGoogleId();
+        Decimal googleUserId = googleUserInfoDto.getGoogleId();
         User googleUser = userRepository.findByGoogleId(googleUserId)
                 .orElse(null);
         String nickname = googleUserInfoDto.getNickname();
