@@ -1,6 +1,7 @@
 package com.finalproject.chorok.login.model;
 
 import lombok.*;
+import software.amazon.ion.Decimal;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -41,7 +42,7 @@ public class User {
 
     @Setter
     private Long kakaoId;
-    private String googleId;
+    private Decimal googleId;
 
     @Builder
     public User(String username, String password, String nickname, String emailCheckToken, String profileImageUrl) {
@@ -64,7 +65,7 @@ public class User {
 
     }
 
-    public User(String username, String password, String nickname, Long kakaoId, String googleId, String profileImage) {
+    public User(String username, String password, String nickname, Long kakaoId, Decimal googleId, String profileImage) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
