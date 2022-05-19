@@ -204,5 +204,22 @@ public class MyPlantService {
         return myPlantForPlaceResponseDto;
     }
 
+    /*
+     * 2022-05-19 추가 기능
+     * 김주호
+     * 내식물번호를 받아서 식물하나 정보 반환
+     */
+    public MyOnePlantResponseDto findMyPlant(Long myPlantNo) {
+        MyPlant plant = myPlantRepository.findById(myPlantNo).orElseThrow(
+                ()-> new NullPointerException("해당 나의식물번호가 존재하지 않습니다.")
+        );
+        return new MyOnePlantResponseDto(
+                plant.getMyPlantNo(),
+                plant.getMyPlantImgUrl(),
+                plant.getMyPlantPlace(),
+                plant.getMyPlantName(),
+                plant.getPlantNo()
+        );
 
+    }
 }

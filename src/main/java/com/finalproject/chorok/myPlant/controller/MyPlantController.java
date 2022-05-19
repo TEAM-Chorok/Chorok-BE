@@ -6,7 +6,6 @@ import com.finalproject.chorok.myPlant.dto.*;
 import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
 import com.finalproject.chorok.plant.repository.PlantPlaceRepository;
-import com.finalproject.chorok.post.dto.PostRequestDto;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.myPlant.service.MyPlantService;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -94,6 +91,16 @@ public class MyPlantController {
             new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
+    }
+
+    /*
+     * 2022-05-19 추가 기능
+     * 김주호
+     * 내식물번호를 받아서 식물하나 정보 반환
+     */
+    @GetMapping("/myplant/plant/{myPlantNo}")
+    public ResponseEntity<MyOnePlantResponseDto> findMyPlant(@PathVariable Long myPlantNo){
+        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.findMyPlant(myPlantNo));
     }
 
 }
