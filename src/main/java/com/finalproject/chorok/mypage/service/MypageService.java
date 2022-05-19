@@ -8,6 +8,8 @@ import com.finalproject.chorok.login.validator.Validator;
 import com.finalproject.chorok.myPlant.dto.MyAllPlantDetailResponseDto;
 import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
+import com.finalproject.chorok.mypage.dto.MypageMyplantFinalDto;
+import com.finalproject.chorok.mypage.dto.MypageMyplantSixDto;
 import com.finalproject.chorok.mypage.model.PlantBookMark;
 import com.finalproject.chorok.mypage.repository.PlantBookMarkRepository;
 import com.finalproject.chorok.plant.repository.PlantRepository;
@@ -79,6 +81,7 @@ public class MypageService {
             myAllPlantDetailResponseDtos.add(myAllPlantDetailResponseDto);
         }
 
+
         return myAllPlantDetailResponseDtos;
     }
 
@@ -113,6 +116,23 @@ public class MypageService {
         }
 
         return commUtils.responseHashMap(HttpStatus.OK);
+    }
+
+    public MypageMyplantFinalDto getSixMyplants(UserDetailsImpl userDetails){
+        List<MyPlant> myPlants = myPlantRepository.findTop6ByUserOrderByMyPlantNameAsc(userDetails.getUser());
+        List<MypageMyplantSixDto> mypageMyplantSixDtos = new ArrayList<>();
+        for (MyPlant myPlant :myPlants){
+            MypageMyplantSixDto mypageMyplantSixDto = new MypageMyplantSixDto(
+                    myPlant.getMyPlantImgUrl(),
+                    myPlant.getMyPlantName(),
+                    plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName()
+            );
+            mypageMyplantSixDtos.add(mypageMyplantSixDto);
+        }
+        MypageMyplantFinalDto mypageMyplantFinalDto = new MypageMyplantFinalDto(
+                myPlantRepository.findAllByUser(userDetails.getUser()).size(),
+                mypageMyplantSixDtos);
+        return mypageMyplantFinalDto;
     }
 
 }
