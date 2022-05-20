@@ -12,5 +12,6 @@ public class IsLoginDto {
     private String username;
     private String nickname;
     private String profileImgUrl;
+    private String profileMsg;
 
 }
