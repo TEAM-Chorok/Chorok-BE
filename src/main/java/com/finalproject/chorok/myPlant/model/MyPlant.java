@@ -4,13 +4,19 @@ import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.MyPlantRequestDto;
 import com.finalproject.chorok.myPlant.dto.MyPlantResponseDto;
 import com.finalproject.chorok.myPlant.dto.MyPlantUpdateRequestDto;
+import com.finalproject.chorok.todo.model.BloomingDay;
+import com.finalproject.chorok.todo.model.Spraying;
+import com.finalproject.chorok.todo.model.Todo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Getter // get 함수를 일괄적으로 만들어줍니다.
 @Setter
@@ -33,15 +39,23 @@ public class MyPlant {
     private int supplements;
     private int leafCleaning;
 
-//    @OneToMany(mappedBy = "myPlant",cascade =CascadeType.ALL)
-//    private List<Todo> todoList;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",referencedColumnName = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
 
-    public MyPlant(MyPlantRequestDto myPlantRequestDto, String myPlantPlace, User user){
+    @OneToMany(mappedBy = "my_plant",cascade = CascadeType.ALL)
+    private List<Todo> todoList;
+
+    @OneToMany(mappedBy = "my_plant",cascade = CascadeType.ALL)
+    private List<BloomingDay> blooming_days;
+
+    @OneToMany(mappedBy = "my_plant",cascade = CascadeType.ALL)
+    private List<Spraying> sprayings;
+
+
+    public MyPlant(MyPlantRequestDto myPlantRequestDto, String myPlantPlace, User user) {
         this.plantNo = Long.parseLong(myPlantRequestDto.getPlantNo());
         this.myPlantPlace = myPlantPlace;
         this.myPlantImgUrl = myPlantRequestDto.getMyPlantImgUrl();
@@ -54,7 +68,8 @@ public class MyPlant {
         this.leafCleaning = 3;
 
     }
-    public MyPlant(Long plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, LocalDate endDay, LocalDate startDay){
+
+    public MyPlant(Long plantNo, String myPlantPlace, String myPlantImgUrl, String myPlantName, User user, LocalDate endDay, LocalDate startDay) {
         this.plantNo = plantNo;
         this.myPlantPlace = myPlantPlace;
         this.myPlantImgUrl = myPlantImgUrl;
@@ -65,7 +80,8 @@ public class MyPlant {
 
 
     }
-    public MyPlant(MyPlantResponseDto myPlantResponseDto, User user){
+
+    public MyPlant(MyPlantResponseDto myPlantResponseDto, User user) {
         this.plantNo = myPlantResponseDto.getPlantNo();
         this.myPlantPlace = myPlantResponseDto.getMyPlantPlace();
         this.myPlantImgUrl = myPlantResponseDto.getMyPlantImgUrl();
@@ -76,7 +92,7 @@ public class MyPlant {
 
     }
 
-    public void update(MyPlantUpdateRequestDto myPlantUpdateRequestDto){
+    public void update(MyPlantUpdateRequestDto myPlantUpdateRequestDto) {
         this.plantNo = Long.parseLong(myPlantUpdateRequestDto.getPlantNo());
         this.myPlantName = myPlantUpdateRequestDto.getMyPlantName();
         this.myPlantPlace = myPlantUpdateRequestDto.getMyPlantPlace();

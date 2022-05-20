@@ -118,6 +118,7 @@ public class MypageService {
         return commUtils.responseHashMap(HttpStatus.OK);
     }
 
+//내식물 6개보기
     public MypageMyplantFinalDto getSixMyplants(UserDetailsImpl userDetails){
         List<MyPlant> myPlants = myPlantRepository.findTop6ByUserOrderByMyPlantNameAsc(userDetails.getUser());
         List<MypageMyplantSixDto> mypageMyplantSixDtos = new ArrayList<>();
