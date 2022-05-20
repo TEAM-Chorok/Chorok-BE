@@ -107,9 +107,10 @@ public class MypageController {
     public ResponseEntity<HashMap<String, String>> updateProfile(
             @RequestParam(value = "nickname", required = false) String nickname,
             @RequestParam(value = "profileImageUrl", required = false) MultipartFile multipartFile,
+            @RequestParam(value = "profileMsg", required = false) String profileMsg,
             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 
-        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updateProfile(nickname, multipartFile, userDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updateProfile(nickname, multipartFile, userDetails, profileMsg));
     }
 }
 
