@@ -20,6 +20,7 @@ public class CommunityResponseDto {
     private String profileImgUrl;
     private String postType;
     private String postImgUrl;
+    private String postTitle;
     private String postContent;
     private Long postLikeCount;
     private Long commentCount;
@@ -56,7 +57,9 @@ public class CommunityResponseDto {
 
 
     // querydsl -  초록톡 전체 조회 - 로그인
-    public CommunityResponseDto(Long postId, String nickname, String profileImgUrl, String postType, String postImgUrl, String postContent,
+    public CommunityResponseDto(Long postId, String nickname, String profileImgUrl,
+                                String postTitle,
+                                String postType, String postImgUrl, String postContent,
                                 Long postLikeCount,
                                 Long commentCount,
                                 Long postLike,
@@ -68,6 +71,7 @@ public class CommunityResponseDto {
         this.profileImgUrl = profileImgUrl;
         this.postType = postType;
         this.postImgUrl = postImgUrl;
+        this.postTitle=postTitle;
         this.postContent = postContent;
         this.postLikeCount = postLikeCount;
         this.commentCount = commentCount;
@@ -83,12 +87,16 @@ public class CommunityResponseDto {
 
 
     // querydsl -  초록톡 전체 조회 - 비로그인
-    public CommunityResponseDto(Long postId, String nickname, String profileImgUrl, String postType, String postImgUrl, String postContent, Long postLikeCount, Long commentCount, LocalDateTime postRecentTime) {
+    public CommunityResponseDto(Long postId, String nickname,
+                                String profileImgUrl,
+                                String postTitle,
+                                String postType, String postImgUrl, String postContent, Long postLikeCount, Long commentCount, LocalDateTime postRecentTime) {
         this.postId = postId;
         this.nickname = nickname;
         this.profileImgUrl = profileImgUrl;
         this.postType = postType;
         this.postImgUrl = postImgUrl;
+        this.postTitle = postTitle;
         this.postContent = postContent;
         this.postLikeCount = postLikeCount;
         this.commentCount = commentCount;
@@ -96,4 +104,6 @@ public class CommunityResponseDto {
         this.postBookMark =false;
         this.postRecentTime = CaluateTime.calculateTime(Timestamp.valueOf(postRecentTime));
     }
+
+    // querydsl 마이페이지 - 내 플렌테리어 모아보기
 }

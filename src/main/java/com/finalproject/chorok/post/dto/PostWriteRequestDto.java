@@ -13,8 +13,6 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 public class PostWriteRequestDto {
-    @NotNull(message = "게시글 제목을 입력해주세요.")
-    @NotBlank(message = "게시글 제목은 비어있으면 안됩니다.")
     private String postTitle;
     @NotNull(message = "게시글 내용을 입력해주세요.")
     @NotBlank(message = "게시글 내용은 비어있으면 안됩니다.")

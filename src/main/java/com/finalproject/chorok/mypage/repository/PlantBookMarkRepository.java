@@ -14,7 +14,7 @@ public interface PlantBookMarkRepository extends JpaRepository<PlantBookMark, Lo
     PlantBookMark findUserPlantBookMarkQuery(@Param("userId") Long userId, @Param("plantNo") Long plantNo);
 
     @Modifying
-    @Query(value = "DELETE FROM post_book_mark WHERE user_id=:userId And plant_no=:plantNo",nativeQuery = true)
+    @Query(value = "DELETE FROM plant_book_mark a WHERE a.user_id=:userId AND a.plant_no=:plantNo",nativeQuery = true)
     void deleteByUserPlantBookMarkQuery(@Param("userId") Long userId, @Param("plantNo") Long plantNo);
 
 }

@@ -18,4 +18,6 @@ public class PlantriaFilterRequestDto {
     private String plantPlaceCode;
 
     private String keyword;
+
+
 }

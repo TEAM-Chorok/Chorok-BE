@@ -1,10 +1,12 @@
 package com.finalproject.chorok.post.dto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@Data
 public class PlantDictionaryResponseDto {
     private Long plantNo;
     private String plantName;
