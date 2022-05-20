@@ -50,6 +50,10 @@ public class User {
     @Column(nullable = true, length=1000)
     private String googleId;
 
+    @Setter
+    @Column(nullable = false)
+    private boolean isEnabled;
+
     @Builder
     public User(String username, String password, String nickname, String emailCheckToken, String profileImageUrl) {
         this.username = username;
@@ -98,6 +102,11 @@ public class User {
     public void changeProfileMsg(String profileMsg) {
         this.profileMsg = profileMsg;
         System.out.println("유저 프로필 메세지 바꾸기");
+    }
+
+    public void changeAccountStatus(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+        System.out.println("유저 비활성화 시키기");
     }
 
     public boolean isValidToken(String token) {

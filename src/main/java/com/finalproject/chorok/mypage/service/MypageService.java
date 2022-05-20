@@ -24,6 +24,7 @@ import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -170,6 +171,14 @@ public class MypageService {
                 myPlantRepository.findAllByUser(userDetails.getUser()).size(),
                 mypageMyplantSixDtos);
         return mypageMyplantFinalDto;
+    }
+
+    //계정 비활성화
+    public HashMap<String, String> inactivateAccount(UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        user.changeAccountStatus(false);
+        userRepository.save(user);
+        return commUtils.responseHashMap(HttpStatus.OK);
     }
 
 }
