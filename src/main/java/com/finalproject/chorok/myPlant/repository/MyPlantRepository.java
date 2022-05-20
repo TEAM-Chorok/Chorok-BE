@@ -28,4 +28,6 @@ public interface MyPlantRepository extends JpaRepository<MyPlant, Long> {
     List<MyPlant> myPlantForPlaceQuery(User user, String myPlantPlace);
 
     MyPlant findByMyPlantNoAndUser(Long myPlantNo, User user);
+
+    List<MyPlant> findTop6ByUserOrderByMyPlantNameAsc(User user);
 }

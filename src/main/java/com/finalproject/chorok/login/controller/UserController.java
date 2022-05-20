@@ -3,14 +3,17 @@ package com.finalproject.chorok.login.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.finalproject.chorok.common.Image.S3Uploader;
+import com.finalproject.chorok.common.utils.RedisUtil;
 import com.finalproject.chorok.common.utils.StatusMessage;
 import com.finalproject.chorok.login.dto.*;
 import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.login.service.GoogleUserService;
 import com.finalproject.chorok.login.service.KakaoUserService;
 import com.finalproject.chorok.login.service.UserService;
 import com.finalproject.chorok.plant.service.PlantFilterService;
 import com.finalproject.chorok.login.dto.LabelingResponseDto;
+import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,11 +22,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.ion.Decimal;
 
 import javax.activity.InvalidActivityException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -35,14 +40,21 @@ public class UserController {
     private final GoogleUserService googleUserService;
     private final S3Uploader s3Uploader;
     private final PlantFilterService plantFilterService;
+    private final UserRepository userRepository;
+    private final CommUtils commUtils;
+    private final RedisUtil redisUtil;
+
 
     @Autowired
-    public UserController(UserService userService, KakaoUserService kakaoUserService, GoogleUserService googleUserService, S3Uploader s3Uploader, PlantFilterService plantFilterService) {
+    public UserController(UserService userService, KakaoUserService kakaoUserService, GoogleUserService googleUserService, S3Uploader s3Uploader, PlantFilterService plantFilterService, UserRepository userRepository, CommUtils commUtils, RedisUtil redisutil) {
         this.userService = userService;
         this.kakaoUserService  = kakaoUserService;
         this.googleUserService = googleUserService;
         this.s3Uploader = s3Uploader;
         this.plantFilterService = plantFilterService;
+        this.userRepository = userRepository;
+        this.commUtils = commUtils;
+        this.redisUtil = redisutil;
     }
 
     //아이디 중복 체크
@@ -84,15 +96,17 @@ public class UserController {
             @RequestParam(value = "password") String password,
             @RequestParam(value = "nickname") String nickname,
             @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile
-            ) throws IOException {
+    ) throws IOException {
 
         String profileImgUrl = null;
 
-        if(!multipartFile.isEmpty()){
-        profileImgUrl = s3Uploader.upload(multipartFile, "static");}
+        if(multipartFile!=null){
+            profileImgUrl = s3Uploader.upload(multipartFile, "static");
+        }
         SignupRequestDto signupRequestDto = new SignupRequestDto(username, password, nickname, profileImgUrl);
         return userService.registerUser(signupRequestDto);
     }
+
 
     //카카오 로그인
     @GetMapping("/auth/kakao/callback")
@@ -104,9 +118,9 @@ public class UserController {
 
     //구글 로그인
     @GetMapping("/auth/google/callback")
-    public GoogleUserResponseDto googleLogin(@RequestParam String code) throws JsonProcessingException {
+    public GoogleUserResponseDto googleLogin(@RequestParam String accessToken) throws JsonProcessingException {
         System.out.println("구글로그인 시작");
-        return googleUserService.googleLogin(code);
+        return googleUserService.googleLogin(accessToken);
     }
 
 
@@ -170,8 +184,11 @@ public class UserController {
         if(user.getKakaoId()!=null){
             System.out.println("카카오아이디 이프문 통과하나");
             return kakaoUserService.kakaoLogout(user.getKakaoId());
+        } else if(user.getGoogleId()!=null){
+            String googleId = user.getGoogleId();
+            String accessToken = (String)redisUtil.get(googleId);
+            return googleUserService.googleRevokeAccess(accessToken, googleId);
         }
-        else {}
         return "일반 로그아웃";
     }
 }
