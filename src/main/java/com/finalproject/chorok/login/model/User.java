@@ -1,6 +1,7 @@
 package com.finalproject.chorok.login.model;
 
 import lombok.*;
+import software.amazon.ion.Decimal;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -40,17 +41,12 @@ public class User {
     private String emailCheckToken;
 
     @Setter
+    @Column(nullable = true)
     private Long kakaoId;
-    private String googleId;
 
-    //    @Builder
-//    public User(String username, String password, String nickname) {
-//        this.username = username;
-//        this.password = password;
-//        this.nickname = nickname;
-//        this.kakaoId = null;
-//        this.googleId = null;
-//    }
+    @Setter
+    @Column(nullable = true, length=1000)
+    private String googleId;
 
     @Builder
     public User(String username, String password, String nickname, String emailCheckToken, String profileImageUrl) {
@@ -82,9 +78,19 @@ public class User {
         this.profileImageUrl = profileImage;
     }
 
-    public void changeTempPassword(String tempPassword) {
+    public void changePassword(String tempPassword) {
         this.password = tempPassword;
-        System.out.println("유저 비밀번호 임시비밀번호로 바꾸기");
+        System.out.println("유저 비밀번호 바꾸기");
+    }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+        System.out.println("유저 닉네임 바꾸기");
+    }
+
+    public void changeProfileImage(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+        System.out.println("유저 프로필 이미지 바꾸기");
     }
 
     public boolean isValidToken(String token) {

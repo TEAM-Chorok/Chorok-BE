@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.finalproject.chorok.common.utils.RedisUtil;
 import com.finalproject.chorok.login.dto.GoogleUserInfoDto;
 import com.finalproject.chorok.login.dto.GoogleUserResponseDto;
 import com.finalproject.chorok.login.model.Labeling;
@@ -17,6 +18,10 @@ import com.finalproject.chorok.security.GoogleOAuthResponse;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.security.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +33,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import software.amazon.ion.Decimal;
 
+import java.io.IOException;
+import java.net.CookieManager;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,12 +47,14 @@ public class GoogleUserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final LabelingRepository labelingRepository;
+    private final RedisUtil redisUtil;
 
     @Autowired
-    public GoogleUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository) {
+    public GoogleUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository, RedisUtil redisUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.labelingRepository = labelingRepository;
+        this.redisUtil = redisUtil;
     }
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -54,12 +64,12 @@ public class GoogleUserService {
     private String clientSecret;
 
 
-    public GoogleUserResponseDto googleLogin(String code) throws JsonProcessingException {
+    public GoogleUserResponseDto googleLogin(String accessToken) throws JsonProcessingException {
         //HTTP Request를 위한 RestTemplate
         RestTemplate restTemplate = new RestTemplate();
 
-        // 1. "인가 코드"로 "액세스 토큰" 요청
-        String accessToken = getAccessToken(restTemplate, code);
+//        // 1. "인가 코드"로 "액세스 토큰" 요청
+//        String accessToken = getAccessToken(restTemplate, code);
         // 2. "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
         GoogleUserInfoDto snsUserInfoDto = getGoogleUserInfo(restTemplate, accessToken);
         // 3. "구글 사용자 정보"로 필요시 회원가입  및 이미 같은 이메일이 있으면 기존회원으로 로그인
@@ -91,8 +101,6 @@ public class GoogleUserService {
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .code(code)
-//                .redirectUri("https://memegle.xyz/redirect/google")
-//                .redirectUri("http://localhost:3000/redirect/google")
                 .redirectUri("http://localhost:8080/auth/google/callback")
                 .grantType("authorization_code")
                 .accessType("offline")
@@ -119,7 +127,6 @@ public class GoogleUserService {
 
     private GoogleUserInfoDto getGoogleUserInfo(RestTemplate restTemplate, String accessToken) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-//        String requestUrl = UriComponentsBuilder.fromHttpUrl("https://oauth2.googleapis.com/tokeninfo")
         String requestUrl = UriComponentsBuilder.fromHttpUrl("https://www.googleapis.com/oauth2/v3/userinfo")
                 .queryParam("access_token", accessToken).encode().toUriString();
 
@@ -127,26 +134,23 @@ public class GoogleUserService {
 
         Map<String,String> userInfo = mapper.readValue(resultJson, new TypeReference<Map<String, String>>(){});
 
-        GoogleUserInfoDto googleUserInfoDto = GoogleUserInfoDto.builder()
-                .googleId(userInfo.get("sub"))
+        String googleId = userInfo.get("sub");
+        redisUtil.set(googleId, accessToken, 60);
+
+        return GoogleUserInfoDto.builder()
+                .googleId(googleId)
                 .email(userInfo.get("email"))
                 .nickname(userInfo.get("name"))
                 .profileImage(userInfo.get("picture"))
                 .build();
-
-        String nickname = userInfo.get("name");
-        String email = userInfo.get("email");
-        String googleId = userInfo.get("sub");
-        String profileImage = userInfo.get("picture");
-        System.out.println("구글 사용자 정보:  " + googleId + ", "+ nickname + ", " + email + ", " + profileImage);
-        return googleUserInfoDto;
     }
 
     private User registerGoogleIfNeeded(GoogleUserInfoDto googleUserInfoDto) {
 
         // DB 에 중복된 google Id 가 있는지 확인
         String googleUserId = googleUserInfoDto.getGoogleId();
-        User googleUser = userRepository.findByGoogleId(googleUserId)
+        User googleUser;
+        googleUser = userRepository.findByGoogleId(googleUserId)
                 .orElse(null);
         String nickname = googleUserInfoDto.getNickname();
 
@@ -159,7 +163,7 @@ public class GoogleUserService {
             User sameEmailUser = userRepository.findByUsername(googleEmail).orElse(null);
             if (sameEmailUser != null) {
                 googleUser = sameEmailUser;
-                // 기존 회원정보에 카카오 Id 추가
+                // 기존 회원정보에 구글 Id 추가
                 googleUser.setGoogleId(googleUserId);
             } else {
                 // 신규 회원가입
@@ -188,13 +192,25 @@ public class GoogleUserService {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         System.out.println("강제로그인 초입부분");
-//        UserDetailsImpl userDetails = UserDetailsImpl.builder()
-//                .username(googleUser.getUsername())
-//                .password(googleUser.getPassword())
-//                .build();
         System.out.println(userDetails.getUsername()+"유저디테일즈 출력여부");
 
 
         return JwtTokenUtils.generateJwtToken(userDetails);
+    }
+
+        public String googleRevokeAccess(String accessToken, String googleId)
+    {
+        try{
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpPost post = new HttpPost("https://accounts.google.com/o/oauth2/revoke?token="+accessToken);
+            org.apache.http.HttpResponse response = client.execute(post);
+            System.out.println("로그아웃 결과는?");
+            System.out.println(response);
+            redisUtil.delete(googleId);
+        }
+        catch(IOException e)
+        {
+        }
+    return "성공";
     }
 }
