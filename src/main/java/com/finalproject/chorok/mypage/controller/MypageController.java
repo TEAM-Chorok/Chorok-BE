@@ -74,6 +74,16 @@ public class MypageController {
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.myPostBookMark(userDetails,plantriaFilterRequestDto,pageable));
     }
 
+    // 내가 북마크한 식물들
+    @GetMapping("/mypage/bookmark/plant")
+    public ResponseEntity<PlantariaDictionaryResponseDto> myPlantBookMark
+    (
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.myPlantBookMark(userDetails));
+    }
+
     //내 식물 보기
 //    @GetMapping("/mypage/myplant")
 //    public ResponseEntity<List<MyAllPlantDetailResponseDto>> myAllPlantDetailResponseDtos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
