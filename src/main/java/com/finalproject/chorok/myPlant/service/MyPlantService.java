@@ -5,6 +5,7 @@ import com.finalproject.chorok.myPlant.dto.*;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import com.finalproject.chorok.plant.repository.PlantPlaceRepository;
 import com.finalproject.chorok.plant.repository.PlantRepository;
+import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
@@ -12,11 +13,14 @@ import com.finalproject.chorok.todo.dto.TodoOnlyResponseDto;
 import com.finalproject.chorok.todo.model.Todo;
 import com.finalproject.chorok.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,6 +34,7 @@ public class MyPlantService {
     private final TodoRepository todoRepository;
     private final PlantRepository plantRepository;
     private final PlantPlaceRepository plantPlaceRepository;
+    private final CommUtils commUtils;
 
     //식물 등록할 때, 투두리스트를 처음에 자동으로 저장해줌.
     @Transactional
@@ -221,5 +226,16 @@ public class MyPlantService {
                 plant.getPlantNo()
         );
 
+    }
+
+    /*
+    *2022-05-19 추가기능
+    *최은아
+    * 내식물 삭제
+     */
+    @Transactional
+    public HashMap<String, String> delMyPlant(Long myPlantNo, UserDetailsImpl userDetails){
+        myPlantRepository.deleteMyPlantByAndUserAndAndMyPlantNo(userDetails.getUser(),myPlantNo);
+    return commUtils.responseHashMap(HttpStatus.OK);
     }
 }
