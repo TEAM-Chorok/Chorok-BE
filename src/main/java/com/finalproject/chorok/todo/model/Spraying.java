@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Data
 @Table(name = "spraying_day")
 public class Spraying {
     @Id
@@ -23,7 +22,7 @@ public class Spraying {
 
     private LocalDate sprayingDay;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "my_plant_no",referencedColumnName = "my_plant_no")
     private MyPlant myPlant;
 

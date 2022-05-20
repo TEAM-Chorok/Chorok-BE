@@ -23,7 +23,7 @@ public class BloomingService {
     private final BloomingDayRepository bloomingDayRepository;
     private final CommUtils commUtils;
 
-    //꽃핀날 추하기
+    //꽃핀날 추가하기
     public BloomingDay createBloomingDay(Long myPlantNo, BloomingDayRequestDto bloomingDayRequestDto, UserDetailsImpl userDetails){
         User user = userDetails.getUser();
         MyPlant myPlant = myPlantRepository.findById(myPlantNo).orElseThrow(

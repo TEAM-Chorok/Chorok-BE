@@ -1,5 +1,6 @@
 package com.finalproject.chorok.myPlant.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.MyPlantRequestDto;
 import com.finalproject.chorok.myPlant.dto.MyPlantResponseDto;
@@ -10,12 +11,9 @@ import com.finalproject.chorok.todo.model.Todo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Getter // get 함수를 일괄적으로 만들어줍니다.
@@ -44,14 +42,16 @@ public class MyPlant {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
-
-    @OneToMany(mappedBy = "my_plant",cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "myPlant",cascade = CascadeType.ALL)
     private List<Todo> todoList;
 
-    @OneToMany(mappedBy = "my_plant",cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "myPlant",cascade = CascadeType.ALL)
     private List<BloomingDay> blooming_days;
 
-    @OneToMany(mappedBy = "my_plant",cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "myPlant",cascade = CascadeType.ALL)
     private List<Spraying> sprayings;
 
 
