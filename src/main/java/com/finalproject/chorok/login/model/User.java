@@ -50,6 +50,10 @@ public class User {
     @Column(nullable = true, length=1000)
     private String googleId;
 
+    @Setter
+    @Column(nullable = false)
+    private boolean isEnabled;
+
     @Builder
     public User(String username, String password, String nickname, String emailCheckToken, String profileImageUrl) {
         this.username = username;
