@@ -89,7 +89,7 @@ public class UserController {
         }
     }
 
-    // 회원 가입 요청 처리
+//     회원 가입 요청 처리
     @PostMapping("/auth/signUp")
     public String registerUser(
             @RequestParam(value = "username") String username,

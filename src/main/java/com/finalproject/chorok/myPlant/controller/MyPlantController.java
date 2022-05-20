@@ -102,5 +102,9 @@ public class MyPlantController {
     public ResponseEntity<MyOnePlantResponseDto> findMyPlant(@PathVariable Long myPlantNo){
         return ResponseEntity.status(HttpStatus.OK).body(myPlantService.findMyPlant(myPlantNo));
     }
-
+//내식물 삭제하기
+   @DeleteMapping("/myplant/{myPlantNo}")
+    public ResponseEntity<?> delMyplant(@PathVariable Long myPlantNo, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.delMyPlant(myPlantNo, userDetails));
+    }
 }

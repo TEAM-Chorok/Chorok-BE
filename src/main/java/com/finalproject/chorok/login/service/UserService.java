@@ -162,11 +162,15 @@ public class UserService {
         String username = userDetails.getUsername();
         String nickname = userDetails.getUser().getNickname();
         Long userId = userDetails.getUser().getUserId();
+        String profileImgUrl = userDetails.getUser().getProfileImageUrl();
+        String profileMsg = userDetails.getUser().getProfileMsg();
         Optional<User> user = userRepository.findByUsername(username);
         IsLoginDto isLoginDto = IsLoginDto.builder()
                 .username(username)
                 .nickname(nickname)
                 .userId(userId)
+                .profileImgUrl(profileImgUrl)
+                .profileMsg(profileMsg)
                 .build();
         System.out.println("isLoginDto 만들어짐");
         return isLoginDto;
