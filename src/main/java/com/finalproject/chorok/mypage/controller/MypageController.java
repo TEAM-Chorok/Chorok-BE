@@ -4,6 +4,7 @@ import com.finalproject.chorok.mypage.dto.MyPlanteriorSearchResponseDto;
 import com.finalproject.chorok.myPlant.dto.MyAllPlantDetailResponseDto;
 import com.finalproject.chorok.mypage.dto.MypageMyplantFinalDto;
 import com.finalproject.chorok.mypage.dto.MypageMyplantSixDto;
+import com.finalproject.chorok.mypage.dto.ProfileUpdateDto;
 import com.finalproject.chorok.mypage.service.MypageService;
 import com.finalproject.chorok.post.dto.CommunityResponseDto;
 import com.finalproject.chorok.post.dto.PlantariaDictionaryResponseDto;
@@ -104,13 +105,13 @@ public class MypageController {
 
     //프로필 수정하기
     @PatchMapping("/user/update/profile")
-    public ResponseEntity<HashMap<String, String>> updateProfile(
-            @RequestParam(value = "nickname", required = false) String nickname,
-            @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile,
-            @RequestParam(value = "profileMsg", required = false) String profileMsg,
+    public ResponseEntity<HashMap<String, String>> updateProfile(@RequestBody ProfileUpdateDto profileUpdateDto,
+//            @RequestParam(value = "nickname", required = false) String nickname,
+//            @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile,
+//            @RequestParam(value = "profileMsg", required = false) String profileMsg,
             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-
-        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updateProfile(nickname, multipartFile, userDetails, profileMsg));
+        System.out.println("컨트롤러 들어오나");
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updateProfile(profileUpdateDto,userDetails));
     }
 
     //회원 비활성화
@@ -118,6 +119,6 @@ public class MypageController {
     public ResponseEntity<HashMap<String, String>> inactivateAccount(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.inactivateAccount(userDetails));
-    }
+    } 
 }
 
