@@ -1,13 +1,13 @@
 package com.finalproject.chorok.post.controller;
 
 import com.finalproject.chorok.post.dto.*;
-import com.finalproject.chorok.post.model.Post;
 import com.finalproject.chorok.post.repository.PostRepository;
 import com.finalproject.chorok.post.service.PostService;
-import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,8 +44,12 @@ public class PostController {
      * @Example : read-posts?postTypecode = postType01
      */
     @GetMapping("/read-posts")
-    public ResponseEntity<List<PostResponseDto>> readPosts(@Valid PlantriaFilterRequestDto postSearchRequestDto){
-        return ResponseEntity.status(HttpStatus.OK).body(postRepository.planteriorReadPosts(postSearchRequestDto));
+    public ResponseEntity<Page<PostResponseDto>> readPosts
+    (
+            @Valid PlantriaFilterRequestDto postSearchRequestDto,
+            @PageableDefault Pageable pageable
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(postService.planteriorReadPosts(postSearchRequestDto,pageable));
   
     }
 
@@ -54,7 +58,10 @@ public class PostController {
      * @Example : /search-post/planterior?keyword=
      */
     @GetMapping("/search-post/integrate/planterior")
-    public ResponseEntity<PostSearchResponseDto> integrateSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto){
+    public ResponseEntity<PostSearchResponseDto> integrateSearchPlanterior
+    (
+            PlantriaFilterRequestDto postSearchRequestDto
+    ){
 
         return ResponseEntity.status(HttpStatus.OK).body(postService.integrateSearchPlanterior(postSearchRequestDto));
 
@@ -64,9 +71,11 @@ public class PostController {
      * 플렌테리어 통합 검색 - 사진
      */
     @GetMapping("/search-post/photo/planterior")
-    public ResponseEntity<PlantriaPhotoResponseDto> photoSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto
+    public ResponseEntity<PlantriaPhotoResponseDto> photoSearchPlanterior(
+            PlantriaFilterRequestDto postSearchRequestDto,
+            @PageableDefault Pageable pageable
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(postService.photoSearchPlanterior(postSearchRequestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(postService.photoSearchPlanterior(postSearchRequestDto,pageable));
 
     }
 
@@ -76,7 +85,7 @@ public class PostController {
      */
     @GetMapping("/search-post/dictionary/planterior")
     public ResponseEntity<PlantariaDictionaryResponseDto> dictionarySearchPlanterior(DictionaryFilterDto dictionaryFilterDto, Pageable pageable) {
-        return  ResponseEntity.status(HttpStatus.OK).body(postService.dictionarySearchPlantria(dictionaryFilterDto));
+        return  ResponseEntity.status(HttpStatus.OK).body(postService.dictionarySearchPlantria(dictionaryFilterDto,pageable));
 
     }
 
@@ -88,6 +97,7 @@ public class PostController {
     public ResponseEntity<List<CommunityResponseDto>> readPostsCommunity(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(name = "postTypeCode",required = false) String postTypeCode,
+            // ? keyword
             @RequestParam(name="keyword", required = false)  String keyword
     )  {
 

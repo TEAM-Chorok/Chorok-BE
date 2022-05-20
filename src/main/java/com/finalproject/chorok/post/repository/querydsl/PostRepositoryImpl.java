@@ -1,20 +1,26 @@
 package com.finalproject.chorok.post.repository.querydsl;
 
+import com.finalproject.chorok.mypage.dto.MyPlanteriorResponseDto;
 import com.finalproject.chorok.plant.model.PlantImg;
 import com.finalproject.chorok.post.dto.*;
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.ExpressionUtils;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
 import static com.finalproject.chorok.login.model.QUser.user;
+import static com.finalproject.chorok.mypage.model.QPlantBookMark.plantBookMark;
 import static com.finalproject.chorok.plant.model.QPlant.plant;
 import static com.finalproject.chorok.plant.model.QPlantImg.plantImg;
+import static com.finalproject.chorok.plant.model.QPlantPlace.plantPlace1;
 import static com.finalproject.chorok.post.model.QComment.comment;
 import static com.finalproject.chorok.post.model.QPost.post;
 import static com.finalproject.chorok.post.model.QPostBookMark.postBookMark;
@@ -27,13 +33,12 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
 
     public PostRepositoryImpl(EntityManager em){
         this.queryFactory = new JPAQueryFactory(em);
-
     }
 
     // 플랜테리어 전체조회(postType01,plantPlaceCode,keyword)
     @Override
-    public List<PostResponseDto> planteriorReadPosts(PlantriaFilterRequestDto postSearchRequestDto) {
-        return queryFactory
+    public Page<PostResponseDto> planteriorReadPosts(PlantriaFilterRequestDto postSearchRequestDto, Pageable pageable) {
+        QueryResults<PostResponseDto> results = queryFactory
                 .select(
                         Projections.constructor(PostResponseDto.class,
                                 post.postId,
@@ -47,11 +52,18 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                 .leftJoin(post.user, user)
                 .where(
                         postTypeCode(postSearchRequestDto.getPostTypeCode()),
-                        postPlaceCode(postSearchRequestDto.getPlantPlaceCode()),
+                        plantPlaceCode(postSearchRequestDto.getPlantPlaceCode()),
                         searchKeyword(postSearchRequestDto.getKeyword())
                 )
                 .orderBy(post.createdAt.desc())
-                .fetch();
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<PostResponseDto> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
     }
 
 
@@ -88,7 +100,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                 .where(
                                 post.postType.postTypeCode.eq("postType01"),
                                 searchKeyword(postSearchRequestDto.getKeyword()),
-                                postPlaceCode(postSearchRequestDto.getPlantPlaceCode())
+                        plantPlaceCode(postSearchRequestDto.getPlantPlaceCode())
                 )
                 .fetchCount();
     }
@@ -169,6 +181,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                                 post.postId,
                                 post.user.nickname,
                                 post.user.profileImageUrl.as("profileImgUrl"),
+                                post.postTitle,
                                 post.postType.postType,
                                 post.postImgUrl,
                                 post.postContent,
@@ -223,6 +236,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                                 post.postId,
                                 post.user.nickname,
                                 post.user.profileImageUrl.as("profileImgUrl"),
+                                post.postTitle,
                                 post.postType.postType,
                                 post.postImgUrl,
                                 post.postContent,
@@ -248,6 +262,228 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                 )
                 .fetch();
     }
+    // [마이페이지]
+    // 내가 작성한 플렌테리어 - 전체 조회
+    @Override
+    public Page<CommunityResponseDto> myPlanterior(Long userId, PlantriaFilterRequestDto plantriaFilterRequestDto,Pageable pageable) {
+        QueryResults<CommunityResponseDto> results = queryFactory
+                .select(Projections.constructor(
+                                CommunityResponseDto.class,
+                                post.postId,
+                                post.user.nickname,
+                                post.user.profileImageUrl.as("profileImgUrl"),
+                                post.postTitle,
+                                post.postType.postType,
+                                post.postImgUrl,
+                                post.postContent,
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postLike.count())
+                                                .from(postLike)
+                                                .where(postLike.post.postId.eq(post.postId)),
+                                        "postLikeCount"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(comment.count())
+                                                .from(comment)
+                                                .where(comment.post.postId.eq(post.postId)),
+                                        "commentCount"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postLike.count())
+                                                .from(postLike)
+                                                .where(
+                                                        postLike.user.userId.eq(userId)
+                                                                .and(postLike.post.postId.eq(post.postId))
+                                                ), "postLike"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postBookMark.count())
+                                                .from(postBookMark)
+                                                .where(
+                                                        postBookMark.user.userId.eq(userId)
+                                                                .and(postBookMark.post.postId.eq(post.postId))
+
+                                                ), "postBookMark"),
+                                post.createdAt.as("postRecentTime")
+                        )
+                )
+                .from(post)
+                .where(
+                        post.user.userId.eq(userId),
+                        postTypeCode(plantriaFilterRequestDto.getPostTypeCode()),
+                        plantPlaceCode(plantriaFilterRequestDto.getPlantPlaceCode())
+
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+        List<CommunityResponseDto> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+    // 내가 북마크한 게시물 전체 조회
+    @Override
+    public Page<CommunityResponseDto> myBookMarkPost(Long userId, PlantriaFilterRequestDto plantriaFilterRequestDto,Pageable pageable) {
+        QueryResults<CommunityResponseDto> results = queryFactory
+                .select(Projections.constructor(
+                                CommunityResponseDto.class,
+                                post.postId,
+                                post.user.nickname,
+                                post.user.profileImageUrl.as("profileImgUrl"),
+                                post.postTitle,
+                                post.postType.postType,
+                                post.postImgUrl,
+                                post.postContent,
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postLike.count())
+                                                .from(postLike)
+                                                .where(postLike.post.postId.eq(post.postId)),
+                                        "postLikeCount"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(comment.count())
+                                                .from(comment)
+                                                .where(comment.post.postId.eq(post.postId)),
+                                        "commentCount"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postLike.count())
+                                                .from(postLike)
+                                                .where(
+                                                        postLike.user.userId.eq(userId)
+                                                                .and(postLike.post.postId.eq(post.postId))
+                                                ), "postLike"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postBookMark.count())
+                                                .from(postBookMark)
+                                                .where(
+                                                        postBookMark.user.userId.eq(userId)
+                                                                .and(postBookMark.post.postId.eq(post.postId))
+
+                                                ), "postBookMark"),
+                                post.createdAt.as("postRecentTime")
+                        )
+                )
+                .from(postBookMark)
+                .where(
+                        postBookMark.user.userId.eq(userId),
+                        postTypeCode(plantriaFilterRequestDto.getPostTypeCode()),
+                        plantPlaceCode(plantriaFilterRequestDto.getPlantPlaceCode())
+
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+        List<CommunityResponseDto> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+
+
+    // 내가 북마크한 식물
+    @Override
+    public List<PlantDictionaryResponseDto> myPlantBookMark(Long userId) {
+        return queryFactory
+                .select(
+                        Projections.constructor(PlantDictionaryResponseDto.class,
+                                plant.plantNo,
+                                plant.plantName,
+                                plantImg.plantImgPrefix,
+                                plantImg.plantImgName
+                        )
+                )
+                .from(plant, plantImg)
+                .leftJoin(plantBookMark)
+                .on(plant.plantNo.eq(plantBookMark.plant.plantNo))
+                .where(
+                        plant.plantNo.eq(plantImg.plantNo),
+                        plantBookMark.user.userId.eq(userId)
+                )
+                .fetch();
+    }
+    //1. 내가쓴 플렌테리어 카운트
+    @Override
+    public Long myPlanteriorCount(Long userId) {
+        return queryFactory
+                .selectFrom(post)
+                .where(
+                        post.user.userId.eq(userId),
+                        post.postType.postTypeCode.eq("postType01")
+                )
+                .fetchCount();
+    }
+    //2. 내가쓴 플렌테리어 6개
+    @Override
+    public List<MyPlanteriorResponseDto> myPlanterior(Long userId) {
+        return queryFactory
+                .select(
+                        Projections.constructor(MyPlanteriorResponseDto.class,
+                                post.postId,
+                                post.postImgUrl,
+                                ExpressionUtils.as(
+                                        plantPlace1.plantPlace,
+                                        "plantPlace"
+                                )
+                        )
+
+                )
+                .from(post,plantPlace1)
+                .where(
+                        post.user.userId.eq(userId),
+                        post.plantPlaceCode.eq(plantPlace1.plantPlaceCode),
+                        post.postType.postTypeCode.eq("postType01")
+                )
+                .orderBy(post.createdAt.desc())
+                .limit(6)
+                .fetch();
+    }
+    //3. 내가 북마크한 플렌테리어 카운트
+    @Override
+    public Long myPlanteriorBookMarkCount(Long userId) {
+        return queryFactory
+                .selectFrom(post)
+                .leftJoin(postBookMark)
+                .on(post.postId.eq(postBookMark.post.postId))
+                .where(
+                        post.postType.postTypeCode.eq("postType01"),
+                        postBookMark.user.userId.eq(userId)
+                )
+                .orderBy(post.createdAt.desc())
+                .fetchCount();
+    }
+    //4. 내가 북마크한 플렌테리어 6개
+    @Override
+    public List<MyPlanteriorResponseDto> myPlanteriorBookMark(Long userId) {
+        return queryFactory
+                .select(
+                        Projections.constructor(MyPlanteriorResponseDto.class,
+                                post.postId,
+                                post.postImgUrl,
+                                ExpressionUtils.as(
+                                        plantPlace1.plantPlace,
+                                        "plantPlace"
+                                )
+                        )
+
+                )
+                .from(post,plantPlace1)
+                .leftJoin(postBookMark)
+                .on(post.postId.eq(postBookMark.post.postId))
+                .where(
+                        post.plantPlaceCode.eq(plantPlace1.plantPlaceCode),
+                        postBookMark.user.userId.eq(userId),
+                        post.postType.postTypeCode.eq("postType01")
+                )
+                .orderBy(post.createdAt.desc())
+                .limit(6)
+                .fetch();
+    }
 
 
     /* 공통  */
@@ -257,7 +493,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
     private BooleanExpression postTypeCode(String postTypeCode) {
         return postTypeCode == null ? null : post.postType.postTypeCode.eq(postTypeCode);
     }
-    private BooleanExpression postPlaceCode(String plantPlaceCode) {
+    private BooleanExpression plantPlaceCode(String plantPlaceCode) {
         return plantPlaceCode == null ? null : post.plantPlaceCode.eq(plantPlaceCode);
     }
     private BooleanExpression searchKeyword(String keyword) {
@@ -282,6 +518,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
     private BooleanExpression containPlantPlace(String plantPlaceCode) {
         return plantPlaceCode==null?null: plant.plantPlaceCode.contains(plantPlaceCode);
     }
+
 
 
 }

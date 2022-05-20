@@ -13,6 +13,8 @@ import com.finalproject.chorok.post.repository.*;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import com.finalproject.chorok.plant.repository.PlantPlaceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +37,7 @@ public class CommUtils {
     private final PlantBookMarkRepository plantBookMarkRepository;
     private final S3Uploader s3Uploader;
 
+    public static final Long DEFAULT_PAGE_SIZE = 10L;
 
     // 식물장소코드로 식물장소 검색
     public  PlantPlace getPlantPlace(String plantPlaceCode){
@@ -138,7 +141,7 @@ public class CommUtils {
     // 사진 저장
     public String postPhotoSave(MultipartFile file) throws IOException {
 
-        if(!file.isEmpty()){
+        if(!file.isEmpty() || file !=null){
             return s3Uploader.upload(file, "static");
         }
         return null;
@@ -149,6 +152,16 @@ public class CommUtils {
             if(file.isEmpty() || file ==null)
                 throw new NullPointerException("플랜테이어는 사진이 필수조건입니다.");
         }
+    }
+
+    // 게시글 등록할때 플렌테리어 이외를 게시판 plantPlaceCode ExceptionCHk
+
+    public String planteriorPlantPlaceChk(String postTypeCode, String plantPlaceCode) {
+
+        if (!postTypeCode.equals("postType01")) {
+            return null;
+        }
+        return plantPlaceCode;
     }
 
 }

@@ -16,6 +16,8 @@ import com.finalproject.chorok.post.repository.PostRepository;
 import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -36,61 +38,28 @@ import java.util.List;
  *
  * 수정일     수정자             수정내용
  * --------   --------    ---------------------------
- *todo
+ *
  */
 @RequiredArgsConstructor
 @Service
 public class PostService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
-    private final CommUtils commUtils;
-    private final CommentRepository commentRepository;
     private final PostBookMarkRepository postBookMarkRepository;
-    private final PlantRepository plantRepository;
-    private final PlantImgRepository plantImgRepository;
-    private final PlantUtils plantUtils;
-    private final S3Uploader s3Uploader;
+    private final CommUtils commUtils;
+    // 1.플랜테리어 조회(queryParameter로 필터링)
+    public Page<PostResponseDto> planteriorReadPosts(PlantriaFilterRequestDto postSearchRequestDto, Pageable pageable) {
 
-
-    /*//1. 플랜테리어 전체 게시물 조회 - 로그인, 비로그인 상관없을거 같음
-    @Transactional
-    public List<PostResponseDto> readPosts(PlantriaFilterRequestDto postSearchRequestDto) {
-
-        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
-        PostResponseDto postResponseDto;
-
-        for(Post post : readPostsQuery(postSearchRequestDto)){
-            postResponseDto = new PostResponseDto(post);
-            postResponseDtoList.add(postResponseDto);
-        }
-        return postResponseDtoList;
+      return   postRepository.planteriorReadPosts(
+                postSearchRequestDto,
+                pageable
+        );
     }
-
-    // 1-1. 플랜테이어 전체 게시물 조회 - 쿼리
-    public List<Post> readPostsQuery(PlantriaFilterRequestDto postSearchRequestDto){
-        List<Post> postList;
-
-        if(postSearchRequestDto.getPlantPlaceCode()==null || postSearchRequestDto.getPlantPlaceCode().equals("")){
-            postList = postRepository.findAllByPostTypePostTypeCodeOrderByCreatedAtDesc(postSearchRequestDto.getPostTypeCode());
-        }else{
-            postList = postRepository.findAllByPostTypePostTypeCodeAndPlantPlaceCodeOrderByCreatedAtDesc(postSearchRequestDto.getPostTypeCode(),postSearchRequestDto.getPlantPlaceCode());
-        }
-        return postList;
-    }*/
-
     // 2. 초록톡 전체 게시물조회 (postTypeCode로 필터링) - 로그인 시
     public List<CommunityResponseDto> readPostsCommunity(User user,String postTypeCode) {
 
         List<CommunityResponseDto> communityResponseDtoList = postRepository.chorokTalkList(user.getUserId(),postTypeCode);
 
-//        for(Post communityPost : readPostsCommunityQuery(postTypeCode)){
-//            CommunityResponseDto communityResponseDto = new CommunityResponseDto(
-//                    communityPost,
-//                    commUtils.LikePostChk(communityPost.getPostId(),user),
-//                    commUtils.BookMarkPostChk(communityPost.getPostId(),user)
-//            );
-//            communityResponseDtoList.add(communityResponseDto);
-//        }
         return communityResponseDtoList;
     }
 
@@ -99,26 +68,11 @@ public class PostService {
     public List<CommunityResponseDto> nonLoginReadPostsCommunity(String postTypeCode) {
         List<CommunityResponseDto> communityResponseDtoList = postRepository.non_login_chorokTalkList(postTypeCode);
 
-//        for(Post communityPost : readPostsCommunityQuery(postTypeCode)){
-//            CommunityResponseDto communityResponseDto = new CommunityResponseDto(
-////                    communityPost
-//            );
-//            communityResponseDtoList.add(communityResponseDto);
-//        }
+
         return communityResponseDtoList;
     }
 
-//    // 2-2,3-2. 초록톡 전체 게시물 조회 - 쿼리
-//    public List<Post> readPostsCommunityQuery(String postTypeCode){
-//
-//        List<Post> communityList = new ArrayList<>();
-//        if(postTypeCode == null || postTypeCode.equals("")){
-//            communityList =postRepository.findByPostTypePostTypeCodeInOrderByCreatedAt(commUtils.getAllCommunityCode());
-//        }else{
-//            communityList =postRepository.findByPostTypePostTypeCodeInOrderByCreatedAt(commUtils.getCommunityCode(postTypeCode));
-//        }
-//        return communityList;
-//    }
+
 
 
     // 4. 게시글 상세조회
@@ -132,7 +86,6 @@ public class PostService {
         for(Comment comment : post.getCommentList()){
             commentResponseDtos.add(new CommentResponseDto(comment));
         }
-
         // 녹색톡 상세조회
         if(post.getPlantPlaceCode()== null || post.getPlantPlaceCode().equals("")){
             return new PostDetailResponseDto(
@@ -144,7 +97,6 @@ public class PostService {
         }
         // 식물 장소
         PlantPlace plantPlace = commUtils.getPlantPlace(post.getPlantPlaceCode());
-
         // 플렌테이어 상세조회
         return new PostDetailResponseDto(
                 post,
@@ -159,12 +111,15 @@ public class PostService {
     @Transactional
     public PostResponseDto writePost(PostWriteRequestDto post, User user) throws IOException {
 
-        // 플랜테리어 사진 유무 체크
+
+        // 1. 플랜테리어 사진 유무 체크
         commUtils.planteriorFileChk(post.getPostTypeCode(),post.getPostImgUrl());
+        // 2. 플랜테리어 와 초록톡 plantPlaceCode 체크
+        post.setPlantPlaceCode(commUtils.planteriorPlantPlaceChk(post.getPostTypeCode(),post.getPlantPlaceCode()));
+        // 3. postTypeCode 유효성 체크
+        PostType postType = commUtils.getPostType(post.getPostTypeCode());
         // 사진 저장
         String postImgUrl = commUtils.postPhotoSave(post.getPostImgUrl());
-        PostType postType = commUtils.getPostType(post.getPostTypeCode());
-
         Post writePost =  postRepository.save(new Post(post,user,postType,postImgUrl));
 
         return new PostResponseDto(writePost);
@@ -187,8 +142,12 @@ public class PostService {
 
         // 게시글에 사진 있는지 확인하고 있으면 삭제
         commUtils.postPhotoDelete(postId);
-        // 플랜테리어 사진 유무 체크
+        // 1. 플랜테리어 사진 유무 체크
         commUtils.planteriorFileChk(postRequestDto.getPostTypeCode(),postRequestDto.getPostImgUrl());
+        // 2. 플랜테리어 와 초록톡 plantPlaceCode 체크
+        postRequestDto.setPlantPlaceCode(commUtils.planteriorPlantPlaceChk(postRequestDto.getPostTypeCode(),postRequestDto.getPlantPlaceCode()));
+        // 3. postTypeCode 유효성 체크
+        PostType postType = commUtils.getPostType(postRequestDto.getPostTypeCode());
         // 사진 저장
         String postImgUrl = commUtils.postPhotoSave(postRequestDto.getPostImgUrl());
 
@@ -252,80 +211,25 @@ public class PostService {
 
         return postSearchResponseDto;
     }
-/*    // 10-1. 플랜테이어 검색 결과 DTO
-    public List<PlantriaSearchResponseDto> getPlantriaSearchList(List<Post> plantriaSearchList){
 
-        List<PlantriaSearchResponseDto> responseDtoList = new ArrayList<>();
-        PlantriaSearchResponseDto responseDto;
-
-        for(Post post : plantriaSearchList){
-            responseDto= new  PlantriaSearchResponseDto(post.getPostId(),post.getPostImgUrl());
-            responseDtoList.add(responseDto);
-        }
-
-        return responseDtoList;
-    }*/
-
-//    // 10-2. 식물도감 검색 결과 DTO
-//    public List<PlantDictionaryResponseDto> getPlantDictionarySearchList( List<PlantImg> plantDictionaryList){
-//        List<PlantDictionaryResponseDto> responseDtoList = new ArrayList<>();
-//        PlantDictionaryResponseDto responseDto;
-//
-//        for(PlantImg plantImg : plantDictionaryList){
-//            responseDto= new  PlantDictionaryResponseDto(
-//                    plantImg.getPlantNo(),
-//                    plantImg.getPlantName(),
-//                    plantUtils.getPlantThumbImg(plantImg.getPlantNo()));
-//            responseDtoList.add(responseDto);
-//        }
-//        return responseDtoList;
-//    }
 
     // 11. 플랜테이어 통합 검색 결과 -  사진
-    public PlantriaPhotoResponseDto photoSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto) {
-        List<PostResponseDto> responseDtoList = postRepository.planteriorReadPosts(postSearchRequestDto);
+    public PlantriaPhotoResponseDto photoSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto, Pageable pageable) {
+        Page<PostResponseDto> responseDtoList = postRepository.planteriorReadPosts(postSearchRequestDto, pageable);
         int planteriorCount  = Math.toIntExact(postRepository.integrateSearchPlanteriorCount(postSearchRequestDto));
 
 
-/*        if(plantPlaceCode == null || plantPlaceCode.equals("")){
-            // 플랜테이어 검색 - 갯수
-            plantriaCount =  postRepository.plantariaSearchCountQuery(keyword);
-            // 플랜테이어 검색 - 리스트
-            List<Post> postList =postRepository.plantariaSearchPhotoQuery(keyword);
-            PostResponseDto responseDto;
-            for(Post post : postList){
-                responseDto = new PostResponseDto(post);
-                responseDtoList.add(responseDto);
-            }
-        }else{
-            // 플랜테이어 검색 - 갯수
-            plantriaCount =  postRepository.plantariaSearchPhotoToPostTypeCodeCountQuery(keyword,plantPlaceCode);
-            // 플랜테이어 검색 - 리스트
-            List<Post> postList =postRepository.plantariaSearchPhotoToPostTypeCodeQuery(keyword,plantPlaceCode);
-            PostResponseDto responseDto;
-            for(Post post : postList){
-                responseDto = new PostResponseDto(post);
-                responseDtoList.add(responseDto);
-            }
-        }*/
         return new PlantriaPhotoResponseDto(planteriorCount,responseDtoList);
     }
 
     // 식물 도감 검색
-    public PlantariaDictionaryResponseDto dictionarySearchPlantria(DictionaryFilterDto dictionaryFilterDto) {
+    public PlantariaDictionaryResponseDto dictionarySearchPlantria(DictionaryFilterDto dictionaryFilterDto,Pageable pageable) {
 
-        //List<PlantDictionaryResponseDto> responseDtoList = new ArrayList<>();
         // 식물도감검색
         List<PlantDictionaryResponseDto> plantDictionaryList = postRepository.plantDictionaryList(dictionaryFilterDto);
-    //    PlantDictionaryResponseDto responseDto;
 
-//        for(PlantImg plantImg : plantDictionaryList){
-//            responseDto= new  PlantDictionaryResponseDto(
-//                    plantImg.getPlantNo(),
-//                    plantImg.getPlantName(),
-//                    plantUtils.getPlantThumbImg(plantImg.getPlantNo()));
-//            responseDtoList.add(responseDto);
-//        }
         return new PlantariaDictionaryResponseDto(plantDictionaryList.size(),plantDictionaryList);
     }
+
+
 }
