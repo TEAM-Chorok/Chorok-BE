@@ -4,8 +4,10 @@ import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.dto.DuplicateChkDto;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.mypage.dto.MyPlanteriorSearchResponseDto;
+import com.finalproject.chorok.mypage.dto.MypagePagingDto;
 import com.finalproject.chorok.mypage.repository.PlantBookMarkRepository;
 import com.finalproject.chorok.post.dto.CommunityResponseDto;
+import com.finalproject.chorok.post.dto.PlantDictionaryResponseDto;
 import com.finalproject.chorok.post.dto.PlantariaDictionaryResponseDto;
 import com.finalproject.chorok.post.dto.PlantriaFilterRequestDto;
 import com.finalproject.chorok.login.repository.UserRepository;
@@ -80,21 +82,25 @@ public class MypageService {
     }
 
     // 내가 작성한 플렌테리어-전체조회
-    public Page<CommunityResponseDto> myPhoto(UserDetailsImpl userDetails, PlantriaFilterRequestDto plantriaFilterRequestDto, Pageable pageable) {
-        return postRepository.myPlanterior(userDetails.getUserId(),plantriaFilterRequestDto,pageable);
+    public MypagePagingDto myPhoto(UserDetailsImpl userDetails, PlantriaFilterRequestDto plantriaFilterRequestDto, Pageable pageable) {
+
+        return new MypagePagingDto(
+                postRepository.myPlanterior(userDetails.getUserId(),plantriaFilterRequestDto,pageable)
+        );
     }
 
     // 내가 북마크한 게시물
-    public Page<CommunityResponseDto> myPostBookMark(UserDetailsImpl userDetails,PlantriaFilterRequestDto plantriaFilterRequestDto,Pageable pageable) {
-        return postRepository.myBookMarkPost(userDetails.getUserId(),plantriaFilterRequestDto,pageable);
+    public MypagePagingDto myPostBookMark(UserDetailsImpl userDetails,PlantriaFilterRequestDto plantriaFilterRequestDto,Pageable pageable) {
+        return new MypagePagingDto(
+                postRepository.myBookMarkPost(userDetails.getUserId(),plantriaFilterRequestDto,pageable)
+        );
     }
 
     // 내가 북마크한 식물
-    public PlantariaDictionaryResponseDto myPlantBookMark(UserDetailsImpl userDetails) {
+    public MypagePagingDto myPlantBookMark(UserDetailsImpl userDetails, Pageable pageable) {
 
-        return  new PlantariaDictionaryResponseDto(
-                postRepository.myPlantBookMark(userDetails.getUserId()).size()
-                ,postRepository.myPlantBookMark(userDetails.getUserId())
+        return new MypagePagingDto(
+                postRepository.myPlantBookMark(userDetails.getUserId(),pageable)
         );
     }
 

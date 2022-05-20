@@ -51,7 +51,8 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                 .from(post)
                 .leftJoin(post.user, user)
                 .where(
-                        postTypeCode(postSearchRequestDto.getPostTypeCode()),
+                        post.postType.postTypeCode.eq("postType01"),
+                        //postTypeCode(postSearchRequestDto.getPostTypeCode()),
                         plantPlaceCode(postSearchRequestDto.getPlantPlaceCode()),
                         searchKeyword(postSearchRequestDto.getKeyword())
                 )
@@ -128,8 +129,8 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
     }
     //플랜테리어 - 식물도감
     @Override
-    public List<PlantDictionaryResponseDto> plantDictionaryList(DictionaryFilterDto dictionaryFilterDto) {
-        return queryFactory
+    public Page<PlantDictionaryResponseDto> plantDictionaryList(DictionaryFilterDto dictionaryFilterDto,Pageable pageable) {
+        QueryResults<PlantDictionaryResponseDto> results = queryFactory
                 .select(
                         Projections.constructor(PlantDictionaryResponseDto.class,
                                 plantImg.plantNo,
@@ -148,7 +149,14 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                         containPlantLevel(dictionaryFilterDto.getPlantLevelCode())
                 )
                 .orderBy(plantImg.plantName.asc())
-                .fetch();
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+        List<PlantDictionaryResponseDto> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+
     }
     //플랜테리어 - 통합검색 - 식물도감
     @Override
@@ -174,8 +182,8 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
 
     // 초록톡 전체게시물 조회 - 로그인시
     @Override
-    public List<CommunityResponseDto> chorokTalkList(Long userId, String postTypeCode) {
-        return queryFactory
+    public Page<CommunityResponseDto> chorokTalkList(Long userId, String postTypeCode,Pageable pageable) {
+        QueryResults<CommunityResponseDto> results = queryFactory
                 .select(Projections.constructor(
                                 CommunityResponseDto.class,
                                 post.postId,
@@ -221,16 +229,23 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                 .where(
                         post.postType.postTypeCode.notIn("postType01")
                                 .and(communityList(postTypeCode)
-                              //  ,searchPlantNameKeyword(keyword)
-                                        )
+                                        //  ,searchPlantNameKeyword(keyword)
+                                )
 
                 )
-                .fetch();
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<CommunityResponseDto> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
     }
     // 초록톡 전체게시물 조회 - 비로그인시
     @Override
-    public List<CommunityResponseDto> non_login_chorokTalkList(String postTypeCode) {
-        return queryFactory
+    public Page<CommunityResponseDto> non_login_chorokTalkList(String postTypeCode,Pageable pageable) {
+        QueryResults<CommunityResponseDto> results = queryFactory
                 .select(Projections.constructor(
                                 CommunityResponseDto.class,
                                 post.postId,
@@ -259,8 +274,14 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                 .where(
                         post.postType.postTypeCode.notIn("postType01")
                                 .and(communityList(postTypeCode))
-                )
-                .fetch();
+                ).offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<CommunityResponseDto> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
     }
     // [마이페이지]
     // 내가 작성한 플렌테리어 - 전체 조회
@@ -388,8 +409,8 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
 
     // 내가 북마크한 식물
     @Override
-    public List<PlantDictionaryResponseDto> myPlantBookMark(Long userId) {
-        return queryFactory
+    public Page<PlantDictionaryResponseDto> myPlantBookMark(Long userId, Pageable pageable) {
+        QueryResults<PlantDictionaryResponseDto> results = queryFactory
                 .select(
                         Projections.constructor(PlantDictionaryResponseDto.class,
                                 plant.plantNo,
@@ -405,7 +426,15 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                         plant.plantNo.eq(plantImg.plantNo),
                         plantBookMark.user.userId.eq(userId)
                 )
-                .fetch();
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<PlantDictionaryResponseDto> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+
     }
     //1. 내가쓴 플렌테리어 카운트
     @Override
