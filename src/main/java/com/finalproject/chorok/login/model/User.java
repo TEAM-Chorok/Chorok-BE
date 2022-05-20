@@ -104,6 +104,11 @@ public class User {
         System.out.println("유저 프로필 메세지 바꾸기");
     }
 
+    public void changeAccountStatus(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+        System.out.println("유저 비활성화 시키기");
+    }
+
     public boolean isValidToken(String token) {
         return this.emailCheckToken.equals(token);
     }
