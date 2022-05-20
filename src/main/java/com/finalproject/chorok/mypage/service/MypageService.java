@@ -130,7 +130,7 @@ public class MypageService {
 
     //프로필 닉네임, 사진 수정
     @Transactional
-    public HashMap<String, String> updateProfile(String nickname, MultipartFile multipartFile, UserDetailsImpl userDetails) throws IOException {
+    public HashMap<String, String> updateProfile(String nickname, MultipartFile multipartFile, UserDetailsImpl userDetails, String profileMsg) throws IOException {
 
         String profileImgUrl = null;
         User user = userDetails.getUser();
@@ -145,6 +145,10 @@ public class MypageService {
         if(multipartFile != null){
             profileImgUrl = s3Uploader.updateProfileImage(multipartFile, "static", userDetails);
             user.changeProfileImage(profileImgUrl);
+            userRepository.save(user);
+        }
+        if(profileMsg != null){
+            user.changeProfileMsg(profileMsg);
             userRepository.save(user);
         }
 
