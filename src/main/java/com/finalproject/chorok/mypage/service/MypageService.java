@@ -4,6 +4,7 @@ import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.dto.DuplicateChkDto;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.mypage.dto.MyPlanteriorSearchResponseDto;
+import com.finalproject.chorok.mypage.dto.ProfileUpdateDto;
 import com.finalproject.chorok.mypage.repository.PlantBookMarkRepository;
 import com.finalproject.chorok.post.dto.CommunityResponseDto;
 import com.finalproject.chorok.post.dto.PlantariaDictionaryResponseDto;
@@ -131,24 +132,29 @@ public class MypageService {
 
     //프로필 닉네임, 사진 수정
     @Transactional
-    public HashMap<String, String> updateProfile(String nickname, MultipartFile multipartFile, UserDetailsImpl userDetails, String profileMsg) throws IOException {
-
+    public HashMap<String, String> updateProfile(ProfileUpdateDto profileUpdateDto, UserDetailsImpl userDetails) throws IOException {
+        System.out.println("서비스 들어오나");
         String profileImgUrl = null;
         User user = userDetails.getUser();
+        String nickname = profileUpdateDto.getNickname();
+        String profileMsg = profileUpdateDto.getProfileMsg();
 
         if (nickname != null) {
             if (!nickname.equals(userDetails.getNickname())) {
                 validator.nickCheck(new DuplicateChkDto(nickname));
+                System.out.println("닉네임 들어오나");
                 user.changeNickname(nickname);
                 userRepository.save(user);
             }
         }
-        if(multipartFile != null){
-            profileImgUrl = s3Uploader.updateProfileImage(multipartFile, "static", userDetails);
-            user.changeProfileImage(profileImgUrl);
-            userRepository.save(user);
-        }
+//        if(multipartFile != null){
+//            profileImgUrl = s3Uploader.updateProfileImage(multipartFile, "static", userDetails);
+//            System.out.println("이미지 들어오나");
+//            user.changeProfileImage(profileImgUrl);
+//            userRepository.save(user);
+//        }
         if(profileMsg != null){
+            System.out.println("메세지 들어오나");
             user.changeProfileMsg(profileMsg);
             userRepository.save(user);
         }
