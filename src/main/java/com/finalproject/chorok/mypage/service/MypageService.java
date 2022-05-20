@@ -17,8 +17,6 @@ import com.finalproject.chorok.mypage.dto.MypageMyplantFinalDto;
 import com.finalproject.chorok.mypage.dto.MypageMyplantSixDto;
 import com.finalproject.chorok.mypage.model.PlantBookMark;
 import com.finalproject.chorok.plant.repository.PlantRepository;
-import com.finalproject.chorok.post.model.PostBookMark;
-
 
 import com.finalproject.chorok.post.repository.PostRepository;
 import com.finalproject.chorok.post.utils.CommUtils;
@@ -32,7 +30,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
