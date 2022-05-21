@@ -44,7 +44,7 @@ public class PostController {
      * @Example : read-posts?postTypecode = postType01
      */
     @GetMapping("/read-posts")
-    public ResponseEntity<Page<PostResponseDto>> readPosts
+    public ResponseEntity<PostPagingDto> readPosts
     (
             @Valid PlantriaFilterRequestDto postSearchRequestDto,
             @PageableDefault Pageable pageable
@@ -71,7 +71,7 @@ public class PostController {
      * 플렌테리어 통합 검색 - 사진
      */
     @GetMapping("/search-post/photo/planterior")
-    public ResponseEntity<PlantriaPhotoResponseDto> photoSearchPlanterior(
+    public ResponseEntity<PostPagingDto> photoSearchPlanterior(
             PlantriaFilterRequestDto postSearchRequestDto,
             @PageableDefault Pageable pageable
     ) {
@@ -84,7 +84,10 @@ public class PostController {
      * 식물도감 조회
      */
     @GetMapping("/search-post/dictionary/planterior")
-    public ResponseEntity<PlantariaDictionaryResponseDto> dictionarySearchPlanterior(DictionaryFilterDto dictionaryFilterDto, Pageable pageable) {
+    public ResponseEntity<PostPagingDto> dictionarySearchPlanterior(
+            DictionaryFilterDto dictionaryFilterDto,
+            @PageableDefault Pageable pageable
+    ) {
         return  ResponseEntity.status(HttpStatus.OK).body(postService.dictionarySearchPlantria(dictionaryFilterDto,pageable));
 
     }
@@ -94,14 +97,15 @@ public class PostController {
      * @Example : read-posts/community?postTypeCode=
      */
     @GetMapping("/read-posts/community")
-    public ResponseEntity<List<CommunityResponseDto>> readPostsCommunity(
+    public ResponseEntity<PostPagingDto> readPostsCommunity(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(name = "postTypeCode",required = false) String postTypeCode,
+            @PageableDefault Pageable pageable
             // ? keyword
-            @RequestParam(name="keyword", required = false)  String keyword
+           // @RequestParam(name="keyword", required = false)  String keyword
     )  {
 
-        return   ResponseEntity.status(HttpStatus.OK).body(postService.readPostsCommunity(userDetails.getUser(), postTypeCode));
+        return   ResponseEntity.status(HttpStatus.OK).body(postService.readPostsCommunity(userDetails.getUser(), postTypeCode,pageable));
 
     }
 
@@ -109,9 +113,12 @@ public class PostController {
      * 초록톡 전체 조회 (비 로그인 시)
      */
     @GetMapping("/non-login/read-posts/community")
-    public ResponseEntity<List<CommunityResponseDto>> nonLoginReadPostsCommunity(@RequestParam(name = "postTypeCode",required = false) String postTypeCode) {
+    public ResponseEntity<PostPagingDto> nonLoginReadPostsCommunity(
+            @RequestParam(name = "postTypeCode",required = false) String postTypeCode,
+            @PageableDefault Pageable pageable
+    ) {
 
-        return   ResponseEntity.status(HttpStatus.OK).body(postService.nonLoginReadPostsCommunity(postTypeCode));
+        return   ResponseEntity.status(HttpStatus.OK).body(postService.nonLoginReadPostsCommunity(postTypeCode,pageable));
 
     }
 

@@ -4,8 +4,11 @@ import com.finalproject.chorok.mypage.dto.MyPlanteriorSearchResponseDto;
 import com.finalproject.chorok.myPlant.dto.MyAllPlantDetailResponseDto;
 import com.finalproject.chorok.mypage.dto.MypageMyplantFinalDto;
 import com.finalproject.chorok.mypage.dto.MypageMyplantSixDto;
+import com.finalproject.chorok.mypage.dto.MypagePagingDto;
+import com.finalproject.chorok.mypage.dto.ProfileUpdateDto;
 import com.finalproject.chorok.mypage.service.MypageService;
 import com.finalproject.chorok.post.dto.CommunityResponseDto;
+import com.finalproject.chorok.post.dto.PlantDictionaryResponseDto;
 import com.finalproject.chorok.post.dto.PlantariaDictionaryResponseDto;
 import com.finalproject.chorok.post.dto.PlantriaFilterRequestDto;
 import com.finalproject.chorok.security.UserDetailsImpl;
@@ -52,7 +55,7 @@ public class MypageController {
 
     // 내가쓴 게시물 - 전체 조회
     @GetMapping("/mypage/post")
-    public ResponseEntity<Page<CommunityResponseDto>> myPhoto
+    public ResponseEntity<MypagePagingDto> myPhoto
     (
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             PlantriaFilterRequestDto plantriaFilterRequestDto,
@@ -64,7 +67,7 @@ public class MypageController {
 
     // 내가 북마크한 게시물
     @GetMapping("/mypage/bookmark/post")
-    public ResponseEntity<Page<CommunityResponseDto>> myPostBookMark
+    public ResponseEntity<MypagePagingDto> myPostBookMark
     (
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             PlantriaFilterRequestDto plantriaFilterRequestDto,
@@ -76,12 +79,13 @@ public class MypageController {
 
     // 내가 북마크한 식물들
     @GetMapping("/mypage/bookmark/plant")
-    public ResponseEntity<PlantariaDictionaryResponseDto> myPlantBookMark
+    public ResponseEntity<MypagePagingDto> myPlantBookMark
     (
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PageableDefault Pageable pageable
     ){
 
-        return ResponseEntity.status(HttpStatus.OK).body(mypageService.myPlantBookMark(userDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.myPlantBookMark(userDetails,pageable));
     }
 
     //내 식물 보기
@@ -104,13 +108,13 @@ public class MypageController {
 
     //프로필 수정하기
     @PatchMapping("/user/update/profile")
-    public ResponseEntity<HashMap<String, String>> updateProfile(
-            @RequestParam(value = "nickname", required = false) String nickname,
-            @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile,
-            @RequestParam(value = "profileMsg", required = false) String profileMsg,
+    public ResponseEntity<HashMap<String, String>> updateProfile(@RequestBody ProfileUpdateDto profileUpdateDto,
+//            @RequestParam(value = "nickname", required = false) String nickname,
+//            @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile,
+//            @RequestParam(value = "profileMsg", required = false) String profileMsg,
             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-
-        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updateProfile(nickname, multipartFile, userDetails, profileMsg));
+        System.out.println("컨트롤러 들어오나");
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updateProfile(profileUpdateDto,userDetails));
     }
 
     //회원 비활성화
@@ -118,6 +122,6 @@ public class MypageController {
     public ResponseEntity<HashMap<String, String>> inactivateAccount(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.inactivateAccount(userDetails));
-    }
+    } 
 }
 

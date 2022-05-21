@@ -26,13 +26,13 @@ public interface PostRepositoryQueryDsl {
     Long plantDictionaryListCount(PlantriaFilterRequestDto postSearchRequestDto);
 
     // [플랜테리어 검색- 식물도감]
-    List<PlantDictionaryResponseDto> plantDictionaryList(DictionaryFilterDto dictionaryFilterDto);
+    Page<PlantDictionaryResponseDto> plantDictionaryList(DictionaryFilterDto dictionaryFilterDto,Pageable pageable);
 
     // [초록톡]
     // 초록톡 전체 게시물 조회(postTypeCode 필터링)-  로그인
-    List<CommunityResponseDto> chorokTalkList(Long userId, String postTypeCode);
+    Page<CommunityResponseDto> chorokTalkList(Long userId, String postTypeCode,Pageable pageable);
     // 초록톡 전체 게시물 조회(postTypeCode 필터링) - 비로그인
-    List<CommunityResponseDto> non_login_chorokTalkList(String postTypeCode);
+    Page<CommunityResponseDto> non_login_chorokTalkList(String postTypeCode,Pageable pageable);
 
     // [마이페이지]
     // 내가 작성한 플랜테이어사진 전체 조회
@@ -46,8 +46,7 @@ public interface PostRepositoryQueryDsl {
 
 
     // 내가 북마크한 식물
-    List<PlantDictionaryResponseDto> myPlantBookMark(Long userId);
-
+    Page<PlantDictionaryResponseDto> myPlantBookMark(Long userId, Pageable pageable);
 
     //1. 내가쓴 플렌테리어 카운트
     Long myPlanteriorCount(Long userId);
