@@ -59,33 +59,24 @@ public class UserController {
 
     //아이디 중복 체크
     @PostMapping("/auth/emailCheck")
-    private ResponseEntity<StatusMessage> usernameDupliChk(@RequestBody DuplicateChkDto duplicateChkDto) {
-        StatusMessage statusMessage = new StatusMessage();
+    private ResponseEntity<HashMap<String, String>> usernameDupliChk(@RequestBody DuplicateChkDto duplicateChkDto) {
         String msg = userService.usernameDuplichk(duplicateChkDto);
         if (msg.equals("사용가능한 이메일 입니다.")) {
-            statusMessage.setStatusCode(StatusMessage.StatusEnum.OK);
-            statusMessage.setMessage(msg);
-            return new ResponseEntity<>(statusMessage, HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.OK));
+
         } else {
-            statusMessage.setStatusCode(StatusMessage.StatusEnum.BAD_REQUEST);
-            statusMessage.setMessage(msg);
-            return new ResponseEntity<>(statusMessage, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.BAD_REQUEST));
         }
     }
 
     //닉네임 중복 체크
     @PostMapping("/auth/nicknameCheck")
-    private ResponseEntity<StatusMessage> nicknameDupliChk(@RequestBody DuplicateChkDto duplicateChkDto){
-        StatusMessage statusMessage = new StatusMessage();
+    private ResponseEntity<HashMap<String, String>> nicknameDupliChk(@RequestBody DuplicateChkDto duplicateChkDto){
         String msg = userService.nicknameDuplichk(duplicateChkDto);
         if(msg.equals("사용가능한 닉네임 입니다.")){
-            statusMessage.setStatusCode(StatusMessage.StatusEnum.OK);
-            statusMessage.setMessage(msg);
-            return new ResponseEntity<>(statusMessage,HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.OK));
         }else{
-            statusMessage.setStatusCode(StatusMessage.StatusEnum.BAD_REQUEST);
-            statusMessage.setMessage(msg);
-            return new ResponseEntity<>(statusMessage, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.BAD_REQUEST));
         }
     }
 
