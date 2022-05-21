@@ -63,6 +63,7 @@ public class User {
         this.googleId = null;
         this.emailCheckToken = emailCheckToken;
         this.profileImageUrl = profileImageUrl;
+        this.isEnabled = true;
 
     }
 
@@ -72,7 +73,7 @@ public class User {
         this.nickname = nickname;
         this.kakaoId = kakaoId;
         this.profileImageUrl = profileImage;
-
+        this.isEnabled = true;
     }
 
     public User(String username, String password, String nickname, Long kakaoId, String googleId, String profileImage) {
@@ -82,6 +83,7 @@ public class User {
         this.kakaoId = kakaoId;
         this.googleId = googleId;
         this.profileImageUrl = profileImage;
+        this.isEnabled = true;
     }
 
     public void changePassword(String tempPassword) {

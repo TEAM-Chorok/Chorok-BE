@@ -58,8 +58,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        System.out.println("UserDetailsImpl authorities 에서 나온 결과");
-
 
         return null;
     }

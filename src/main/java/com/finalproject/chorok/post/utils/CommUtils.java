@@ -140,19 +140,23 @@ public class CommUtils {
     }
     // 사진 저장
     public String postPhotoSave(MultipartFile file) throws IOException {
-
-        if(!file.isEmpty() || file !=null){
-            return s3Uploader.upload(file, "static");
+        if(file.isEmpty()){
+            return null;
         }
-        return null;
+        return s3Uploader.upload(file, "static");
     }
     // 플랜테리어 사진 유무 체크
     public void planteriorFileChk(String postTypeCode, MultipartFile file){
         if(postTypeCode.equals("postType01") || postTypeCode == "postType01"){
-            if(file.isEmpty() || file ==null)
+            if(file.getOriginalFilename().isEmpty() || file ==null || file.equals(""))
                 throw new NullPointerException("플랜테이어는 사진이 필수조건입니다.");
         }
     }
+//    // MultipartFile null 체크
+//    public Boolean martipartNullChk(MultipartFile file){
+//        file.get
+//
+//    }
 
     // 게시글 등록할때 플렌테리어 이외를 게시판 plantPlaceCode ExceptionCHk
 
@@ -162,6 +166,15 @@ public class CommUtils {
             return null;
         }
         return plantPlaceCode;
+    }
+
+    // 반환값 없는 에러 API 반환값 설정
+    public HashMap<String,String> errResponseHashMap(HttpStatus httpCode){
+        HashMap<String,String> hs = new HashMap<>();
+
+        hs.put("StatusCode",String.valueOf(httpCode));
+        hs.put("msg","작업을 완료하지 못했습니다");
+        return hs;
     }
 
 }
