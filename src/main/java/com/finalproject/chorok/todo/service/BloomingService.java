@@ -24,15 +24,19 @@ public class BloomingService {
     private final CommUtils commUtils;
 
     //꽃핀날 추가하기
-    public BloomingDay createBloomingDay(Long myPlantNo, LocalDate thatDay, UserDetailsImpl userDetails){
+    public BloomingDay createBloomingDay(Long myPlantNo, BloomingDayRequestDto bloomingDayRequestDto, UserDetailsImpl userDetails){
         User user = userDetails.getUser();
         MyPlant myPlant = myPlantRepository.findById(myPlantNo).orElseThrow(
                 () -> new IllegalArgumentException("나의식물이 존재하지 않습니다.")
         );
-        BloomingDay bloomingDay1 = new BloomingDay(thatDay,myPlant,user);
+        BloomingDay bloomingDay = new BloomingDay(
+                bloomingDayRequestDto.getBloomingDay(),
+                myPlant,
+                user
+        );
 
 
-        return bloomingDayRepository.save(bloomingDay1);
+        return bloomingDayRepository.save(bloomingDay);
     }
 @Transactional
     public HashMap<String, String>  delBloomingDay(Long myPlantNo, LocalDate bloomingDay, UserDetailsImpl userDetails) {
