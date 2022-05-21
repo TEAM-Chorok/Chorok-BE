@@ -37,4 +37,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     Todo findFirstByUserOrderByTodoNoAsc(User user);
 
     Todo findByUserAndTodoTimeAndWorkTypeAndMyPlant_MyPlantNo(User user, LocalDate todoTime, String workType, Long myPlantNo);
+    Todo findByUserAndMyPlant_MyPlantNoAndWorkTypeOrderByLastWorkTimeDesc(User user, Long myPlantNo, String workType);
+    Optional<Todo> findFirstByUserAndMyPlant_MyPlantNoAndWorkTypeOrderByLastWorkTimeDesc(User user,Long myPlantNo,String workType);
+
 }

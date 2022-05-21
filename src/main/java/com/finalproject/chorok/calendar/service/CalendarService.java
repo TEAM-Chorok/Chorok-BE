@@ -82,10 +82,24 @@ public class CalendarService {
         return calendarResponseDto;
     }
 
-    public Todo checkTodoInCalendar(LocalDate todoTime, String workType, Long myPlantNo, UserDetailsImpl userDetails) {
+//달력에서 투두 체크하기
+   public Todo checkTodoInCalendar(LocalDate todoTime, String workType, Long myPlantNo, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         Todo todo = todoRepository.findByUserAndTodoTimeAndWorkTypeAndMyPlant_MyPlantNo(user, todoTime, workType, myPlantNo);
-        System.out.println("todo = " + todo);
+        //위의 todo가 없을시,,
+
+        if (todo == null){
+            Todo todo2 = new Todo(
+                    workType,
+                    todoRepository.findFirstByUserAndMyPlant_MyPlantNoAndWorkTypeOrderByLastWorkTimeDesc(user,myPlantNo,workType).get().getTodoTime(),
+                    todoTime,
+                    true,
+                    userDetails.getUser(),
+                    myPlantRepository.findByMyPlantNo(myPlantNo)
+            );
+            todoRepository.save(todo2);
+            return todo2;
+        }
         todo.setStatus(true);
         todoRepository.save(todo);
         return todo;

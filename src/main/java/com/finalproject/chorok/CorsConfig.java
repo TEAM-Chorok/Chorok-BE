@@ -10,6 +10,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000")
+                .allowedOrigins("http://chorok-test.s3-website.ap-northeast-2.amazonaws.com/")
                 .allowedMethods("GET","POST","PUT","DELETE","PATCH")
                 .allowCredentials(true)
                 .maxAge(3000);
