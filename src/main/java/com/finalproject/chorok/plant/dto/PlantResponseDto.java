@@ -1,5 +1,6 @@
 package com.finalproject.chorok.plant.dto;
 
+import com.finalproject.chorok.mypage.model.PlantBookMark;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +28,10 @@ public class PlantResponseDto {
     private String fallWaterCycle;
     private String winterWaterCycle;
 
-    public PlantResponseDto(Long plantNo,String plantName,String plantImgUrl,String plantLevel,String plantPlace,String plantType,String plantGrowthShape, String plantTemp, String plantHumid,String plantInfo,String springWaterCycle,String summerWaterCycle,String fallWaterCycle,String winterWaterCycle){
+    // 2022.05.21 추가 - 북마크
+    private Boolean plantBookMark;
+
+    public PlantResponseDto(Long plantNo,String plantName,String plantImgUrl,String plantLevel,String plantPlace,String plantType,String plantGrowthShape, String plantTemp, String plantHumid,String plantInfo,String springWaterCycle,String summerWaterCycle,String fallWaterCycle,String winterWaterCycle,PlantBookMark plantBookMark){
         this.plantNo = plantNo;
         this.plantName = plantName;
         this.plantImgUrl = plantImgUrl;
@@ -42,6 +46,8 @@ public class PlantResponseDto {
         this.summerWaterCycle = summerWaterCycle;
         this.fallWaterCycle = fallWaterCycle;
         this.winterWaterCycle = winterWaterCycle;
+        this.plantBookMark = plantBookMark != null;
     }
+
 
 }

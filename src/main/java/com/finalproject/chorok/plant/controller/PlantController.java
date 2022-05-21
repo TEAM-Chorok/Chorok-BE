@@ -18,6 +18,6 @@ public class PlantController {
     @GetMapping("/plant/{plantNo}")
     public PlantResponseDto getAllPlants(@PathVariable Long plantNo, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        return plantService.getPlantDetail(plantNo);
+        return plantService.getPlantDetail(plantNo,userDetails.getUser());
     }
 }
