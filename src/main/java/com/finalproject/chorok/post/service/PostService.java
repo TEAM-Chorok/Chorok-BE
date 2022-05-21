@@ -47,29 +47,33 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final PostBookMarkRepository postBookMarkRepository;
     private final CommUtils commUtils;
-    // 1.플랜테리어 조회(queryParameter로 필터링)
-    public Page<PostResponseDto> planteriorReadPosts(PlantriaFilterRequestDto postSearchRequestDto, Pageable pageable) {
 
-      return   postRepository.planteriorReadPosts(
-                postSearchRequestDto,
-                pageable
-        );
+    // 1.플랜테리어 조회(queryParameter로 필터링)
+    public PostPagingDto planteriorReadPosts(PlantriaFilterRequestDto postSearchRequestDto, Pageable pageable) {
+
+      return new PostPagingDto(
+              postRepository.planteriorReadPosts(postSearchRequestDto,pageable)
+      );
     }
     // 2. 초록톡 전체 게시물조회 (postTypeCode로 필터링) - 로그인 시
-    public List<CommunityResponseDto> readPostsCommunity(User user,String postTypeCode) {
+    public PostPagingDto readPostsCommunity(User user,String postTypeCode,Pageable pageable) {
 
-        List<CommunityResponseDto> communityResponseDtoList = postRepository.chorokTalkList(user.getUserId(),postTypeCode);
+        //List<CommunityResponseDto> communityResponseDtoList = postRepository.chorokTalkList(user.getUserId(),postTypeCode);
 
-        return communityResponseDtoList;
+       // return communityResponseDtoList;
+        return new PostPagingDto(
+                postRepository.chorokTalkList(user.getUserId(),postTypeCode,pageable)
+        );
     }
 
 
     // 3. 초록톡 전체 게시물조회 (postTypeCode로 필터링) - 비로그인 시
-    public List<CommunityResponseDto> nonLoginReadPostsCommunity(String postTypeCode) {
-        List<CommunityResponseDto> communityResponseDtoList = postRepository.non_login_chorokTalkList(postTypeCode);
-
-
-        return communityResponseDtoList;
+    public PostPagingDto nonLoginReadPostsCommunity(String postTypeCode,Pageable pageable) {
+//        List<CommunityResponseDto> communityResponseDtoList = postRepository.non_login_chorokTalkList(postTypeCode);
+//        return communityResponseDtoList;
+        return new PostPagingDto(
+                postRepository.non_login_chorokTalkList(postTypeCode,pageable)
+        );
     }
 
 
@@ -214,21 +218,27 @@ public class PostService {
 
 
     // 11. 플랜테이어 통합 검색 결과 -  사진
-    public PlantriaPhotoResponseDto photoSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto, Pageable pageable) {
-        Page<PostResponseDto> responseDtoList = postRepository.planteriorReadPosts(postSearchRequestDto, pageable);
-        int planteriorCount  = Math.toIntExact(postRepository.integrateSearchPlanteriorCount(postSearchRequestDto));
+    public PostPagingDto photoSearchPlanterior(PlantriaFilterRequestDto postSearchRequestDto, Pageable pageable) {
+       // Page<PostResponseDto> responseDtoList = postRepository.planteriorReadPosts(postSearchRequestDto, pageable);
+       // int planteriorCount  = Math.toIntExact(postRepository.integrateSearchPlanteriorCount(postSearchRequestDto));
 
 
-        return new PlantriaPhotoResponseDto(planteriorCount,responseDtoList);
+        //return new PlantriaPhotoResponseDto(planteriorCount,responseDtoList);
+        return new PostPagingDto(
+            postRepository.planteriorReadPosts(postSearchRequestDto, pageable)
+        );
     }
 
     // 식물 도감 검색
-    public PlantariaDictionaryResponseDto dictionarySearchPlantria(DictionaryFilterDto dictionaryFilterDto,Pageable pageable) {
+    public PostPagingDto dictionarySearchPlantria(DictionaryFilterDto dictionaryFilterDto,Pageable pageable) {
 
         // 식물도감검색
-        List<PlantDictionaryResponseDto> plantDictionaryList = postRepository.plantDictionaryList(dictionaryFilterDto);
+        //List<PlantDictionaryResponseDto> plantDictionaryList = postRepository.plantDictionaryList(dictionaryFilterDto,pageable);
 
-        return new PlantariaDictionaryResponseDto(plantDictionaryList.size(),plantDictionaryList);
+       // return new PlantariaDictionaryResponseDto(plantDictionaryList.size(),plantDictionaryList);
+        return  new PostPagingDto(
+                postRepository.plantDictionaryList(dictionaryFilterDto,pageable)
+        );
     }
 
 

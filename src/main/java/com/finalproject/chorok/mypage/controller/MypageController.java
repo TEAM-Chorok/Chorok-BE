@@ -4,9 +4,11 @@ import com.finalproject.chorok.mypage.dto.MyPlanteriorSearchResponseDto;
 import com.finalproject.chorok.myPlant.dto.MyAllPlantDetailResponseDto;
 import com.finalproject.chorok.mypage.dto.MypageMyplantFinalDto;
 import com.finalproject.chorok.mypage.dto.MypageMyplantSixDto;
+import com.finalproject.chorok.mypage.dto.MypagePagingDto;
 import com.finalproject.chorok.mypage.dto.ProfileUpdateDto;
 import com.finalproject.chorok.mypage.service.MypageService;
 import com.finalproject.chorok.post.dto.CommunityResponseDto;
+import com.finalproject.chorok.post.dto.PlantDictionaryResponseDto;
 import com.finalproject.chorok.post.dto.PlantariaDictionaryResponseDto;
 import com.finalproject.chorok.post.dto.PlantriaFilterRequestDto;
 import com.finalproject.chorok.security.UserDetailsImpl;
@@ -53,7 +55,7 @@ public class MypageController {
 
     // 내가쓴 게시물 - 전체 조회
     @GetMapping("/mypage/post")
-    public ResponseEntity<Page<CommunityResponseDto>> myPhoto
+    public ResponseEntity<MypagePagingDto> myPhoto
     (
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             PlantriaFilterRequestDto plantriaFilterRequestDto,
@@ -65,7 +67,7 @@ public class MypageController {
 
     // 내가 북마크한 게시물
     @GetMapping("/mypage/bookmark/post")
-    public ResponseEntity<Page<CommunityResponseDto>> myPostBookMark
+    public ResponseEntity<MypagePagingDto> myPostBookMark
     (
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             PlantriaFilterRequestDto plantriaFilterRequestDto,
@@ -77,12 +79,13 @@ public class MypageController {
 
     // 내가 북마크한 식물들
     @GetMapping("/mypage/bookmark/plant")
-    public ResponseEntity<PlantariaDictionaryResponseDto> myPlantBookMark
+    public ResponseEntity<MypagePagingDto> myPlantBookMark
     (
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PageableDefault Pageable pageable
     ){
 
-        return ResponseEntity.status(HttpStatus.OK).body(mypageService.myPlantBookMark(userDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.myPlantBookMark(userDetails,pageable));
     }
 
     //내 식물 보기
