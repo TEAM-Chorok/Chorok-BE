@@ -32,13 +32,15 @@ public class User {
     @Column(nullable = true, unique = true)
     private String nickname;
 
-
     @Column(nullable = true)
     @Lob //Large Object : 파일이름이 길 경우 대비
     private String profileImageUrl;
 
     @Column(unique = true)
     private String emailCheckToken;
+
+    @Column(nullable = true, length = 1000)
+    private String profileMsg;
 
     @Setter
     @Column(nullable = true)
@@ -47,6 +49,10 @@ public class User {
     @Setter
     @Column(nullable = true, length=1000)
     private String googleId;
+
+    @Setter
+    @Column(nullable = false)
+    private boolean isEnabled;
 
     @Builder
     public User(String username, String password, String nickname, String emailCheckToken, String profileImageUrl) {
@@ -57,6 +63,7 @@ public class User {
         this.googleId = null;
         this.emailCheckToken = emailCheckToken;
         this.profileImageUrl = profileImageUrl;
+        this.isEnabled = true;
 
     }
 
@@ -66,7 +73,7 @@ public class User {
         this.nickname = nickname;
         this.kakaoId = kakaoId;
         this.profileImageUrl = profileImage;
-
+        this.isEnabled = true;
     }
 
     public User(String username, String password, String nickname, Long kakaoId, String googleId, String profileImage) {
@@ -76,6 +83,7 @@ public class User {
         this.kakaoId = kakaoId;
         this.googleId = googleId;
         this.profileImageUrl = profileImage;
+        this.isEnabled = true;
     }
 
     public void changePassword(String tempPassword) {
@@ -91,6 +99,16 @@ public class User {
     public void changeProfileImage(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
         System.out.println("유저 프로필 이미지 바꾸기");
+    }
+
+    public void changeProfileMsg(String profileMsg) {
+        this.profileMsg = profileMsg;
+        System.out.println("유저 프로필 메세지 바꾸기");
+    }
+
+    public void changeAccountStatus(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+        System.out.println("유저 비활성화 시키기");
     }
 
     public boolean isValidToken(String token) {

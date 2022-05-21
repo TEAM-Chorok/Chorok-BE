@@ -3,6 +3,8 @@ package com.finalproject.chorok.todo.model;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.model.MyPlant;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -12,7 +14,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Data
 @Table(name = "spraying_day")
 public class Spraying {
     @Id
@@ -21,7 +22,7 @@ public class Spraying {
 
     private LocalDate sprayingDay;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "my_plant_no",referencedColumnName = "my_plant_no")
     private MyPlant myPlant;
 

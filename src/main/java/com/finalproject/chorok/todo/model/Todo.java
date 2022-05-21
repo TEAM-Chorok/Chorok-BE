@@ -5,6 +5,8 @@ import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.todo.dto.TodoAutoDto;
 import com.finalproject.chorok.todo.dto.TodoRequestDto;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -14,7 +16,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Data
 @Table(name = "todo")
 public class Todo {
 

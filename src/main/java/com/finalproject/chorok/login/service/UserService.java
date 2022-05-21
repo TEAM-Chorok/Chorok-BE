@@ -15,9 +15,11 @@ import com.finalproject.chorok.login.validator.Validator;
 import com.finalproject.chorok.plant.model.Plant;
 import com.finalproject.chorok.plant.repository.PlantRepository;
 import com.finalproject.chorok.login.dto.LabelingResponseDto;
+import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,9 +46,10 @@ public class UserService {
     private final RedisUtil redisUtil;
     private final PlantRepository plantRepository;
     private final PlantUtils plantUtils;
+    private final CommUtils commUtils;
 
     @Transactional
-    public String registerUser(SignupRequestDto requestDto) {
+    public HashMap<String, String> registerUser(SignupRequestDto requestDto) {
         String msg = "회원가입 성공";
 //        String msg = "회원인증 이메일 전송";
 
@@ -55,7 +58,7 @@ public class UserService {
             validator.signupValidate(requestDto);
         } catch (IllegalArgumentException e) {
             msg = e.getMessage();
-            return msg;
+            return commUtils.errResponseHashMap(HttpStatus.BAD_REQUEST);
         }
 
         // 패스워드 암호화
@@ -80,19 +83,11 @@ public class UserService {
         User savedUser = userRepository.save(user);
         Labeling defaultLabeling = new Labeling(savedUser);
         labelingRepository.save(defaultLabeling);
-        return msg;
+        return commUtils.responseHashMap(HttpStatus.OK);
     }
-
-    public void labelingTest(UserDetailsImpl userDetails) {
-
-        Labeling defaultLabeling = new Labeling(userDetails.getUser());
-        labelingRepository.save(defaultLabeling);
-    }
-
-
 
         @Transactional
-    public ResponseEntity<CMResponseDto> sendTempPassword(EmailRequestDto emailRequestDto) throws InvalidActivityException {
+    public CMResponseDto sendTempPassword(EmailRequestDto emailRequestDto) throws InvalidActivityException {
 
         User findUser = userRepository.findByUsername(emailRequestDto.getEmail()).orElseThrow(
                 () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
@@ -108,7 +103,7 @@ public class UserService {
 
         sendTempPasswordConfirmEmail(findUser, tempPassword);
         System.out.println("작업완료");
-        return ResponseEntity.ok(new CMResponseDto("true"));
+        return new CMResponseDto("true");
     }
 //
     private void sendTempPasswordConfirmEmail(User user, String tempPwd) {
@@ -162,11 +157,15 @@ public class UserService {
         String username = userDetails.getUsername();
         String nickname = userDetails.getUser().getNickname();
         Long userId = userDetails.getUser().getUserId();
+        String profileImgUrl = userDetails.getUser().getProfileImageUrl();
+        String profileMsg = userDetails.getUser().getProfileMsg();
         Optional<User> user = userRepository.findByUsername(username);
         IsLoginDto isLoginDto = IsLoginDto.builder()
                 .username(username)
                 .nickname(nickname)
                 .userId(userId)
+                .profileImgUrl(profileImgUrl)
+                .profileMsg(profileMsg)
                 .build();
         System.out.println("isLoginDto 만들어짐");
         return isLoginDto;
