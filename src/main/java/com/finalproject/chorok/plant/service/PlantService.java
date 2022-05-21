@@ -1,6 +1,9 @@
 package com.finalproject.chorok.plant.service;
 
 import com.finalproject.chorok.common.utils.PlantUtils;
+import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.mypage.model.PlantBookMark;
+import com.finalproject.chorok.mypage.repository.PlantBookMarkRepository;
 import com.finalproject.chorok.plant.dto.PlantGrowthResponsDto;
 import com.finalproject.chorok.plant.dto.PlantPlaceResponseDto;
 import com.finalproject.chorok.plant.dto.PlantResponseDto;
@@ -8,6 +11,7 @@ import com.finalproject.chorok.plant.dto.PlantTypeResponseDto;
 import com.finalproject.chorok.plant.model.Plant;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import com.finalproject.chorok.plant.repository.*;
+import com.finalproject.chorok.post.utils.CommUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +30,11 @@ public class PlantService {
     private final PlantImgRepository plantImgRepository;
     private final PlantUtils plantUtils;
     private final PlantGrowthShapeRepository plantGrowthShapeRepository;
+    private final PlantBookMarkRepository plantBookMarkRepository;
+    private final CommUtils commUtils;
 
     @Transactional
-    public PlantResponseDto getPlantDetail(Long plantNo) {
+    public PlantResponseDto getPlantDetail(Long plantNo, User user) {
         Plant plant = plantRepository.findByPlantNo(plantNo);
         //식물생육에 좋은 장소 붙여서 넣어주기
         String code = plant.getPlantPlaceCode();
@@ -73,6 +79,11 @@ public class PlantService {
         String finalType = typeAll.substring(0, typeAll.length() - 1);
         String finalGrowth = growthAll.substring(0, growthAll.length() - 1);
 
+
+        // 내가 북마크한 식물 조회
+        // PlantBookMark plantBookMark = plantBookMarkRepository.findBy()
+
+
         PlantResponseDto plantResponseDto = new PlantResponseDto(
                 plantNo,
                 plant.getPlantName(),
@@ -88,7 +99,8 @@ public class PlantService {
                 plant.getWaterCycleSpringCode(),
                 plant.getWaterCycleSummerCode(),
                 plant.getWaterCycleAutumnCode(),
-                plant.getWaterCycleWinterCode()
+                plant.getWaterCycleWinterCode(),
+                commUtils.getPlantBookMark(user,plantNo)
         );
         return plantResponseDto;
     }

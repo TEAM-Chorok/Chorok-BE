@@ -106,25 +106,25 @@ public class MypageService {
         );
     }
 
-    public List<MyAllPlantDetailResponseDto> getAllMyPlantDetail(UserDetailsImpl userDetails) {
-        List<MyPlant> myPlants = myPlantRepository.findAllByUser(userDetails.getUser());
-        List<MyAllPlantDetailResponseDto> myAllPlantDetailResponseDtos = new ArrayList<>();
-        for (MyPlant myPlant : myPlants) {
-            MyAllPlantDetailResponseDto myAllPlantDetailResponseDto = new MyAllPlantDetailResponseDto(
-                    myPlant.getMyPlantNo(),
-                    myPlant.getMyPlantImgUrl(),
-                    myPlant.getMyPlantPlace(),
-                    myPlant.getMyPlantName(),
-                    plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName(),
-                    myPlant.getStartDay(),
-                    myPlant.getEndDay()
-            );
-            myAllPlantDetailResponseDtos.add(myAllPlantDetailResponseDto);
-        }
-
-
-        return myAllPlantDetailResponseDtos;
-    }
+//    public List<MyAllPlantDetailResponseDto> getAllMyPlantDetail(UserDetailsImpl userDetails) {
+//        List<MyPlant> myPlants = myPlantRepository.findAllByUser(userDetails.getUser());
+//        List<MyAllPlantDetailResponseDto> myAllPlantDetailResponseDtos = new ArrayList<>();
+//        for (MyPlant myPlant : myPlants) {
+//            MyAllPlantDetailResponseDto myAllPlantDetailResponseDto = new MyAllPlantDetailResponseDto(
+//                    myPlant.getMyPlantNo(),
+//                    myPlant.getMyPlantImgUrl(),
+//                    myPlant.getMyPlantPlace(),
+//                    myPlant.getMyPlantName(),
+//                    plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName(),
+//                    myPlant.getStartDay(),
+//                    myPlant.getEndDay()
+//            );
+//            myAllPlantDetailResponseDtos.add(myAllPlantDetailResponseDto);
+//        }
+//
+//
+//        return myAllPlantDetailResponseDtos;
+//    }
 
     //비밀번호 수정
     public HashMap<String, String> updatePassword(String password, UserDetailsImpl userDetails) {
