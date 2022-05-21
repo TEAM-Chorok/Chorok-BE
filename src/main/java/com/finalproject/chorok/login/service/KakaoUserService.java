@@ -9,14 +9,12 @@ import com.finalproject.chorok.login.model.Labeling;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.login.repository.LabelingRepository;
 import com.finalproject.chorok.login.repository.UserRepository;
+import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.security.jwt.JwtTokenUtils;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +24,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 @Service
@@ -33,12 +32,14 @@ public class KakaoUserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final LabelingRepository labelingRepository;
+    private final CommUtils commUtils;
 
     @Autowired
-    public KakaoUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository) {
+    public KakaoUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository, CommUtils commUtils) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.labelingRepository = labelingRepository;
+        this.commUtils = commUtils;
     }
 
     public KakaoUserResponseDto kakaoLogin(String code) throws JsonProcessingException {
@@ -193,7 +194,7 @@ public class KakaoUserService {
         return JwtTokenUtils.generateJwtToken(userDetails);
     }
 
-    public String kakaoLogout(Long kakaoId) throws JsonProcessingException {
+    public HashMap<String, String> kakaoLogout(Long kakaoId) throws JsonProcessingException {
         System.out.println("카카오 서비스단으로 이동하나");
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
@@ -213,7 +214,7 @@ public class KakaoUserService {
         System.out.println("요청 잘 들어갔나");
         System.out.println(response);
 
-        return response.getBody();
+        return commUtils.responseHashMap(HttpStatus.OK);
 
 
     }

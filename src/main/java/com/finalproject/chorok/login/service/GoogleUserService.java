@@ -13,6 +13,7 @@ import com.finalproject.chorok.login.model.Labeling;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.login.repository.LabelingRepository;
 import com.finalproject.chorok.login.repository.UserRepository;
+import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.GoogleOAuthRequest;
 import com.finalproject.chorok.security.GoogleOAuthResponse;
 import com.finalproject.chorok.security.UserDetailsImpl;
@@ -25,6 +26,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,6 +39,7 @@ import software.amazon.ion.Decimal;
 
 import java.io.IOException;
 import java.net.CookieManager;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,13 +51,15 @@ public class GoogleUserService {
     private final UserRepository userRepository;
     private final LabelingRepository labelingRepository;
     private final RedisUtil redisUtil;
+    private final CommUtils commUtils;
 
     @Autowired
-    public GoogleUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository, RedisUtil redisUtil) {
+    public GoogleUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository, RedisUtil redisUtil, CommUtils commUtils) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.labelingRepository = labelingRepository;
         this.redisUtil = redisUtil;
+        this.commUtils = commUtils;
     }
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -198,19 +203,17 @@ public class GoogleUserService {
         return JwtTokenUtils.generateJwtToken(userDetails);
     }
 
-        public String googleRevokeAccess(String accessToken, String googleId)
+        public HashMap<String, String> googleRevokeAccess(String accessToken, String googleId)
     {
         try{
             HttpClient client = HttpClientBuilder.create().build();
             HttpPost post = new HttpPost("https://accounts.google.com/o/oauth2/revoke?token="+accessToken);
             org.apache.http.HttpResponse response = client.execute(post);
-            System.out.println("로그아웃 결과는?");
-            System.out.println(response);
             redisUtil.delete(googleId);
         }
         catch(IOException e)
         {
         }
-    return "성공";
+    return commUtils.responseHashMap(HttpStatus.OK);
     }
 }

@@ -164,5 +164,14 @@ public class CommUtils {
         return plantPlaceCode;
     }
 
+    // 반환값 없는 에러 API 반환값 설정
+    public HashMap<String,String> errResponseHashMap(HttpStatus httpCode){
+        HashMap<String,String> hs = new HashMap<>();
+
+        hs.put("StatusCode",String.valueOf(httpCode));
+        hs.put("msg","작업을 완료하지 못했습니다");
+        return hs;
+    }
+
 }
 
