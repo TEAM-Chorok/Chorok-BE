@@ -203,7 +203,7 @@ class PlantBookMarkTest {
     // 내가 쓴 글 카운트
     @Test
     public void myPlanteriorCount(){
-        Long userId = 9L;
+        Long userId = 24L;
         long result = queryFactory
                 .selectFrom(post)
                 .where(
@@ -217,7 +217,7 @@ class PlantBookMarkTest {
     // 내가 쓴 글 6개 조회
     @Test
     public void myPlanterior(){
-        Long userId = 9L;
+        Long userId = 24L;
         List<MyPlanteriorResponseDto> result =  queryFactory
                 .select(
                         Projections.constructor(MyPlanteriorResponseDto.class,
@@ -230,10 +230,12 @@ class PlantBookMarkTest {
                         )
 
                 )
-                .from(post,plantPlace1)
+                .from(post)
+                .leftJoin(plantPlace1)
+                .on(post.plantPlaceCode.eq(plantPlace1.plantPlaceCode))
                 .where(
                         post.user.userId.eq(userId),
-                        post.plantPlaceCode.eq(plantPlace1.plantPlaceCode),
+                        //post.plantPlaceCode.eq(plantPlace1.plantPlaceCode),
                         post.postType.postTypeCode.eq("postType01")
                 )
                 .orderBy(post.createdAt.desc())
@@ -247,7 +249,7 @@ class PlantBookMarkTest {
     // 내가 북마크한 플렌테리어 카운트
     @Test
     public void myPlanteriorBookMarkCount() {
-        Long userId = 9L;
+        Long userId = 24L;
         Long result = queryFactory
                 .selectFrom(post)
                 .leftJoin(postBookMark)
@@ -263,7 +265,7 @@ class PlantBookMarkTest {
     // 내가 북마크한 플렌테리어 6개
     @Test
     public void myPlanteriorBookMark(){
-        Long userId = 9L;
+        Long userId = 24L;
         List<MyPlanteriorResponseDto> result =  queryFactory
                 .select(
                         Projections.constructor(MyPlanteriorResponseDto.class,

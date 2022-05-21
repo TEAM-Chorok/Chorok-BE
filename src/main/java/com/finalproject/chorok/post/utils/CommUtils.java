@@ -37,7 +37,7 @@ public class CommUtils {
     private final PlantBookMarkRepository plantBookMarkRepository;
     private final S3Uploader s3Uploader;
 
-    public static final Long DEFAULT_PAGE_SIZE = 10L;
+
 
     // 식물장소코드로 식물장소 검색
     public  PlantPlace getPlantPlace(String plantPlaceCode){
@@ -162,10 +162,14 @@ public class CommUtils {
 
     public String planteriorPlantPlaceChk(String postTypeCode, String plantPlaceCode) {
 
-        if (!postTypeCode.equals("postType01")) {
-            return null;
+        if (postTypeCode.equals("postType01")) {
+            if(plantPlaceCode.isEmpty()){
+                throw new NullPointerException("플렌테리어는 plantPlaceCode가 필수요소입니다.");
+            }
+            return plantPlaceCode;
         }
-        return plantPlaceCode;
+        return null;
+
     }
 
 }

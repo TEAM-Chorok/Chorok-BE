@@ -462,10 +462,12 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                         )
 
                 )
-                .from(post,plantPlace1)
+                .from(post)
+                .leftJoin(plantPlace1)
+                .on(post.plantPlaceCode.eq(plantPlace1.plantPlaceCode))
                 .where(
                         post.user.userId.eq(userId),
-                        post.plantPlaceCode.eq(plantPlace1.plantPlaceCode),
+                        //post.plantPlaceCode.eq(plantPlace1.plantPlaceCode),
                         post.postType.postTypeCode.eq("postType01")
                 )
                 .orderBy(post.createdAt.desc())
