@@ -3,9 +3,7 @@ package com.finalproject.chorok.mypage.service;
 import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.dto.DuplicateChkDto;
 import com.finalproject.chorok.login.model.User;
-import com.finalproject.chorok.mypage.dto.MyPlanteriorSearchResponseDto;
-import com.finalproject.chorok.mypage.dto.MypagePagingDto;
-import com.finalproject.chorok.mypage.dto.ProfileUpdateDto;
+import com.finalproject.chorok.mypage.dto.*;
 import com.finalproject.chorok.mypage.repository.PlantBookMarkRepository;
 import com.finalproject.chorok.post.dto.CommunityResponseDto;
 import com.finalproject.chorok.post.dto.PlantDictionaryResponseDto;
@@ -16,8 +14,6 @@ import com.finalproject.chorok.login.validator.Validator;
 import com.finalproject.chorok.myPlant.dto.MyAllPlantDetailResponseDto;
 import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
-import com.finalproject.chorok.mypage.dto.MypageMyplantFinalDto;
-import com.finalproject.chorok.mypage.dto.MypageMyplantSixDto;
 import com.finalproject.chorok.mypage.model.PlantBookMark;
 import com.finalproject.chorok.plant.repository.PlantRepository;
 
@@ -88,6 +84,21 @@ public class MypageService {
 
         return new MypagePagingDto(
                 postRepository.myPlanterior(userDetails.getUserId(),plantriaFilterRequestDto,pageable)
+        );
+    }
+
+
+    // 내가 북마크한 커뮤니티 전체 조회 ( 커뮤니티 )
+    public MypagePagingDto myCommunityBookMark(UserDetailsImpl userDetails, Pageable pageable) {
+        return new MypagePagingDto(
+                postRepository.myCommunityBookMark(userDetails.getUserId(),pageable)
+        );
+    }
+
+    // 내가 쓴 커뮤니티 게시물 전체 조회 ( 커뮤니티)
+    public MypagePagingDto myCommunity(UserDetailsImpl userDetails, Pageable pageable) {
+        return new MypagePagingDto(
+                postRepository.myCommunity(userDetails.getUserId(),pageable)
         );
     }
 
@@ -185,6 +196,13 @@ public class MypageService {
                 mypageMyplantSixDtos);
         return mypageMyplantFinalDto;
     }
+    // 내가 스크랩한 식물 6개
+    public MypageMyBookMarkplantFinalDto getSixBookmarkPlant(UserDetailsImpl userDetails, Pageable pageable) {
+        return new MypageMyBookMarkplantFinalDto(
+                postRepository.myPlantBookMark(userDetails.getUserId(),pageable)
+        );
+
+    }
 
     //계정 비활성화
     public HashMap<String, String> inactivateAccount(UserDetailsImpl userDetails) {
@@ -193,5 +211,7 @@ public class MypageService {
         userRepository.save(user);
         return commUtils.responseHashMap(HttpStatus.OK);
     }
+
+
 
 }

@@ -1,11 +1,7 @@
 package com.finalproject.chorok.mypage.controller;
 
-import com.finalproject.chorok.mypage.dto.MyPlanteriorSearchResponseDto;
+import com.finalproject.chorok.mypage.dto.*;
 import com.finalproject.chorok.myPlant.dto.MyAllPlantDetailResponseDto;
-import com.finalproject.chorok.mypage.dto.MypageMyplantFinalDto;
-import com.finalproject.chorok.mypage.dto.MypageMyplantSixDto;
-import com.finalproject.chorok.mypage.dto.MypagePagingDto;
-import com.finalproject.chorok.mypage.dto.ProfileUpdateDto;
 import com.finalproject.chorok.mypage.service.MypageService;
 import com.finalproject.chorok.post.dto.CommunityResponseDto;
 import com.finalproject.chorok.post.dto.PlantDictionaryResponseDto;
@@ -46,6 +42,7 @@ public class MypageController {
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.plantBookMark(plantNo, userDetails.getUser()));
 
     }
+
     // 마이페이지 내가쓴 플렌테이어 6개, 북마크한 플렌테리어 조회 6개
     @GetMapping("/mypage/post/planterior")
     public ResponseEntity<MyPlanteriorSearchResponseDto> myPlanterior(@AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -53,7 +50,9 @@ public class MypageController {
         return ResponseEntity.status(HttpStatus.OK).body( mypageService.myPlanterior(userDetails));
     }
 
-    // 내가쓴 게시물 - 전체 조회
+
+
+    // 내가쓴 게시물 - 전체 조회 ( 플렌테리어 ,커뮤니티)
     @GetMapping("/mypage/post")
     public ResponseEntity<MypagePagingDto> myPhoto
     (
@@ -65,7 +64,7 @@ public class MypageController {
         return ResponseEntity.status(HttpStatus.OK).body( mypageService.myPhoto(userDetails, plantriaFilterRequestDto,pageable));
     }
 
-    // 내가 북마크한 게시물
+    // 내가 북마크한 게시물 ( 플렌테리어 , 커뮤니터 )
     @GetMapping("/mypage/bookmark/post")
     public ResponseEntity<MypagePagingDto> myPostBookMark
     (
@@ -75,6 +74,23 @@ public class MypageController {
     ){
 
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.myPostBookMark(userDetails,plantriaFilterRequestDto,pageable));
+    }
+
+    // 내가 북마크한 커뮤니티 전체 조회 ( 커뮤니티 )
+    @GetMapping("/mypage/bookmark/post/community")
+    public ResponseEntity<MypagePagingDto> myCommunityBookMark(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PageableDefault Pageable pageable
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.myCommunityBookMark(userDetails,pageable));
+    }
+    // 내가 쓴 커뮤니티 게시물 전체 조회 ( 커뮤니티)
+    @GetMapping("/mypage/bookmark/community")
+    public ResponseEntity<MypagePagingDto> myCommunity(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PageableDefault Pageable pageable
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.myCommunity(userDetails,pageable));
     }
 
     // 내가 북마크한 식물들
@@ -99,6 +115,19 @@ public class MypageController {
     public ResponseEntity<MypageMyplantFinalDto> getSixMyPlant(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.getSixMyplants(userDetails));
     }
+
+    // 내가 스크랩한 식물 6개
+    @GetMapping("/mypage/bookmark/myplant")
+    public ResponseEntity<MypageMyBookMarkplantFinalDto> getSixBookmarkPlant(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PageableDefault(size = 6) Pageable pageable
+    ){
+
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.getSixBookmarkPlant(userDetails,pageable));
+    }
+
+
+
     //비밀번호 수정하기
     @PatchMapping("/user/update/password")
     public ResponseEntity<HashMap<String, String>> updatePassword(@RequestParam(name = "password") String password, @AuthenticationPrincipal UserDetailsImpl userDetails) {

@@ -80,8 +80,7 @@ public class PlantService {
         String finalGrowth = growthAll.substring(0, growthAll.length() - 1);
 
 
-        // 내가 북마크한 식물 조회
-        // PlantBookMark plantBookMark = plantBookMarkRepository.findBy()
+
 
 
         PlantResponseDto plantResponseDto = new PlantResponseDto(

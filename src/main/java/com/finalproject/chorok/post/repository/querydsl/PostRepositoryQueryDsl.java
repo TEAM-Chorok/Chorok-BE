@@ -44,7 +44,10 @@ public interface PostRepositoryQueryDsl {
     // 2. postTypeCode != postType01 , -> plantPlaceCode로 필터링 불가능
     Page<CommunityResponseDto> myBookMarkPost(Long userId,PlantriaFilterRequestDto plantriaFilterRequestDto, Pageable pageable);
 
-
+    // 내가 북마크한 커뮤니티 전체조회
+    Page<CommunityResponseDto> myCommunityBookMark(Long userId, Pageable pageable);
+    // 내가 쓴 커뮤니티 게시물 전체 조회
+    Page<CommunityResponseDto> myCommunity(Long userId, Pageable pageable);
     // 내가 북마크한 식물
     Page<PlantDictionaryResponseDto> myPlantBookMark(Long userId, Pageable pageable);
 

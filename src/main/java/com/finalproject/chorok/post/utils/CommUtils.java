@@ -161,7 +161,7 @@ public class CommUtils {
     public String planteriorPlantPlaceChk(String postTypeCode, String plantPlaceCode) {
 
         if (postTypeCode.equals("postType01")) {
-            if(plantPlaceCode.isEmpty()){
+            if(plantPlaceCode==null || plantPlaceCode.equals("")){
                 throw new NullPointerException("플렌테리어는 plantPlaceCode가 필수요소입니다.");
             }
             return plantPlaceCode;

@@ -233,6 +233,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                                 )
 
                 )
+                .orderBy(post.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
@@ -274,7 +275,9 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                 .where(
                         post.postType.postTypeCode.notIn("postType01")
                                 .and(communityList(postTypeCode))
-                ).offset(pageable.getOffset())
+                )
+                .orderBy(post.createdAt.desc())
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
 
@@ -336,6 +339,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                         plantPlaceCode(plantriaFilterRequestDto.getPlantPlaceCode())
 
                 )
+                .orderBy(post.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
@@ -344,6 +348,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
 
         return new PageImpl<>(content, pageable, total);
     }
+
     // 내가 북마크한 게시물 전체 조회
     @Override
     public Page<CommunityResponseDto> myBookMarkPost(Long userId, PlantriaFilterRequestDto plantriaFilterRequestDto,Pageable pageable) {
@@ -396,6 +401,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                         plantPlaceCode(plantriaFilterRequestDto.getPlantPlaceCode())
 
                 )
+                .orderBy(post.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
@@ -405,6 +411,126 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
         return new PageImpl<>(content, pageable, total);
     }
 
+    // 내가 북마크한 커뮤니티 전체조회
+    @Override
+    public Page<CommunityResponseDto> myCommunityBookMark(Long userId, Pageable pageable) {
+        QueryResults<CommunityResponseDto> results = queryFactory
+                .select(Projections.constructor(
+                                CommunityResponseDto.class,
+                                post.postId,
+                                post.user.nickname,
+                                post.user.profileImageUrl.as("profileImgUrl"),
+                                post.postTitle,
+                                post.postType.postType,
+                                post.postImgUrl,
+                                post.postContent,
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postLike.count())
+                                                .from(postLike)
+                                                .where(postLike.post.postId.eq(post.postId)),
+                                        "postLikeCount"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(comment.count())
+                                                .from(comment)
+                                                .where(comment.post.postId.eq(post.postId)),
+                                        "commentCount"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postLike.count())
+                                                .from(postLike)
+                                                .where(
+                                                        postLike.user.userId.eq(userId)
+                                                                .and(postLike.post.postId.eq(post.postId))
+                                                ), "postLike"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postBookMark.count())
+                                                .from(postBookMark)
+                                                .where(
+                                                        postBookMark.user.userId.eq(userId)
+                                                                .and(postBookMark.post.postId.eq(post.postId))
+
+                                                ), "postBookMark"),
+                                post.createdAt.as("postRecentTime")
+                        )
+                )
+                .from(post)
+                .where(
+                        post.user.userId.eq(userId),
+                        post.postType.postTypeCode.notIn("postType01")
+
+                )
+                .orderBy(post.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+        List<CommunityResponseDto> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+    // 내가 쓴 커뮤니티 게시물 전체 조회
+    @Override
+    public Page<CommunityResponseDto> myCommunity(Long userId, Pageable pageable) {
+        QueryResults<CommunityResponseDto> results = queryFactory
+                .select(Projections.constructor(
+                                CommunityResponseDto.class,
+                                post.postId,
+                                post.user.nickname,
+                                post.user.profileImageUrl.as("profileImgUrl"),
+                                post.postTitle,
+                                post.postType.postType,
+                                post.postImgUrl,
+                                post.postContent,
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postLike.count())
+                                                .from(postLike)
+                                                .where(postLike.post.postId.eq(post.postId)),
+                                        "postLikeCount"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(comment.count())
+                                                .from(comment)
+                                                .where(comment.post.postId.eq(post.postId)),
+                                        "commentCount"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postLike.count())
+                                                .from(postLike)
+                                                .where(
+                                                        postLike.user.userId.eq(userId)
+                                                                .and(postLike.post.postId.eq(post.postId))
+                                                ), "postLike"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(postBookMark.count())
+                                                .from(postBookMark)
+                                                .where(
+                                                        postBookMark.user.userId.eq(userId)
+                                                                .and(postBookMark.post.postId.eq(post.postId))
+
+                                                ), "postBookMark"),
+                                post.createdAt.as("postRecentTime")
+                        )
+                )
+                .from(post)
+                .where(
+                        post.user.userId.eq(userId),
+                        post.postType.postTypeCode.notIn("postType01")
+
+                )
+                .orderBy(post.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+        List<CommunityResponseDto> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+    }
 
 
     // 내가 북마크한 식물
@@ -426,6 +552,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                         plant.plantNo.eq(plantImg.plantNo),
                         plantBookMark.user.userId.eq(userId)
                 )
+                .orderBy(plant.plantName.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
