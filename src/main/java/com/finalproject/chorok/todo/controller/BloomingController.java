@@ -26,6 +26,8 @@ public class BloomingController {
 
     return ResponseEntity.status(HttpStatus.OK).body(bloomingService.createBloomingDay(myPlantNo,bloomingDayRequestDto,userDetails));
     }
+
+    //꽃핀날 삭제
     @DeleteMapping("/blooming/{myPlantNo}/{yearmonthday}")
     public ResponseEntity<HashMap<String, String>> deleteBloomingDay(@PathVariable Long myPlantNo, @PathVariable String yearmonthday, @AuthenticationPrincipal UserDetailsImpl userDetails){
         String year = yearmonthday.substring(0, 4);
