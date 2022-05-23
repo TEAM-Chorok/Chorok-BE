@@ -29,7 +29,7 @@ public class MyPlantController {
 
     //내식물 이미지포함 등록하기
     @PostMapping("/myplant")
-    public ResponseEntity<MyPlant> createMyPlant(
+    public ResponseEntity<String> createMyPlant(
             @RequestParam("plantNo") String plantNo,
             @RequestParam(value = "myPlantPlaceCode") String myPlantPlaceCode,
             @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
@@ -99,12 +99,13 @@ public class MyPlantController {
      * 내식물번호를 받아서 식물하나 정보 반환
      */
     @GetMapping("/myplant/plant/{myPlantNo}")
-    public ResponseEntity<MyOnePlantResponseDto> findMyPlant(@PathVariable Long myPlantNo){
+    public ResponseEntity<MyOnePlantResponseDto> findMyPlant(@PathVariable Long myPlantNo) {
         return ResponseEntity.status(HttpStatus.OK).body(myPlantService.findMyPlant(myPlantNo));
     }
-//내식물 삭제하기
-   @DeleteMapping("/myplant/{myPlantNo}")
-    public ResponseEntity<?> delMyplant(@PathVariable Long myPlantNo, @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+    //내식물 삭제하기
+    @DeleteMapping("/myplant/{myPlantNo}")
+    public ResponseEntity<?> delMyplant(@PathVariable Long myPlantNo, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(myPlantService.delMyPlant(myPlantNo, userDetails));
     }
 }
