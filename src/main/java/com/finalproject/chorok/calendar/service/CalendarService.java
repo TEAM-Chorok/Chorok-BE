@@ -55,7 +55,7 @@ public class CalendarService {
             );
             bloomingDayResponstDtos.add(bloomingDayResponstDto);
         }
-        for(Spraying spraying : sprayingDays){
+        for (Spraying spraying : sprayingDays) {
             SprayingDayResponstDto sprayingDayResponstDto = new SprayingDayResponstDto(
                     spraying.getSprayingDay()
             );
@@ -82,43 +82,46 @@ public class CalendarService {
         return calendarResponseDto;
     }
 
-//달력에서 투두 체크하기
-   public Todo checkTodoInCalendar(LocalDate todoTime, String workType, Long myPlantNo, UserDetailsImpl userDetails) {
+    //달력에서 투두 체크하기
+    public boolean checkTodoInCalendar(LocalDate todoTime, String workType, Long myPlantNo, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         Todo todo = todoRepository.findByUserAndTodoTimeAndWorkTypeAndMyPlant_MyPlantNo(user, todoTime, workType, myPlantNo);
         //위의 todo가 없을시,,
 
-        if (todo == null){
+        if (todo == null) {
             Todo todo2 = new Todo(
                     workType,
-                    todoRepository.findFirstByUserAndMyPlant_MyPlantNoAndWorkTypeOrderByLastWorkTimeDesc(user,myPlantNo,workType).get().getTodoTime(),
+                    todoRepository.findFirstByUserAndMyPlant_MyPlantNoAndWorkTypeOrderByLastWorkTimeDesc(user, myPlantNo, workType).get().getTodoTime(),
                     todoTime,
                     true,
                     userDetails.getUser(),
                     myPlantRepository.findByMyPlantNo(myPlantNo)
             );
             todoRepository.save(todo2);
-            return todo2;
+            return todo2.isStatus();
         }
         todo.setStatus(true);
         todoRepository.save(todo);
-        return todo;
+        return todo.isStatus();
     }
+
+
     //분무한 날 추가하기
-    public SprayingDayResponstDto checkSprayingInCalendar(Long myPlantNo, LocalDate thatDay, UserDetailsImpl userDetails){
+    public SprayingDayResponstDto checkSprayingInCalendar(Long myPlantNo, LocalDate thatDay, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         MyPlant myPlant = myPlantRepository.findById(myPlantNo).orElseThrow(
                 () -> new IllegalArgumentException("나의식물이 존재하지 않습니다.")
         );
-        Spraying spraying = new Spraying(thatDay,myPlant,user);
+        Spraying spraying = new Spraying(thatDay, myPlant, user);
         sprayingDayRepository.save(spraying);
         SprayingDayResponstDto sprayingDayResponstDto = new SprayingDayResponstDto(spraying.getSprayingDay());
         return sprayingDayResponstDto;
 
     }
+
     @Transactional
     public HashMap<String, String> delSprayingDay(Long myPlantNo, LocalDate thatDay, UserDetailsImpl userDetails) {
-        sprayingDayRepository.deleteSprayingBySprayingDayAndMyPlant_MyPlantNoAndUser(thatDay,myPlantNo, userDetails.getUser());
+        sprayingDayRepository.deleteSprayingBySprayingDayAndMyPlant_MyPlantNoAndUser(thatDay, myPlantNo, userDetails.getUser());
         return commUtils.responseHashMap(HttpStatus.OK);
     }
 

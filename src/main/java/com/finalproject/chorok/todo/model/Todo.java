@@ -27,7 +27,7 @@ public class Todo {
     private LocalDate todoTime;
     private boolean status;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "my_plant_no", referencedColumnName = "my_plant_no")
     private MyPlant myPlant;
 
