@@ -6,6 +6,7 @@ import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
 import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.todo.dto.BloomingDayRequestDto;
+import com.finalproject.chorok.todo.dto.BloomingDayResponstDto;
 import com.finalproject.chorok.todo.model.BloomingDay;
 import com.finalproject.chorok.todo.repository.BloomingDayRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class BloomingService {
     private final CommUtils commUtils;
 
     //꽃핀날 추가하기
-    public BloomingDay createBloomingDay(Long myPlantNo, BloomingDayRequestDto bloomingDayRequestDto, UserDetailsImpl userDetails){
+    public BloomingDayResponstDto createBloomingDay(Long myPlantNo, BloomingDayRequestDto bloomingDayRequestDto, UserDetailsImpl userDetails){
         User user = userDetails.getUser();
         MyPlant myPlant = myPlantRepository.findById(myPlantNo).orElseThrow(
                 () -> new IllegalArgumentException("나의식물이 존재하지 않습니다.")
@@ -34,9 +35,9 @@ public class BloomingService {
                 myPlant,
                 user
         );
+         bloomingDayRepository.save(bloomingDay);
 
-
-        return bloomingDayRepository.save(bloomingDay);
+        return new BloomingDayResponstDto(bloomingDayRequestDto.getBloomingDay());
     }
 @Transactional
     public HashMap<String, String>  delBloomingDay(Long myPlantNo, LocalDate bloomingDay, UserDetailsImpl userDetails) {

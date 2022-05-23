@@ -2,6 +2,7 @@ package com.finalproject.chorok.todo.controller;
 
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.todo.dto.BloomingDayRequestDto;
+import com.finalproject.chorok.todo.dto.BloomingDayResponstDto;
 import com.finalproject.chorok.todo.model.BloomingDay;
 import com.finalproject.chorok.todo.service.BloomingService;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,9 @@ public class BloomingController {
     private final BloomingService bloomingService;
 
     @PostMapping("/blooming/{myPlantNo}")
-    public ResponseEntity<BloomingDay> createBloomingDay (@PathVariable Long myPlantNo,
-                                          @RequestBody BloomingDayRequestDto bloomingDayRequestDto,
-                                          @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<BloomingDayResponstDto> createBloomingDay (@PathVariable Long myPlantNo,
+                                                                     @RequestBody BloomingDayRequestDto bloomingDayRequestDto,
+                                                                     @AuthenticationPrincipal UserDetailsImpl userDetails){
 
     return ResponseEntity.status(HttpStatus.OK).body(bloomingService.createBloomingDay(myPlantNo,bloomingDayRequestDto,userDetails));
     }
