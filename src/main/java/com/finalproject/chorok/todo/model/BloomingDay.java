@@ -22,7 +22,7 @@ public class BloomingDay {
 
     private LocalDate bloomingDay;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "my_plant_no", referencedColumnName = "my_plant_no")
     private MyPlant myPlant;
 

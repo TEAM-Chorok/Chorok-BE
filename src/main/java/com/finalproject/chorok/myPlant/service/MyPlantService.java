@@ -129,40 +129,39 @@ public class MyPlantService {
 
         for (Todo todo : todos) {
             Optional<Todo> todo2 = todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType());
-            Todo todo3 = todoRepository.findFirstByUserOrderByTodoNoAsc(user);
-            LocalDate thatDay = todo3.getTodoTime();
-            if(todo2.isPresent()){
-           thatDay = todo2.get().getTodoTime();
-        }
+//            Todo todo3 = todoRepository.findFirstByUserOrderByTodoNoAsc(user);
+            LocalDate thatDay = myPlantRepository.findByMyPlantNo(todo.getMyPlant().getMyPlantNo()).getStartDay();
+            if (todo2.isPresent()) {
+                thatDay = todo2.get().getTodoTime();
+            }
 
             TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
-                todo.getTodoNo(),
-                todo.getMyPlant().getMyPlantNo(),
-                todo.getWorkType(),
-                todo.getLastWorkTime(),
-                //워크타입별 스테이터스가 true인 값과 오늘의 날짜차이. 즉, 몇일이 지났는지.
-                (int) (LocalDate.now().toEpochDay() - thatDay.toEpochDay()),
-                todo.isStatus()
-        );
-        todoOnlyResponseDtos.add(todoOnlyResponseDto);
-    }
-        for(MyPlant myPlant :myPlants)
-    {
-        MyPlantResponseDto myPlantResponseDto = new MyPlantResponseDto(
-                myPlant.getMyPlantNo(),
-                myPlant.getPlantNo(),
-                plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName(),
-                myPlant.getMyPlantPlace(),
-                myPlant.getMyPlantImgUrl(),
-                myPlant.getMyPlantName(),
-                myPlant.getStartDay(),
-                myPlant.getEndDay(),
-                todoOnlyResponseDtos.stream().filter(h -> h.getMyPlantNo().equals(myPlant.getMyPlantNo())).collect(Collectors.toList()));
-        myPlantResponseDtos.add(myPlantResponseDto);
-    }
-        return myPlantResponseDtos;
-}
+                    todo.getTodoNo(),
+                    todo.getMyPlant().getMyPlantNo(),
+                    todo.getWorkType(),
+                    todo.getLastWorkTime(),
+                    //워크타입별 스테이터스가 true인 값과 오늘의 날짜차이. 즉, 몇일이 지났는지.
 
+                    (int) (LocalDate.now().toEpochDay() - thatDay.toEpochDay()),
+                    todo.isStatus()
+            );
+            todoOnlyResponseDtos.add(todoOnlyResponseDto);
+        }
+        for (MyPlant myPlant : myPlants) {
+            MyPlantResponseDto myPlantResponseDto = new MyPlantResponseDto(
+                    myPlant.getMyPlantNo(),
+                    myPlant.getPlantNo(),
+                    plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName(),
+                    myPlant.getMyPlantPlace(),
+                    myPlant.getMyPlantImgUrl(),
+                    myPlant.getMyPlantName(),
+                    myPlant.getStartDay(),
+                    myPlant.getEndDay(),
+                    todoOnlyResponseDtos.stream().filter(h -> h.getMyPlantNo().equals(myPlant.getMyPlantNo())).collect(Collectors.toList()));
+            myPlantResponseDtos.add(myPlantResponseDto);
+        }
+        return myPlantResponseDtos;
+    }
 
 
     //나의 식물 수정하기
@@ -216,7 +215,7 @@ public class MyPlantService {
      */
     public MyOnePlantResponseDto findMyPlant(Long myPlantNo) {
         MyPlant plant = myPlantRepository.findById(myPlantNo).orElseThrow(
-                ()-> new NullPointerException("해당 나의식물번호가 존재하지 않습니다.")
+                () -> new NullPointerException("해당 나의식물번호가 존재하지 않습니다.")
         );
         return new MyOnePlantResponseDto(
                 plant.getMyPlantNo(),
@@ -229,13 +228,13 @@ public class MyPlantService {
     }
 
     /*
-    *2022-05-19 추가기능
-    *최은아
-    * 내식물 삭제
+     *2022-05-19 추가기능
+     *최은아
+     * 내식물 삭제
      */
     @Transactional
-    public HashMap<String, String> delMyPlant(Long myPlantNo, UserDetailsImpl userDetails){
-        myPlantRepository.deleteMyPlantByAndUserAndAndMyPlantNo(userDetails.getUser(),myPlantNo);
-    return commUtils.responseHashMap(HttpStatus.OK);
+    public HashMap<String, String> delMyPlant(Long myPlantNo, UserDetailsImpl userDetails) {
+        myPlantRepository.deleteMyPlantByAndUserAndAndMyPlantNo(userDetails.getUser(), myPlantNo);
+        return commUtils.responseHashMap(HttpStatus.OK);
     }
 }
