@@ -1,5 +1,7 @@
 package com.finalproject.chorok.myPlant.controller;
 
+import com.finalproject.chorok.common.Image.Image;
+import com.finalproject.chorok.common.Image.ImageRepository;
 import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.*;
@@ -25,6 +27,7 @@ public class MyPlantController {
     private final MyPlantRepository myPlantRepository;
     private final S3Uploader S3Uploader;
     private final PlantPlaceRepository plantPlaceRepository;
+    private final ImageRepository imageRepository;
 
 
     //내식물 이미지포함 등록하기
@@ -49,20 +52,40 @@ public class MyPlantController {
     }
 
     //내식물 수정하기
-    @PatchMapping("myplant/update/{myPlantNo}")
-    public ResponseEntity<MyPlant> updateMyPlant(@PathVariable Long myPlantNo,
-                                                 @RequestParam("plantNo") String plantNo,
-                                                 @RequestParam("myPlantName") String myPlantName,
-                                                 @RequestParam("myPlantPlaceCode") String myPlantPlaceCode,
-                                                 @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
-                                                 @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) throws IOException {
-
-        String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
-        MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(plantNo, myPlantName, myPlantPlaceCode, myPlantImgUrl);
-        myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails));
+//    @PatchMapping("/myplant/update/{myPlantNo}")
+//    public ResponseEntity<String> updateMyPlant(@PathVariable Long myPlantNo,
+//                                                 @RequestParam("myPlantName") String myPlantName,
+//                                                 @RequestParam("myPlantPlaceCode") String myPlantPlaceCode,
+//                                                 @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
+//                                                 @AuthenticationPrincipal UserDetailsImpl userDetails
+//    ) {
+//
+//        try {
+//            String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
+//            MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(myPlantName, myPlantPlaceCode, myPlantImgUrl);
+//            myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
+//
+//        }catch (Exception e){
+//            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return ResponseEntity.status(HttpStatus.OK).body("내 식물 수정완료");
+//    }
+    //내식물 수정하기
+    @PostMapping("/myplant/update/{myPlantNo}")
+    public ResponseEntity<String> updateMyPlant(@PathVariable Long myPlantNo,
+                                                @RequestParam(value = "myPlantName", required = false) String myPlantName,
+                                                @RequestParam(value = "myPlantPlaceCode", required = false) String myPlantPlaceCode,
+                                                @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
+                                                @RequestParam(value = "originalUrl", required = false) String originalUrl,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+//        MyPlant myPlant = myPlantRepository.findByMyPlantNo(myPlantNo);
+//        User user = userDetails.getUser();
+//        Image image = imageRepository.findByImageUrl(myPlant.getMyPlantImgUrl());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(myPlantService.updateMyPlant(myPlantNo,myPlantName,myPlantPlaceCode,multipartFile,originalUrl));
     }
+
 
     //내 식물들 보기
     @GetMapping("/myplant")

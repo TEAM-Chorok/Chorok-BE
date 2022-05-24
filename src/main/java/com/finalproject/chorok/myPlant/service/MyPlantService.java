@@ -1,5 +1,8 @@
 package com.finalproject.chorok.myPlant.service;
 
+import com.finalproject.chorok.common.Image.Image;
+import com.finalproject.chorok.common.Image.ImageRepository;
+import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.*;
 import com.finalproject.chorok.plant.model.PlantPlace;
@@ -14,10 +17,14 @@ import com.finalproject.chorok.todo.model.Todo;
 import com.finalproject.chorok.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.Multipart;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +42,8 @@ public class MyPlantService {
     private final PlantRepository plantRepository;
     private final PlantPlaceRepository plantPlaceRepository;
     private final CommUtils commUtils;
+    private final ImageRepository imageRepository;
+    private final S3Uploader s3Uploader;
 
     //식물 등록할 때, 투두리스트를 처음에 자동으로 저장해줌.
     @Transactional
@@ -236,5 +245,50 @@ public class MyPlantService {
     public HashMap<String, String> delMyPlant(Long myPlantNo, UserDetailsImpl userDetails) {
         myPlantRepository.deleteMyPlantByAndUserAndAndMyPlantNo(userDetails.getUser(), myPlantNo);
         return commUtils.responseHashMap(HttpStatus.OK);
+    }
+
+    @Transactional
+    public String updateMyPlant(Long myPlantNo, String myPlantName, String myPlantPlaceCode, MultipartFile multipartFile, String originalUrl) {
+        MyPlant myPlant = myPlantRepository.findByMyPlantNo(myPlantNo);
+        Image image = imageRepository.findByImageUrl(myPlant.getMyPlantImgUrl());
+        try {
+            //originalUrl이 널값일때->멀티파트파일이 있을때
+//            if (originalUrl == null || originalUrl.equals(""))
+            if (!multipartFile.isEmpty()) {
+                //사진삭제
+                s3Uploader.deleteImage(image.getFilename());
+                imageRepository.deleteByImageUrl(myPlant.getMyPlantImgUrl());
+                String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
+                myPlant.setMyPlantName(myPlantName);
+                myPlant.setMyPlantImgUrl(myPlantImgUrl);
+                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+                myPlantRepository.save(myPlant);
+            } else {
+                myPlant.setMyPlantName(myPlantName);
+                myPlant.setMyPlantImgUrl(originalUrl);
+                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+                myPlantRepository.save(myPlant);
+
+            }
+            return "멀티파트파일로 저장완료";
+//            MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(myPlantName, myPlantPlaceCode, myPlantImgUrl);
+//            myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
+
+        }
+        catch (NullPointerException e) {
+            //멀티파트가 null일때니까, originalImgurl로 간다.
+            myPlant.setMyPlantName(myPlantName);
+            myPlant.setMyPlantImgUrl(originalUrl);
+            myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+            myPlantRepository.save(myPlant);
+            return "오리지날유알엘로 저장완료";
+
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return "s3업로드오류용에러메세지";
+
+        }
+
     }
 }
