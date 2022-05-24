@@ -130,9 +130,8 @@ public class MypageController {
 
     //비밀번호 수정하기
     @PatchMapping("/user/update/password")
-    public ResponseEntity<HashMap<String, String>> updatePassword(@RequestParam(name = "password") String password, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updatePassword(password, userDetails));
+    public ResponseEntity<HashMap<String, String>> updatePassword(@RequestBody ProfileUpdateDto profileUpdateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updatePassword(profileUpdateDto, userDetails));
     }
 
     //프로필 수정하기

@@ -138,8 +138,9 @@ public class MypageService {
 //    }
 
     //비밀번호 수정
-    public HashMap<String, String> updatePassword(String password, UserDetailsImpl userDetails) {
+    public HashMap<String, String> updatePassword(ProfileUpdateDto profileUpdateDto, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
+        String password = profileUpdateDto.getPassword();
         validator.passwordCheck(password);
         String encodedPassword = passwordEncoder.encode(password);
         user.changePassword(encodedPassword);
