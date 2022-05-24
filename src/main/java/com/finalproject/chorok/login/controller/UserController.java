@@ -168,4 +168,9 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.OK));
     }
+
+    //CI/CD 응답
+    @GetMapping("/auth") public String checkHealth() {
+        return "healthy!~";
+    }
 }
