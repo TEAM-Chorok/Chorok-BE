@@ -49,20 +49,59 @@ public class MyPlantController {
     }
 
     //내식물 수정하기
-    @PatchMapping("myplant/update/{myPlantNo}")
-    public ResponseEntity<MyPlant> updateMyPlant(@PathVariable Long myPlantNo,
-                                                 @RequestParam("plantNo") String plantNo,
-                                                 @RequestParam("myPlantName") String myPlantName,
-                                                 @RequestParam("myPlantPlaceCode") String myPlantPlaceCode,
-                                                 @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
-                                                 @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) throws IOException {
+//    @PatchMapping("/myplant/update/{myPlantNo}")
+//    public ResponseEntity<String> updateMyPlant(@PathVariable Long myPlantNo,
+//                                                 @RequestParam("myPlantName") String myPlantName,
+//                                                 @RequestParam("myPlantPlaceCode") String myPlantPlaceCode,
+//                                                 @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
+//                                                 @AuthenticationPrincipal UserDetailsImpl userDetails
+//    ) {
+//
+//        try {
+//            String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
+//            MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(myPlantName, myPlantPlaceCode, myPlantImgUrl);
+//            myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
+//
+//        }catch (Exception e){
+//            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return ResponseEntity.status(HttpStatus.OK).body("내 식물 수정완료");
+//    }
+    //내식물 수정하기
+    @PostMapping("/myplant/update/{myPlantNo}")
+    public ResponseEntity<String> updateMyPlant(@PathVariable Long myPlantNo,
+                                                @RequestParam(value = "myPlantName", required = false) String myPlantName,
+                                                @RequestParam(value = "myPlantPlaceCode", required = false) String myPlantPlaceCode,
+                                                @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        MyPlant myPlant = myPlantRepository.findByMyPlantNo(myPlantNo);
+        User user = userDetails.getUser();
+        if (myPlantName == null) {
+            myPlantName = myPlant.getMyPlantName();
+        }
+        else if (myPlantPlaceCode == null) {
+            myPlantPlaceCode = plantPlaceRepository.findByPlantPlace(myPlant.getMyPlantPlace()).getPlantPlaceCode();
+        }
+        else if (multipartFile.isEmpty() || multipartFile==null) {
+            String myPlantImgUrl = myPlant.getMyPlantImgUrl();
+        }
+        ;
 
-        String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
-        MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(plantNo, myPlantName, myPlantPlaceCode, myPlantImgUrl);
-        myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails));
+        try {
+            String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
+            MyPlant myPlant1 = new MyPlant(myPlant.getPlantNo(),plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace(),myPlantImgUrl,myPlantName,user,myPlant.getEndDay(),myPlant.getStartDay());
+            myPlantRepository.save(myPlant1);
+            myPlantRepository.delete(myPlant);
+//            MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(myPlantName, myPlantPlaceCode, myPlantImgUrl);
+//            myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
+
+        } catch (Exception e) {
+            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("내 식물 수정완료");
     }
+
 
     //내 식물들 보기
     @GetMapping("/myplant")

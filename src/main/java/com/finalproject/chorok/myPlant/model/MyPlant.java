@@ -93,7 +93,6 @@ public class MyPlant {
     }
 
     public void update(MyPlantUpdateRequestDto myPlantUpdateRequestDto) {
-        this.plantNo = Long.parseLong(myPlantUpdateRequestDto.getPlantNo());
         this.myPlantName = myPlantUpdateRequestDto.getMyPlantName();
         this.myPlantPlace = myPlantUpdateRequestDto.getMyPlantPlace();
         this.myPlantImgUrl = myPlantUpdateRequestDto.getMyPlantImgUrl();

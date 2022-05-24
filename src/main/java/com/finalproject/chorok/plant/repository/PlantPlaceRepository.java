@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PlantPlaceRepository extends JpaRepository<PlantPlace,String> {
     PlantPlace findByPlantPlaceCode(String plantPlaceCode);
+    PlantPlace findByPlantPlace(String plantPlace);
 
 }
