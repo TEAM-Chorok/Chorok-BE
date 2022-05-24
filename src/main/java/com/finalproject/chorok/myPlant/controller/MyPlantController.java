@@ -1,5 +1,7 @@
 package com.finalproject.chorok.myPlant.controller;
 
+import com.finalproject.chorok.common.Image.Image;
+import com.finalproject.chorok.common.Image.ImageRepository;
 import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.*;
@@ -25,6 +27,7 @@ public class MyPlantController {
     private final MyPlantRepository myPlantRepository;
     private final S3Uploader S3Uploader;
     private final PlantPlaceRepository plantPlaceRepository;
+    private final ImageRepository imageRepository;
 
 
     //내식물 이미지포함 등록하기
@@ -73,33 +76,14 @@ public class MyPlantController {
                                                 @RequestParam(value = "myPlantName", required = false) String myPlantName,
                                                 @RequestParam(value = "myPlantPlaceCode", required = false) String myPlantPlaceCode,
                                                 @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
+                                                @RequestParam(value = "originalUrl", required = false) String originalUrl,
                                                 @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        MyPlant myPlant = myPlantRepository.findByMyPlantNo(myPlantNo);
-        User user = userDetails.getUser();
-        if (myPlantName == null) {
-            myPlantName = myPlant.getMyPlantName();
-        }
-        else if (myPlantPlaceCode == null) {
-            myPlantPlaceCode = plantPlaceRepository.findByPlantPlace(myPlant.getMyPlantPlace()).getPlantPlaceCode();
-        }
-        else if (multipartFile.isEmpty() || multipartFile==null) {
-            String myPlantImgUrl = myPlant.getMyPlantImgUrl();
-        }
-        ;
-
-        try {
-            String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
-            MyPlant myPlant1 = new MyPlant(myPlant.getPlantNo(),plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace(),myPlantImgUrl,myPlantName,user,myPlant.getEndDay(),myPlant.getStartDay());
-            myPlantRepository.save(myPlant1);
-            myPlantRepository.delete(myPlant);
-//            MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(myPlantName, myPlantPlaceCode, myPlantImgUrl);
-//            myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
-
-        } catch (Exception e) {
-            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("내 식물 수정완료");
+//        MyPlant myPlant = myPlantRepository.findByMyPlantNo(myPlantNo);
+//        User user = userDetails.getUser();
+//        Image image = imageRepository.findByImageUrl(myPlant.getMyPlantImgUrl());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(myPlantService.updateMyPlant(myPlantNo,myPlantName,myPlantPlaceCode,multipartFile,originalUrl));
     }
 
 
