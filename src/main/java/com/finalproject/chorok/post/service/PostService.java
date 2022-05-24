@@ -115,8 +115,8 @@ public class PostService {
     @Transactional
     public PostResponseDto writePost(PostWriteRequestDto post, User user) throws IOException {
 
-
         // 1. 플랜테리어 사진 유무 체크
+
         commUtils.planteriorFileChk(post.getPostTypeCode(),post.getPostImgUrl());
         // 2. 플랜테리어 와 초록톡 plantPlaceCode 체크
         post.setPlantPlaceCode(commUtils.planteriorPlantPlaceChk(post.getPostTypeCode(),post.getPlantPlaceCode()));
@@ -142,22 +142,18 @@ public class PostService {
 
     // 7. 게시글 수정
     @Transactional
-    public PostResponseDto updatePost(Long postId, PostWriteRequestDto postRequestDto) throws IOException {
+    public PostResponseDto updatePost(Long postId, PostWriteRequestDto postRequestDto,String originalUrl) throws IOException {
 
-        // 게시글에 사진 있는지 확인하고 있으면 삭제
-        commUtils.postPhotoDelete(postId);
-        // 1. 플랜테리어 사진 유무 체크
-        commUtils.planteriorFileChk(postRequestDto.getPostTypeCode(),postRequestDto.getPostImgUrl());
+        if(originalUrl == null || originalUrl.equals("")){
+            // 1. 플랜테리어 사진 유무 체크
+            commUtils.planteriorFileChk(postRequestDto.getPostTypeCode(),postRequestDto.getPostImgUrl());
+        }
         // 2. 플랜테리어 와 초록톡 plantPlaceCode 체크
         postRequestDto.setPlantPlaceCode(commUtils.planteriorPlantPlaceChk(postRequestDto.getPostTypeCode(),postRequestDto.getPlantPlaceCode()));
         // 3. postTypeCode 유효성 체크
         PostType postType = commUtils.getPostType(postRequestDto.getPostTypeCode());
-        // 사진 저장
-        String postImgUrl = commUtils.postPhotoSave(postRequestDto.getPostImgUrl());
 
-        Post post =  commUtils.getPost(postId);
-        post.update(postRequestDto,postImgUrl);
-        return new PostResponseDto(post);
+        return new PostResponseDto(commUtils.originalUrlChk(postId,originalUrl,postRequestDto));
     }
 
     // 8. 게시글 좋아요

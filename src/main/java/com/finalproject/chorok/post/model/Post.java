@@ -60,6 +60,7 @@ public class Post extends Timestamped {
     private String postTitle;
 
     @Column(nullable = false)
+    @Lob
     private String postContent;
 
     @Column
@@ -76,11 +77,20 @@ public class Post extends Timestamped {
     }
 
     // update
-    public void update(PostWriteRequestDto postRequestDto, String postImgUrl) {
-        this.postTitle=postRequestDto.getPostTitle();
-        this.postContent=postRequestDto.getPostContent();
+    public void update(PostWriteRequestDto post, String postImgUrl) {
+        this.postTitle=post.getPostTitle();
+        this.postContent=post.getPostContent();
         this.postImgUrl=postImgUrl;
-        this.plantPlaceCode=postRequestDto.getPlantPlaceCode();
+        this.plantPlaceCode=post.getPlantPlaceCode();
     }
+
+    // update 사진 삭제
+    public void updateDeleteImage(PostWriteRequestDto post){
+        this.postTitle=post.getPostTitle();
+        this.postContent=post.getPostContent();
+        this.postImgUrl=null;
+        this.plantPlaceCode=post.getPlantPlaceCode();
+    }
+
 }
 
