@@ -37,7 +37,7 @@ public class CalendarController {
     }
 
     @PatchMapping("/calendar/{yearmonthday}/{myPlantNo}/{workType}")
-    public ResponseEntity<?> checkTodoOkInCalendar(@PathVariable String yearmonthday, @PathVariable String workType, @PathVariable Long myPlantNo, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<String> checkTodoOkInCalendar(@PathVariable String yearmonthday, @PathVariable String workType, @PathVariable Long myPlantNo, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         LocalDate thatDay = datePhashing.getDate(yearmonthday);
         return ResponseEntity.status(HttpStatus.OK).body(calendarService.checkTodoInCalendar(thatDay, workType, myPlantNo, userDetails));
