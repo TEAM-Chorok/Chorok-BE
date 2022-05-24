@@ -1,5 +1,6 @@
 package com.finalproject.chorok.post.utils;
 
+import com.finalproject.chorok.common.Image.Image;
 import com.finalproject.chorok.common.Image.ImageRepository;
 import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.model.User;
@@ -7,6 +8,7 @@ import com.finalproject.chorok.mypage.model.PlantBookMark;
 import com.finalproject.chorok.mypage.repository.PlantBookMarkRepository;
 import com.finalproject.chorok.plant.model.Plant;
 import com.finalproject.chorok.plant.repository.PlantRepository;
+import com.finalproject.chorok.post.dto.PostWriteRequestDto;
 import com.finalproject.chorok.post.dto.comment.CommentResponseDto;
 import com.finalproject.chorok.post.model.*;
 import com.finalproject.chorok.post.repository.*;
@@ -140,7 +142,7 @@ public class CommUtils {
     }
     // 사진 저장
     public String postPhotoSave(MultipartFile file) throws IOException {
-        if(file == null || file.isEmpty()){
+        if(file == null ||file.isEmpty() || file.equals("")){
             return null;
         }
         return s3Uploader.upload(file, "static");
@@ -150,10 +152,11 @@ public class CommUtils {
     // 플랜테리어 사진 유무 체크
     public void planteriorFileChk(String postTypeCode, MultipartFile file){
         if(postTypeCode.equals("postType01") || postTypeCode == "postType01"){
-            if(file == null)
+            if(file == null || file.isEmpty())
                 throw new NullPointerException("플랜테이어는 사진이 필수조건입니다.");
         }
     }
+
 
 
     // 게시글 등록할때 플렌테리어 이외를 게시판 plantPlaceCode ExceptionCHk
@@ -169,11 +172,40 @@ public class CommUtils {
         return null;
 
     }
+    // 사진 업데이트 할때 image 변환유무 체크
+    public Post originalUrlChk(Long postId, String originalUrl, PostWriteRequestDto postRequestDto) throws IOException {
+        Post post = getPost(postId);
+        Image image = imageRepository.findByImageUrl(post.getPostImgUrl());
+        // 1. 비어있을때
+        if(originalUrl == null || originalUrl.equals("")){
+            // s3에서 이미지 삭제
+            //s3Uploader.deleteImage(image.getFilename());
+            // image
+            imageRepository.deleteByImageUrl(post.getPostImgUrl());
+
+            // 1-1. 사진 삭제
+            if(postRequestDto.getPostImgUrl()==null || postRequestDto.getPostImgUrl().isEmpty()){
+                post.updateDeleteImage(postRequestDto);
+            }
+            // 1-2. 사진 수정
+            else{
+                String imageUrl = postPhotoSave(postRequestDto.getPostImgUrl());
+                post.update(postRequestDto,imageUrl);
+            }
+
+        }
+        // 2. 들어있을때 유지
+        else{
+            post.update(postRequestDto,originalUrl);
+        }
+        return post;
+    }
+
 
     // 반환값 없는 에러 API 반환값 설정
     public HashMap<String,String> errResponseHashMap(HttpStatus httpCode){
-        HashMap<String,String> hs = new HashMap<>();
 
+        HashMap<String,String> hs = new HashMap<>();
         hs.put("StatusCode",String.valueOf(httpCode));
         hs.put("msg","작업을 완료하지 못했습니다");
         return hs;

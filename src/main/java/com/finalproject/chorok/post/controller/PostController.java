@@ -136,10 +136,13 @@ public class PostController {
     // 게시글 작성
     @PostMapping("/write-post")
     public ResponseEntity<PostResponseDto> writePost(
-            @Valid @ModelAttribute PostWriteRequestDto postWriteRequestDto,
+            @ModelAttribute PostWriteRequestDto postWriteRequestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
+        System.out.println("PostController.writePost");
+        System.out.println(postWriteRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(postService.writePost(postWriteRequestDto, userDetails.getUser()));
+
 
     }
 
@@ -152,10 +155,14 @@ public class PostController {
     }
 
     // 게시글 수정
-    @PutMapping("/update-post/{postId}")
-    public ResponseEntity<PostResponseDto> updatePost(@Valid@ModelAttribute PostWriteRequestDto postWriteRequestDto, @PathVariable Long postId) throws IOException {
+    @PostMapping("/update-post/{postId}")
+    public ResponseEntity<PostResponseDto> updatePost(
+            @Valid @ModelAttribute PostWriteRequestDto postWriteRequestDto,
+            @RequestParam(value = "originalUrl",required = false) String originalUrl,
+            @PathVariable Long postId
+    ) throws IOException {
 
-        return  ResponseEntity.status(HttpStatus.OK).body( postService.updatePost(postId,postWriteRequestDto));
+        return  ResponseEntity.status(HttpStatus.OK).body( postService.updatePost(postId,postWriteRequestDto,originalUrl));
     }
 
     // 게시글 좋아요 기능

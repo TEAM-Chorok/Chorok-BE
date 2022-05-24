@@ -327,9 +327,17 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                                                 .where(
                                                         postBookMark.user.userId.eq(userId)
                                                                 .and(postBookMark.post.postId.eq(post.postId))
-
                                                 ), "postBookMark"),
-                                post.createdAt.as("postRecentTime")
+                                post.createdAt.as("postRecentTime"),
+                        ExpressionUtils.as(
+                                JPAExpressions
+                                        .select(plantPlace1.plantPlace)
+                                        .from(plantPlace1)
+                                        // .leftJoin(post).on(post.plantPlaceCode.eq(plantPlace1.plantPlaceCode))
+                                        .where(
+                                                post.plantPlaceCode.eq(plantPlace1.plantPlaceCode)
+                                        ), "plantPlace")
+
                         )
                 )
                 .from(post)
@@ -391,10 +399,18 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                                                                 .and(postBookMark.post.postId.eq(post.postId))
 
                                                 ), "postBookMark"),
-                                post.createdAt.as("postRecentTime")
+                                post.createdAt.as("postRecentTime"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(plantPlace1.plantPlace)
+                                                .from(plantPlace1)
+                                                .where(post.plantPlaceCode.eq(plantPlace1.plantPlaceCode)
+                                                ),"plantPlace")
+
                         )
                 )
-                .from(postBookMark)
+                .from(post)
+                .leftJoin(postBookMark).on(post.postId.eq(postBookMark.post.postId))
                 .where(
                         postBookMark.user.userId.eq(userId),
                         postTypeCode(plantriaFilterRequestDto.getPostTypeCode()),
@@ -412,6 +428,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
     }
 
     // 내가 북마크한 커뮤니티 전체조회
+    // 2022-05-23 북마크 쿼리 추기
     @Override
     public Page<CommunityResponseDto> myCommunityBookMark(Long userId, Pageable pageable) {
         QueryResults<CommunityResponseDto> results = queryFactory
@@ -457,8 +474,10 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                         )
                 )
                 .from(post)
+                .leftJoin(postBookMark).on(post.postId.eq(postBookMark.post.postId))
                 .where(
-                        post.user.userId.eq(userId),
+                        postBookMark.user.userId.eq(userId),
+                       // post.user.userId.eq(userId),
                         post.postType.postTypeCode.notIn("postType01")
 
                 )

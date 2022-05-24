@@ -27,22 +27,11 @@ public class CommunityResponseDto {
     private Boolean postLike;
     private Boolean postBookMark;
     private String postRecentTime;
+    // 2022-05-23 식물공간 추가 김주호
+    private String plantPlace;
 
 
-//    public CommunityResponseDto(Post communityPost,Boolean likePostChk, Boolean bookMarkPostChk){
-//        this.postId = communityPost.getPostId();
-//        this.nickname = communityPost.getUser().getNickname();
-//        this.profileImgUrl = communityPost.getUser().getProfileImageUrl();
-//        this.postContent = communityPost.getPostContent();
-//        this.postType = communityPost.getPostType().getPostType();
-//        this.postImgUrl=communityPost.getPostImgUrl();
-//        this.postLikeCount= communityPost.getPostLike().size();
-//        this.commentCount=communityPost.getCommentList().size();
-//        this.postLike = likePostChk;
-//        this.postBookMark = bookMarkPostChk;
-//        this.postRecentTime= CaluateTime.calculateTime(Timestamp.valueOf(communityPost.getCreatedAt()));
-//
-//    }
+
     public CommunityResponseDto(Post communityPost) {
         this.postId = communityPost.getPostId();
         this.nickname = communityPost.getUser().getNickname();
@@ -105,5 +94,30 @@ public class CommunityResponseDto {
         this.postRecentTime = CaluateTime.calculateTime(Timestamp.valueOf(postRecentTime));
     }
 
-    // querydsl 마이페이지 - 내 플렌테리어 모아보기
+    // querydsl 마이페이지 - 내 식물공간 및 스크랩한 식물공간에 place정보 추가
+    public CommunityResponseDto(Long postId, String nickname, String profileImgUrl,
+                                String postTitle,
+                                String postType, String postImgUrl, String postContent,
+                                Long postLikeCount,
+                                Long commentCount,
+                                Long postLike,
+                                Long postBookMark,
+                                LocalDateTime postRecentTime,
+                                String plantPlace
+
+    ) {
+        this.postId = postId;
+        this.nickname = nickname;
+        this.profileImgUrl = profileImgUrl;
+        this.postType = postType;
+        this.postImgUrl = postImgUrl;
+        this.postTitle=postTitle;
+        this.postContent = postContent;
+        this.postLikeCount = postLikeCount;
+        this.commentCount = commentCount;
+        this.postLike = booleanChk(postLike);
+        this.postBookMark = booleanChk(postBookMark);
+        this.postRecentTime= CaluateTime.calculateTime(Timestamp.valueOf(postRecentTime));
+        this.plantPlace =plantPlace;
+    }
 }
