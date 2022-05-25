@@ -227,7 +227,6 @@ public class MypageService {
     //계정 비활성화
     public HashMap<String, String> inactivateAccount(UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        user.changeAccountStatus(false);
         user.changePassword(UUID.randomUUID().toString());
         user.changeUsername(UUID.randomUUID().toString());
         userRepository.save(user);
