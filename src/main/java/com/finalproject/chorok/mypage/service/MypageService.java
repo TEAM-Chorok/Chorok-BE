@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -153,7 +154,7 @@ public class MypageService {
 
     //프로필 닉네임, 사진 수정
     @Transactional
-    public String updateProfile(String nickname, MultipartFile multipartFile, String profileMsg, String originalUrl, UserDetailsImpl userDetails) throws IOException {
+    public HashMap<String, String> updateProfile(String nickname, MultipartFile multipartFile, String profileMsg, String originalUrl, UserDetailsImpl userDetails) throws IOException {
         System.out.println("서비스 들어오나");
         if (!nickname.equals(userDetails.getNickname())) {
             validator.nickCheck(new DuplicateChkDto(nickname));}
@@ -180,7 +181,7 @@ public class MypageService {
                 user.changeProfileMsg(profileMsg);
                 userRepository.save(user);
             }
-            return "멀티파트파일로 저장완료";
+            return commUtils.responseHashMap(HttpStatus.OK);
 
         }
         catch (NullPointerException e) {
@@ -189,11 +190,11 @@ public class MypageService {
             user.changeNickname(nickname);
             user.changeProfileMsg(profileMsg);
             userRepository.save(user);
-            return "오리지날유알엘로 저장완료";
+            return commUtils.responseHashMap(HttpStatus.OK);
         }
         catch (IOException e) {
             e.printStackTrace();
-            return "s3업로드오류용에러메세지";
+            return commUtils.responseHashMap(HttpStatus.OK);
 
         }
     }
@@ -226,7 +227,8 @@ public class MypageService {
     //계정 비활성화
     public HashMap<String, String> inactivateAccount(UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        user.changeAccountStatus(false);
+        user.changePassword(UUID.randomUUID().toString());
+        user.changeUsername(UUID.randomUUID().toString());
         userRepository.save(user);
         return commUtils.responseHashMap(HttpStatus.OK);
     }

@@ -22,14 +22,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    @SneakyThrows
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Can't find " + username));
-        if (user.isEnabled()){
             return new UserDetailsImpl(user);
-        } else throw new NotActiveException("비활성화된 유저입니다.");
 
     }
-
 }

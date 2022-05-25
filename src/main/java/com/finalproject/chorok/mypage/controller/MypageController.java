@@ -136,14 +136,14 @@ public class MypageController {
 
     //프로필 수정하기
     @PostMapping("/user/update/profile")
-    public String updateProfile(
+    public ResponseEntity<HashMap<String, String>> updateProfile(
             @RequestParam(value = "nickname", required = false) String nickname,
             @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile,
             @RequestParam(value = "profileMsg", required = false) String profileMsg,
             @RequestParam(value = "originalUrl", required = false) String originalUrl,
             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         System.out.println("컨트롤러 들어오나");
-        return mypageService.updateProfile(nickname,multipartFile, profileMsg, originalUrl, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updateProfile(nickname,multipartFile, profileMsg, originalUrl, userDetails));
     }
 
     //회원 비활성화
