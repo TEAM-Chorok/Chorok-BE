@@ -4,9 +4,9 @@ name: chorok-logging-system
 
 on:
   push:
-      branches: [ Login.ver20 ]
-    pull_request:
-      branches: [ Login.ver20 ]
+    branches: [ Login.ver20 ]
+  pull_request:
+    branches: [ Login.ver20 ]
   
 env:
   S3_BUCKET_NAME: bucket-chorok
