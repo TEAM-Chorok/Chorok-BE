@@ -247,6 +247,7 @@ public class MyPlantService {
         return commUtils.responseHashMap(HttpStatus.OK);
     }
 
+    //내 식물 수정
     @Transactional
     public String updateMyPlant(Long myPlantNo, String myPlantName, String myPlantPlaceCode, MultipartFile multipartFile, String originalUrl) {
         MyPlant myPlant = myPlantRepository.findByMyPlantNo(myPlantNo);
@@ -254,7 +255,7 @@ public class MyPlantService {
         try {
             //originalUrl이 널값일때->멀티파트파일이 있을때
 //            if (originalUrl == null || originalUrl.equals(""))
-            if (!multipartFile.isEmpty()) {
+            if (!multipartFile.isEmpty()&&image!=null) {
                 //사진삭제
                 s3Uploader.deleteImage(image.getFilename());
                 imageRepository.deleteByImageUrl(myPlant.getMyPlantImgUrl());
@@ -263,16 +264,25 @@ public class MyPlantService {
                 myPlant.setMyPlantImgUrl(myPlantImgUrl);
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
                 myPlantRepository.save(myPlant);
-            } else {
+            }
+            if(!multipartFile.isEmpty()&&image==null){
+                String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
                 myPlant.setMyPlantName(myPlantName);
-                myPlant.setMyPlantImgUrl(originalUrl);
+                myPlant.setMyPlantImgUrl(myPlantImgUrl);
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
                 myPlantRepository.save(myPlant);
-
             }
+//            else if (!multipartFile.isEmpty() && myPlant.getMyPlantImgUrl().isEmpty()) {
+//                String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
+//
+//                myPlant.setMyPlantName(myPlantName);
+//                myPlant.setMyPlantImgUrl(myPlantImgUrl);
+//                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+//                myPlantRepository.save(myPlant);
+//
+//            }
+
             return "멀티파트파일로 저장완료";
-//            MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(myPlantName, myPlantPlaceCode, myPlantImgUrl);
-//            myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
 
         }
         catch (NullPointerException e) {
@@ -282,7 +292,6 @@ public class MyPlantService {
             myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
             myPlantRepository.save(myPlant);
             return "오리지날유알엘로 저장완료";
-
         }
         catch (IOException e) {
             e.printStackTrace();

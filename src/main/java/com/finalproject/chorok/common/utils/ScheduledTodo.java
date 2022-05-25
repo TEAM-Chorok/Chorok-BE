@@ -31,12 +31,14 @@ public class ScheduledTodo {
         LocalDate supplementToDoTime = LocalDate.now().minusDays(90);
         LocalDate cleaningToDoTime = LocalDate.now().minusDays(3);
         LocalDate windyToDoTime = LocalDate.now().minusDays(1);
+        LocalDate test = LocalDate.now();
 
         List<Todo> waterTodos = todoRepository.findByTodoTimeAndWorkType(waterToDoTime,"물주기");
         List<Todo> changingTodos = todoRepository.findByTodoTimeAndWorkType(changingToDoTime,"분갈이");
         List<Todo> supplementTodos = todoRepository.findByTodoTimeAndWorkType(supplementToDoTime,"영양제");
         List<Todo> cleaningTodos = todoRepository.findByTodoTimeAndWorkType(cleaningToDoTime,"잎닦기");
         List<Todo> windyTodos = todoRepository.findByTodoTimeAndWorkType(windyToDoTime,"환기");
+
         for (Todo todo : waterTodos) {
             String workType = todo.getWorkType();
             LocalDate lastWorkTime = todo.getTodoTime();
