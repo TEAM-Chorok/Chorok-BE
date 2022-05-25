@@ -137,24 +137,38 @@ public class MyPlantService {
         List<TodoOnlyResponseDto> todoOnlyResponseDtos = new ArrayList<>();
 
         for (Todo todo : todos) {
-            Optional<Todo> todo2 = todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType());
-//            Todo todo3 = todoRepository.findFirstByUserOrderByTodoNoAsc(user);
-            LocalDate thatDay = myPlantRepository.findByMyPlantNo(todo.getMyPlant().getMyPlantNo()).getStartDay();
-            if (todo2.isPresent()) {
-                thatDay = todo2.get().getTodoTime();
+            try {Optional<Todo> todo2 = todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType());
+                LocalDate thatDay = todo2.get().getTodoTime();
+                TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
+                        todo.getTodoNo(),
+                        todo.getMyPlant().getMyPlantNo(),
+                        todo.getWorkType(),
+                        todo.getLastWorkTime(),
+                        //워크타입별 스테이터스가 true인 값과 오늘의 날짜차이. 즉, 몇일이 지났는지.
+
+                        (int) (LocalDate.now().toEpochDay() - thatDay.toEpochDay()),
+                        todo.isStatus()
+                );
+                todoOnlyResponseDtos.add(todoOnlyResponseDto);
+
+            }catch (Exception e){
+                LocalDate thatDay = myPlantRepository.findByMyPlantNo(todo.getMyPlant().getMyPlantNo()).getStartDay();
+                TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
+                        todo.getTodoNo(),
+                        todo.getMyPlant().getMyPlantNo(),
+                        todo.getWorkType(),
+                        todo.getLastWorkTime(),
+                        //워크타입별 스테이터스가 true인 값과 오늘의 날짜차이. 즉, 몇일이 지났는지.
+
+                        (int) (LocalDate.now().toEpochDay() - thatDay.toEpochDay()),
+                        todo.isStatus()
+                );
+                todoOnlyResponseDtos.add(todoOnlyResponseDto);
             }
 
-            TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
-                    todo.getTodoNo(),
-                    todo.getMyPlant().getMyPlantNo(),
-                    todo.getWorkType(),
-                    todo.getLastWorkTime(),
-                    //워크타입별 스테이터스가 true인 값과 오늘의 날짜차이. 즉, 몇일이 지났는지.
 
-                    (int) (LocalDate.now().toEpochDay() - thatDay.toEpochDay()),
-                    todo.isStatus()
-            );
-            todoOnlyResponseDtos.add(todoOnlyResponseDto);
+
+
         }
         for (MyPlant myPlant : myPlants) {
             MyPlantResponseDto myPlantResponseDto = new MyPlantResponseDto(
@@ -272,15 +286,7 @@ public class MyPlantService {
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
                 myPlantRepository.save(myPlant);
             }
-//            else if (!multipartFile.isEmpty() && myPlant.getMyPlantImgUrl().isEmpty()) {
-//                String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
-//
-//                myPlant.setMyPlantName(myPlantName);
-//                myPlant.setMyPlantImgUrl(myPlantImgUrl);
-//                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
-//                myPlantRepository.save(myPlant);
-//
-//            }
+
 
             return "멀티파트파일로 저장완료";
 

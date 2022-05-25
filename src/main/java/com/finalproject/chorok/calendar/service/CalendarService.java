@@ -8,7 +8,6 @@ import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
 import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
 import com.finalproject.chorok.todo.dto.BloomingDayResponstDto;
-import com.finalproject.chorok.todo.dto.SprayingDayRequestDto;
 import com.finalproject.chorok.todo.dto.SprayingDayResponstDto;
 import com.finalproject.chorok.todo.model.BloomingDay;
 import com.finalproject.chorok.todo.model.Spraying;
@@ -37,7 +36,7 @@ public class CalendarService {
     private final SprayingDayRepository sprayingDayRepository;
     private final CommUtils commUtils;
 
-
+//달별 투두내역 확인하기
     public CalendarResponseDto getMonthly(Long myPlantNo, LocalDate start, LocalDate end, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         MyPlant myPlant = myPlantRepository.findByMyPlantNo(myPlantNo);
@@ -89,7 +88,7 @@ public class CalendarService {
         try {
             Todo todo = todoRepository.findByUserAndTodoTimeAndWorkTypeAndMyPlant_MyPlantNo(user, todoTime, workType, myPlantNo);
             todo.setStatus(true);
-            todoRepository.saveAndFlush(todo);
+            todoRepository.save(todo);
             return "기존투두수정";
         } catch (NoSuchElementException e){
             Todo todo2 = new Todo(
