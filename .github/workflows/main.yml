@@ -1,16 +1,15 @@
 # logging-deploy.yml 
 
-name: logging-system 
+name: chorok-logging-system
 
 on:
-  workflow_dispatch:
-#   push:
-#     branches: [ main ]
-#   pull_request:
-#     branches: [ main ]
+  push:
+      branches: [ Login.ver20 ]
+    pull_request:
+      branches: [ Login.ver20 ]
   
 env:
-  S3_BUCKET_NAME: logging-deploy-user0
+  S3_BUCKET_NAME: bucket-chorok
   PROJECT_NAME: Chorok
 
 jobs: 
