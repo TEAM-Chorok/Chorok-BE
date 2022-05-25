@@ -1,6 +1,5 @@
 package com.finalproject.chorok.myPlant.controller;
 
-import com.finalproject.chorok.common.Image.Image;
 import com.finalproject.chorok.common.Image.ImageRepository;
 import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.model.User;
@@ -27,7 +26,6 @@ public class MyPlantController {
     private final MyPlantRepository myPlantRepository;
     private final S3Uploader S3Uploader;
     private final PlantPlaceRepository plantPlaceRepository;
-    private final ImageRepository imageRepository;
 
 
     //내식물 이미지포함 등록하기
@@ -51,25 +49,7 @@ public class MyPlantController {
                 .body(myPlantService.addMyPlant(myPlantRequestDto, plantPlace, userDetails.getUser()));
     }
 
-    //내식물 수정하기
-//    @PatchMapping("/myplant/update/{myPlantNo}")
-//    public ResponseEntity<String> updateMyPlant(@PathVariable Long myPlantNo,
-//                                                 @RequestParam("myPlantName") String myPlantName,
-//                                                 @RequestParam("myPlantPlaceCode") String myPlantPlaceCode,
-//                                                 @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
-//                                                 @AuthenticationPrincipal UserDetailsImpl userDetails
-//    ) {
-//
-//        try {
-//            String myPlantImgUrl = S3Uploader.upload(multipartFile, "static");
-//            MyPlantUpdateRequestDto myPlantUpdateRequestDto = new MyPlantUpdateRequestDto(myPlantName, myPlantPlaceCode, myPlantImgUrl);
-//            myPlantService.updateMyPlant(myPlantUpdateRequestDto, myPlantNo, userDetails);
-//
-//        }catch (Exception e){
-//            new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//        return ResponseEntity.status(HttpStatus.OK).body("내 식물 수정완료");
-//    }
+
     //내식물 수정하기
     @PostMapping("/myplant/update/{myPlantNo}")
     public ResponseEntity<String> updateMyPlant(@PathVariable Long myPlantNo,
@@ -79,9 +59,7 @@ public class MyPlantController {
                                                 @RequestParam(value = "originalUrl", required = false) String originalUrl,
                                                 @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-//        MyPlant myPlant = myPlantRepository.findByMyPlantNo(myPlantNo);
-//        User user = userDetails.getUser();
-//        Image image = imageRepository.findByImageUrl(myPlant.getMyPlantImgUrl());
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(myPlantService.updateMyPlant(myPlantNo,myPlantName,myPlantPlaceCode,multipartFile,originalUrl));
     }
