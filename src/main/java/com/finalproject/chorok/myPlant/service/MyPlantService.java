@@ -137,7 +137,7 @@ public class MyPlantService {
         List<TodoOnlyResponseDto> todoOnlyResponseDtos = new ArrayList<>();
 
         for (Todo todo : todos) {
-            try {Optional<Todo> todo2 = todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType());
+            try {Optional<Todo> todo2 = todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByTodoTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType());
                 LocalDate thatDay = todo2.get().getTodoTime();
                 TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
                         todo.getTodoNo(),
