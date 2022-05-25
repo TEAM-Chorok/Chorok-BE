@@ -12,9 +12,9 @@ cloud:
   aws:
     credentials:
 #      accessKey: ENC(JNpcPHiHppG7wBYrLRGuKqKSpd1Jp8gXf2km6IJxgRg=)
-      accessKey: ${ secrets.AWS_ACCESS_KEY_ID }
+      accessKey: ${{ secrets.AWS_ACCESS_KEY_ID }}
 #      secretKey: ENC(DRA87eViCreHGt5vH58oxN8PZWSwhbxwM4wdt29E3gXya3/nmAQvod9X5hYXHEC7w+CsFwHK1EI=)
-      secretKey: ${ secrets.AWS_SECRET_ACCESS_KEY }
+      secretKey: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       instanceProfile : true
     s3:
 #      bucket: ENC(RDS+2kmnrtjcooa8RQhZPVEohW9ZWy6KTJQdlEJEVg8=)
