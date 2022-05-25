@@ -1,5 +1,7 @@
 package com.finalproject.chorok.mypage.service;
 
+import com.finalproject.chorok.common.Image.Image;
+import com.finalproject.chorok.common.Image.ImageRepository;
 import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.dto.DuplicateChkDto;
 import com.finalproject.chorok.login.model.User;
@@ -47,6 +49,7 @@ public class MypageService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
+    private final ImageRepository imageRepository;
 
 
 
@@ -150,34 +153,49 @@ public class MypageService {
 
     //프로필 닉네임, 사진 수정
     @Transactional
-    public HashMap<String, String> updateProfile(ProfileUpdateDto profileUpdateDto, UserDetailsImpl userDetails) throws IOException {
+    public String updateProfile(String nickname, MultipartFile multipartFile, String profileMsg, String originalUrl, UserDetailsImpl userDetails) throws IOException {
         System.out.println("서비스 들어오나");
-        String profileImgUrl = null;
+        if (!nickname.equals(userDetails.getNickname())) {
+            validator.nickCheck(new DuplicateChkDto(nickname));}
         User user = userDetails.getUser();
-        String nickname = profileUpdateDto.getNickname();
-        String profileMsg = profileUpdateDto.getProfileMsg();
+        Image image = imageRepository.findByImageUrl(user.getProfileImageUrl());
 
-        if (nickname != null) {
-            if (!nickname.equals(userDetails.getNickname())) {
-                validator.nickCheck(new DuplicateChkDto(nickname));
-                System.out.println("닉네임 들어오나");
+        try {
+            //originalUrl이 널값일때->멀티파트파일이 있을때
+//            if (originalUrl == null || originalUrl.equals(""))
+            if (!multipartFile.isEmpty()&&image!=null) {
+                //사진삭제
+                s3Uploader.deleteImage(image.getFilename());
+                imageRepository.deleteByImageUrl(user.getProfileImageUrl());
+                String updatedProfileImgUrl = s3Uploader.upload(multipartFile, "static");
+                user.changeProfileImage(updatedProfileImgUrl);
                 user.changeNickname(nickname);
+                user.changeProfileMsg(profileMsg);
                 userRepository.save(user);
             }
+            if(!multipartFile.isEmpty()&&image==null){
+                String updatedProfileImgUrl = s3Uploader.upload(multipartFile, "static");
+                user.changeProfileImage(updatedProfileImgUrl);
+                user.changeNickname(nickname);
+                user.changeProfileMsg(profileMsg);
+                userRepository.save(user);
+            }
+            return "멀티파트파일로 저장완료";
+
         }
-//        if(multipartFile != null){
-//            profileImgUrl = s3Uploader.updateProfileImage(multipartFile, "static", userDetails);
-//            System.out.println("이미지 들어오나");
-//            user.changeProfileImage(profileImgUrl);
-//            userRepository.save(user);
-//        }
-        if(profileMsg != null){
-            System.out.println("메세지 들어오나");
+        catch (NullPointerException e) {
+            //멀티파트가 null일때니까, originalImgurl로 간다.
+            user.changeProfileImage(originalUrl);
+            user.changeNickname(nickname);
             user.changeProfileMsg(profileMsg);
             userRepository.save(user);
+            return "오리지날유알엘로 저장완료";
         }
+        catch (IOException e) {
+            e.printStackTrace();
+            return "s3업로드오류용에러메세지";
 
-        return commUtils.responseHashMap(HttpStatus.OK);
+        }
     }
 
 //내식물 6개보기
