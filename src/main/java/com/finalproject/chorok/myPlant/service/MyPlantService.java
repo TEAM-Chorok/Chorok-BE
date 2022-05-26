@@ -137,9 +137,7 @@ public class MyPlantService {
         List<TodoOnlyResponseDto> todoOnlyResponseDtos = new ArrayList<>();
 
         for (Todo todo : todos) {
-            //식물안의 투두리스트 넣어주는 try-cahtch문
             try {
-                System.out.println("트라이로 탔음");
 
                 Optional<Todo> todo2 = todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByTodoTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType());
                 LocalDate thatDay = todo2.get().getTodoTime();
@@ -155,7 +153,7 @@ public class MyPlantService {
                 );
                 todoOnlyResponseDtos.add(todoOnlyResponseDto);
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 LocalDate thatDay = myPlantRepository.findByMyPlantNo(todo.getMyPlant().getMyPlantNo()).getStartDay();
                 TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
                         todo.getTodoNo(),
@@ -169,8 +167,6 @@ public class MyPlantService {
                 );
                 todoOnlyResponseDtos.add(todoOnlyResponseDto);
             }
-
-
 
 
         }
@@ -273,7 +269,7 @@ public class MyPlantService {
         try {
             //originalUrl이 널값일때->멀티파트파일이 있을때
 //            if (originalUrl == null || originalUrl.equals(""))
-            if (!multipartFile.isEmpty()&&image!=null) {
+            if (!multipartFile.isEmpty() && image != null) {
                 //사진삭제
                 s3Uploader.deleteImage(image.getFilename());
                 imageRepository.deleteByImageUrl(myPlant.getMyPlantImgUrl());
@@ -283,15 +279,17 @@ public class MyPlantService {
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
                 myPlantRepository.save(myPlant);
             }
-            if(!multipartFile.isEmpty()&&image==null){
+            if (!multipartFile.isEmpty() && image == null) {
                 String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
                 myPlant.setMyPlantName(myPlantName);
                 myPlant.setMyPlantImgUrl(myPlantImgUrl);
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
                 myPlantRepository.save(myPlant);
             }
+
             //멀티파트파일이 날라는오는데 비어있을때
             if (multipartFile.isEmpty()){
+
                 myPlant.setMyPlantName(myPlantName);
                 myPlant.setMyPlantImgUrl(originalUrl);
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
@@ -301,16 +299,14 @@ public class MyPlantService {
 
             return "멀티파트파일로 저장완료";
 
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             //멀티파트가 null일때니까, originalImgurl로 간다.
             myPlant.setMyPlantName(myPlantName);
             myPlant.setMyPlantImgUrl(originalUrl);
             myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
             myPlantRepository.save(myPlant);
             return "오리지날유알엘로 저장완료";
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return "s3업로드오류용에러메세지";
 
