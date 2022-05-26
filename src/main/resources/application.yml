@@ -11,11 +11,14 @@ spring:
 cloud:
   aws:
     credentials:
-      accessKey: ENC(Yr8zQdA/Bagr0MIz/cc2PN1oSwpK8alXBBD06MdWRng=)
-      secretKey: ENC(/G3QMXcU2N/Su6P6/sFcMMtPuyfdy3L4/jQVKYq52iy2yaX+YZavJ45L418I+GWht6xqltM+wcg=)
+      accessKey: ENC(Me/EbbBvygqh327xvKqgWZXUuRyVU7fsrKXV7vHG8fg=)
+      secretKey: ENC(sV499ai524txYIancozaY70I3JEfi5KUV3DCjjSXHjCJ9ZSvOGwmnDzYDcoyJex3LEEeeeyOOHk=)
+      # 옛날 s3
+#      accessKey: ENC(Yr8zQdA/Bagr0MIz/cc2PN1oSwpK8alXBBD06MdWRng=)
+#      secretKey: ENC(/G3QMXcU2N/Su6P6/sFcMMtPuyfdy3L4/jQVKYq52iy2yaX+YZavJ45L418I+GWht6xqltM+wcg=)
       instanceProfile : true
     s3:
-      bucket: bucket-chorok
+      bucket: miniprojectspring7
     region:
       static: ap-northeast-2
     stack:
