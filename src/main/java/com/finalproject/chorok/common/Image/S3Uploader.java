@@ -32,14 +32,14 @@ public class S3Uploader {
 
     private final PostRepository1 postRepository;
 
-    @Value("${cloud.aws.s3.bucket}")
-    public String bucket;  // S3 버킷 이름
+//    @Value("${cloud.aws.s3.bucket}")
+    public String bucket = "bucket-chorok";  // S3 버킷 이름
 
-    @Value("${cloud.aws.credentials.access-key}")
-    private String accessKey;
+//    @Value("${cloud.aws.credentials.access-key}")
+    private String accessKey = "AKIA5EQM35EJGSBEMWF2";
 
-    @Value("${cloud.aws.credentials.secret-key}")
-    private String secretKey;
+//    @Value("${cloud.aws.credentials.secret-key}")
+    private String secretKey = "phWGJQ3hWDU0KVq3ejYJTZXfFPG5mFodOKewtqNI";
 
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
         File uploadFile = convert(multipartFile)  // 파일 변환할 수 없으면 에러
