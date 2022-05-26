@@ -16,7 +16,8 @@ public class ChorokApplication {
 
     public static final String APPLICATION_LOCATIONS = "spring.config.location="
             + "classpath:application.properties,"
-            + "classpath:application.yml";
+            + "classpath:application.yml,"
+            + "classpath:main.yml";
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(ChorokApplication.class)
