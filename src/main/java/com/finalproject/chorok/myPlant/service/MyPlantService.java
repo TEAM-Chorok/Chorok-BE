@@ -305,6 +305,7 @@ public class MyPlantService {
         } catch (NullPointerException e) {
             //멀티파트가 null일때니까, originalImgurl로 간다.
             System.out.println("사번");
+            System.out.println("오리지날 유알엘은"+originalUrl);
             myPlant.setMyPlantName(myPlantName);
             myPlant.setMyPlantImgUrl(originalUrl);
             myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
