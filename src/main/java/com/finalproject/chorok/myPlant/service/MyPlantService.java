@@ -137,7 +137,11 @@ public class MyPlantService {
         List<TodoOnlyResponseDto> todoOnlyResponseDtos = new ArrayList<>();
 
         for (Todo todo : todos) {
-            try {Optional<Todo> todo2 = todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByTodoTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType());
+            //식물안의 투두리스트 넣어주는 try-cahtch문
+            try {
+                System.out.println("트라이로 탔음");
+
+                Optional<Todo> todo2 = todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByTodoTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType());
                 LocalDate thatDay = todo2.get().getTodoTime();
                 TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
                         todo.getTodoNo(),
@@ -283,6 +287,13 @@ public class MyPlantService {
                 String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
                 myPlant.setMyPlantName(myPlantName);
                 myPlant.setMyPlantImgUrl(myPlantImgUrl);
+                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+                myPlantRepository.save(myPlant);
+            }
+            //멀티파트파일이 날라는오는데 비어있을때
+            if (multipartFile.isEmpty()){
+                myPlant.setMyPlantName(myPlantName);
+                myPlant.setMyPlantImgUrl(originalUrl);
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
                 myPlantRepository.save(myPlant);
             }
