@@ -175,6 +175,7 @@ public class CommUtils {
     // 사진 업데이트 할때 image 변환유무 체크
     public Post originalUrlChk(Long postId, String originalUrl, PostWriteRequestDto postRequestDto) throws IOException {
         Post post = getPost(postId);
+        PostType postType = getPostType(postRequestDto.getPostTypeCode());
         Image image = imageRepository.findByImageUrl(post.getPostImgUrl());
         // 1. 비어있을때
         if(originalUrl == null || originalUrl.equals("")){
@@ -185,18 +186,18 @@ public class CommUtils {
 
             // 1-1. 사진 삭제
             if(postRequestDto.getPostImgUrl()==null || postRequestDto.getPostImgUrl().isEmpty()){
-                post.updateDeleteImage(postRequestDto);
+                post.updateDeleteImage(postRequestDto,postType);
             }
             // 1-2. 사진 수정
             else{
                 String imageUrl = postPhotoSave(postRequestDto.getPostImgUrl());
-                post.update(postRequestDto,imageUrl);
+                post.update(postRequestDto,imageUrl,postType);
             }
 
         }
         // 2. 들어있을때 유지
         else{
-            post.update(postRequestDto,originalUrl);
+            post.update(postRequestDto,originalUrl,postType);
         }
         return post;
     }
