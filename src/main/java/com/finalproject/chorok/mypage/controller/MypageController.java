@@ -147,7 +147,7 @@ public class MypageController {
     }
 
     //회원 비활성화
-    @PatchMapping("/user/update/accountStatus")
+    @PutMapping("/user/update/accountStatus")
     public ResponseEntity<HashMap<String, String>> inactivateAccount(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.inactivateAccount(userDetails));
