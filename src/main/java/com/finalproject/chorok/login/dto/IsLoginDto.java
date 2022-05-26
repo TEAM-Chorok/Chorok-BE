@@ -13,6 +13,5 @@ public class IsLoginDto {
     private String nickname;
     private String profileImgUrl;
     private String profileMsg;
-    private Boolean tokenChk;
 
 }

@@ -153,7 +153,6 @@ public class UserService {
 
     //로그인 확인
     public IsLoginDto isloginChk(UserDetailsImpl userDetails) {
-        try {
             System.out.println("isloginChk함수 들어옴");
             String username = userDetails.getUsername();
             String nickname = userDetails.getUser().getNickname();
@@ -167,16 +166,10 @@ public class UserService {
                     .userId(userId)
                     .profileImgUrl(profileImgUrl)
                     .profileMsg(profileMsg)
-                    .tokenChk(true)
                     .build();
             System.out.println("isLoginDto 만들어짐");
             return isLoginDto;
-        } catch (Exception e) {
-            IsLoginDto isLoginDto = IsLoginDto.builder()
-                    .tokenChk(false)
-                    .build();
-            return isLoginDto;
-        }
+
     }
 
 
