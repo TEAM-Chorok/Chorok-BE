@@ -288,7 +288,7 @@ public class MyPlantService {
             }
 
             //멀티파트파일이 날라는오는데 비어있을때
-            if (multipartFile.isEmpty()){
+            if (multipartFile.isEmpty()||multipartFile==null){
 
                 myPlant.setMyPlantName(myPlantName);
                 myPlant.setMyPlantImgUrl(originalUrl);
