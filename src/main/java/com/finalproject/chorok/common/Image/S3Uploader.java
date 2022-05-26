@@ -35,10 +35,10 @@ public class S3Uploader {
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;  // S3 버킷 이름
 
-    @Value("${cloud.aws.credentials.access-key}")
+    @Value("${jobs.build.steps[5].with.aws-access-key-id}")
     private String accessKey;
 
-    @Value("${cloud.aws.credentials.secret-key}")
+    @Value("${jobs.build.steps[5].with.aws-secret-access-key}")
     private String secretKey;
 
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {

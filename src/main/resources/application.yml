@@ -11,7 +11,8 @@ spring:
 cloud:
   aws:
     credentials:
-      accessKey: ENC(JwnrnzPNOFIMgRzGoDYBiFC6cw0//hHk00NCXetkydU=)
+      accessKey: sdfsdfsdfds
+#      ENC(JwnrnzPNOFIMgRzGoDYBiFC6cw0//hHk00NCXetkydU=)
 #      accessKey: ${{ secrets.AWS_ACCESS_KEY_ID }}
       secretKey: ENC(MdW1froGz5vtH5EMt6cy/1El7qfJVLmcTaP2ahDyQa47rGq9FlXodkUJrwm6eAyhsHqGtWvukJk=)
 #      secretKey: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
