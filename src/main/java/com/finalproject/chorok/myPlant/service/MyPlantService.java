@@ -271,6 +271,7 @@ public class MyPlantService {
 //            if (originalUrl == null || originalUrl.equals(""))
             if (!multipartFile.isEmpty() && image != null) {
                 //사진삭제
+                System.out.println("일번");
                 s3Uploader.deleteImage(image.getFilename());
                 imageRepository.deleteByImageUrl(myPlant.getMyPlantImgUrl());
                 String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
@@ -280,6 +281,7 @@ public class MyPlantService {
                 myPlantRepository.save(myPlant);
             }
             if (!multipartFile.isEmpty() && image == null) {
+                System.out.println("이번");
                 String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
                 myPlant.setMyPlantName(myPlantName);
                 myPlant.setMyPlantImgUrl(myPlantImgUrl);
@@ -289,6 +291,7 @@ public class MyPlantService {
 
             //멀티파트파일이 날라는오는데 비어있을때
             if (multipartFile.isEmpty()||multipartFile==null){
+                System.out.println("삼번");
 
                 myPlant.setMyPlantName(myPlantName);
                 myPlant.setMyPlantImgUrl(originalUrl);
@@ -301,6 +304,7 @@ public class MyPlantService {
 
         } catch (NullPointerException e) {
             //멀티파트가 null일때니까, originalImgurl로 간다.
+            System.out.println("사번");
             myPlant.setMyPlantName(myPlantName);
             myPlant.setMyPlantImgUrl(originalUrl);
             myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
