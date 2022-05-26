@@ -172,6 +172,7 @@ public class MypageService {
                 user.changeProfileImage(updatedProfileImgUrl);
                 user.changeNickname(nickname);
                 user.changeProfileMsg(profileMsg);
+                System.out.println("일번 업데이트유알엘은"+updatedProfileImgUrl);
                 userRepository.save(user);
             }
             if(!multipartFile.isEmpty()&&image==null){
@@ -180,6 +181,7 @@ public class MypageService {
                 user.changeNickname(nickname);
                 user.changeProfileMsg(profileMsg);
                 userRepository.save(user);
+                System.out.println("이번 업데이트유알엘은"+updatedProfileImgUrl);
             }
             return commUtils.responseHashMap(HttpStatus.OK);
 
@@ -190,6 +192,7 @@ public class MypageService {
             user.changeNickname(nickname);
             user.changeProfileMsg(profileMsg);
             userRepository.save(user);
+            System.out.println("삼번 오리지널유알엘은"+originalUrl);
             return commUtils.responseHashMap(HttpStatus.OK);
         }
         catch (IOException e) {
