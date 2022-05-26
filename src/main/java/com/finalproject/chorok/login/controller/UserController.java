@@ -168,7 +168,7 @@ public class UserController {
     }
     //CI/CD 응답
     @GetMapping("/auth") public String checkHealth() {
-        return "좀되라..zzggㅎㅎ!!1g";
+        return "좀되라..zzggㅎㅎ!!1gg";
     }
 }
 
