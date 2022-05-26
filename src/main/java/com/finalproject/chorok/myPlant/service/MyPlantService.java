@@ -138,6 +138,7 @@ public class MyPlantService {
 
         for (Todo todo : todos) {
             try {
+
                 Optional<Todo> todo2 = todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByTodoTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType());
                 LocalDate thatDay = todo2.get().getTodoTime();
                 TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
@@ -285,12 +286,16 @@ public class MyPlantService {
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
                 myPlantRepository.save(myPlant);
             }
-            if (multipartFile.isEmpty()) {
+
+            //멀티파트파일이 날라는오는데 비어있을때
+            if (multipartFile.isEmpty()){
+
                 myPlant.setMyPlantName(myPlantName);
                 myPlant.setMyPlantImgUrl(originalUrl);
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
                 myPlantRepository.save(myPlant);
             }
+
 
             return "멀티파트파일로 저장완료";
 
