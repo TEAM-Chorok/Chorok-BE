@@ -17,10 +17,15 @@ import com.finalproject.chorok.plant.repository.PlantRepository;
 import com.finalproject.chorok.login.dto.LabelingResponseDto;
 import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.UserDetailsImpl;
+import com.finalproject.chorok.security.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -47,6 +52,7 @@ public class UserService {
     private final PlantRepository plantRepository;
     private final PlantUtils plantUtils;
     private final CommUtils commUtils;
+    private final KakaoUserService kakaoUserService;
 
     @Transactional
     public HashMap<String, String> registerUser(SignupRequestDto requestDto) {
@@ -65,17 +71,17 @@ public class UserService {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
         String nickname = requestDto.getNickname();
-        System.out.println(password+"3");
+        System.out.println(password + "3");
 
         String emailCheckToken = UUID.randomUUID().toString();
         String profileImgUrl = requestDto.getProfileImgUrl();
 
         User user = new User(username, password, nickname, emailCheckToken, profileImgUrl);
 
-         //이메일 인증 코드부분
+        //이메일 인증 코드부분
         redisUtil.set(emailCheckToken, user, 2);
 
-        System.out.println(user+"4");
+        System.out.println(user + "4");
 
         sendSignupConfirmEmail(user);
 
@@ -86,26 +92,27 @@ public class UserService {
         return commUtils.responseHashMap(HttpStatus.OK);
     }
 
-        @Transactional
+    @Transactional
     public CMResponseDto sendTempPassword(EmailRequestDto emailRequestDto) throws InvalidActivityException {
 
         User findUser = userRepository.findByUsername(emailRequestDto.getEmail()).orElseThrow(
                 () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
         );
         System.out.println("이메일 존재여부 체크");
-         //인증 이메일 1시간 지났는지 체크
+        //인증 이메일 1시간 지났는지 체크
 
         String tempPassword = temporaryPassword(10); // 8글자 랜덤으로 임시 비밀번호 생성
 
         String tempEncPassword = passwordEncoder.encode(tempPassword); // 암호화
-        System.out.println("암호화"+tempEncPassword);
+        System.out.println("암호화" + tempEncPassword);
         findUser.changePassword(tempEncPassword);
 
         sendTempPasswordConfirmEmail(findUser, tempPassword);
         System.out.println("작업완료");
         return new CMResponseDto("true");
     }
-//
+
+    //
     private void sendTempPasswordConfirmEmail(User user, String tempPwd) {
         EmailMessage emailMessage = EmailMessage.builder()
                 .to(user.getUsername())
@@ -120,7 +127,6 @@ public class UserService {
     }
 
 
-
     private String temporaryPassword(int size) {
         StringBuffer buffer = new StringBuffer();
         Random random = new Random();
@@ -130,7 +136,7 @@ public class UserService {
             buffer.append(chars[random.nextInt(chars.length)]);
         }
         buffer.append("!a1");
-        System.out.println("임시비밀번호 생성"+buffer.toString());
+        System.out.println("임시비밀번호 생성" + buffer.toString());
         return buffer.toString();
     }
 
@@ -140,7 +146,7 @@ public class UserService {
         String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
 
         Context context = new Context();
-        context.setVariable("link", path+"/auth/check-email-token?token=" + user.getEmailCheckToken() +
+        context.setVariable("link", path + "/auth/check-email-token?token=" + user.getEmailCheckToken() +
                 "&email=" + user.getUsername());
         String message = templateEngine.process("email-link", context);
         EmailMessage emailMessage = EmailMessage.builder()
@@ -153,28 +159,28 @@ public class UserService {
 
     //로그인 확인
     public IsLoginDto isloginChk(UserDetailsImpl userDetails) {
-            System.out.println("isloginChk함수 들어옴");
-            String username = userDetails.getUsername();
-            String nickname = userDetails.getUser().getNickname();
-            Long userId = userDetails.getUser().getUserId();
-            String profileImgUrl = userDetails.getUser().getProfileImageUrl();
-            String profileMsg = userDetails.getUser().getProfileMsg();
-            Optional<User> user = userRepository.findByUsername(username);
-            IsLoginDto isLoginDto = IsLoginDto.builder()
-                    .username(username)
-                    .nickname(nickname)
-                    .userId(userId)
-                    .profileImgUrl(profileImgUrl)
-                    .profileMsg(profileMsg)
-                    .build();
-            System.out.println("isLoginDto 만들어짐");
-            return isLoginDto;
+        System.out.println("isloginChk함수 들어옴");
+        String username = userDetails.getUsername();
+        String nickname = userDetails.getUser().getNickname();
+        Long userId = userDetails.getUser().getUserId();
+        String profileImgUrl = userDetails.getUser().getProfileImageUrl();
+        String profileMsg = userDetails.getUser().getProfileMsg();
+        Optional<User> user = userRepository.findByUsername(username);
+        IsLoginDto isLoginDto = IsLoginDto.builder()
+                .username(username)
+                .nickname(nickname)
+                .userId(userId)
+                .profileImgUrl(profileImgUrl)
+                .profileMsg(profileMsg)
+                .build();
+        System.out.println("isLoginDto 만들어짐");
+        return isLoginDto;
 
     }
 
 
     //아이디 중복체크
-    public String usernameDuplichk(DuplicateChkDto duplicateChkDto){
+    public String usernameDuplichk(DuplicateChkDto duplicateChkDto) {
         String msg = "사용가능한 이메일 입니다.";
 
         try {
@@ -184,8 +190,7 @@ public class UserService {
             return msg;
         }
         return msg;
-        }
-
+    }
 
 
     //닉네임 중복검사
@@ -202,10 +207,10 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<CMResponseDto> checkEmailToken(String token, String email) throws InvalidActivityException {
+    public UserResponseDto checkEmailToken(String token, String email) throws InvalidActivityException {
         System.out.println("이메일 토큰 인증과정 함수시작");
 
-        User findUser = (User)redisUtil.get(token);
+        User findUser = (User) redisUtil.get(token);
 
         if (!findUser.isValidToken(token))
             throw new InvalidActivityException("유효하지 않는 토큰입니다.");
@@ -214,10 +219,26 @@ public class UserService {
         Labeling defaultLabeling = new Labeling(savedUser);
         labelingRepository.save(defaultLabeling);
         System.out.println("User 저장");
-        if(savedUser.getUserId() > 0) redisUtil.delete(token);
+        if (savedUser.getUserId() > 0) redisUtil.delete(token);
         System.out.println("redisutil 제거");
 
-        return ResponseEntity.ok(new CMResponseDto("true"));
+        // 4. 강제 로그인 처리
+        System.out.println("4. 강제 로그인 처리");
+        final String AUTH_HEADER = "Authorization";
+        final String TOKEN_TYPE = "BEARER";
+
+        String jwt_token = forceLogin(savedUser); // 로그인처리 후 토큰 받아오기
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTH_HEADER, TOKEN_TYPE + " " + jwt_token);
+        UserResponseDto userResponseDto = UserResponseDto.builder()
+                .token(TOKEN_TYPE + " " + jwt_token)
+                .userId(savedUser.getUserId())
+                .nickname(savedUser.getNickname())
+                .email(savedUser.getUsername())
+                .build();
+
+        return userResponseDto;
+
     }
 
     @Transactional
@@ -243,8 +264,7 @@ public class UserService {
                     labeledPlant.getPlantName(),
                     true
             );
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Plant randomPlant = plantRepository.searchOneRandomPlantByLabeling();
 
             return new LabelingResponseDto(
@@ -260,29 +280,37 @@ public class UserService {
     public List<LabelingResponseDto> getLabelingResults(UserDetailsImpl userDetails) {
 
         Optional<Labeling> labelingTested = labelingRepository.findByUser_UserId(userDetails.getUserId());
-        if(labelingTested.isPresent()){
-        List<Plant> labeledPlants = plantRepository.searchThreePlantByLabeling(
-                labelingTested.get().getAnswer1(),
-                labelingTested.get().getAnswer2(),
-                labelingTested.get().getAnswer3(),
-                labelingTested.get().getAnswer4());
+        if (labelingTested.isPresent()) {
+            List<Plant> labeledPlants = plantRepository.searchThreePlantByLabeling(
+                    labelingTested.get().getAnswer1(),
+                    labelingTested.get().getAnswer2(),
+                    labelingTested.get().getAnswer3(),
+                    labelingTested.get().getAnswer4());
 
-        List<LabelingResponseDto> labelingResponseDtos = new ArrayList<>();
+            List<LabelingResponseDto> labelingResponseDtos = new ArrayList<>();
 
-        for (Plant labeledPlant : labeledPlants) {
+            for (Plant labeledPlant : labeledPlants) {
 
-            LabelingResponseDto labelingResponseDto = new LabelingResponseDto(
-                    labeledPlant.getPlantNo(),
-                    plantUtils.getPlantThumbImg(labeledPlant.getPlantNo()),
-                    labeledPlant.getPlantName(),
-                    true
-            );
-            labelingResponseDtos.add(labelingResponseDto);
+                LabelingResponseDto labelingResponseDto = new LabelingResponseDto(
+                        labeledPlant.getPlantNo(),
+                        plantUtils.getPlantThumbImg(labeledPlant.getPlantNo()),
+                        labeledPlant.getPlantName(),
+                        true
+                );
+                labelingResponseDtos.add(labelingResponseDto);
 
-        }
-        return labelingResponseDtos;}
-        else {
+            }
+            return labelingResponseDtos;
+        } else {
             return null;
         }
+    }
+
+    public String forceLogin(User user) {
+        UserDetailsImpl userDetails = new UserDetailsImpl(user);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return JwtTokenUtils.generateJwtToken(userDetails);
     }
 }
