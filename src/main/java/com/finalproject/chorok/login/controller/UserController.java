@@ -131,15 +131,16 @@ public class UserController {
     @GetMapping("/auth/check-email-token")
     public ResponseEntity<UserResponseDto> checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
         UserResponseDto userResponseDto = userService.checkEmailToken(token, email);
-        response.setHeader("Authorization", userResponseDto.getToken());
-        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
-//        try {
-//            response.setHeader("Authorization", userResponseDto.getToken());
-////            response.sendRedirect("https://chorok.kr/home");
-//            return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
-//        } catch (IOException e) {
-//            throw new InvalidActivityException("유효하지 않은 주소입니다.");
-//        }
+//        response.setHeader("Authorization", userResponseDto.getToken());
+//        response.sendRedirect("https://chorok.kr/home");
+//        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
+        try {
+            response.setHeader("Authorization", userResponseDto.getToken());
+            response.sendRedirect("https://chorok.kr/home");
+            return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
+        } catch (IOException e) {
+            throw new InvalidActivityException("유효하지 않은 주소입니다.");
+        }
 
     }
 
