@@ -5,6 +5,7 @@ import com.finalproject.chorok.common.Image.ImageRepository;
 import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.*;
+import com.finalproject.chorok.plant.model.Plant;
 import com.finalproject.chorok.plant.model.PlantPlace;
 import com.finalproject.chorok.plant.repository.PlantPlaceRepository;
 import com.finalproject.chorok.plant.repository.PlantRepository;
@@ -237,16 +238,23 @@ public class MyPlantService {
      * 내식물번호를 받아서 식물하나 정보 반환
      */
     public MyOnePlantResponseDto findMyPlant(Long myPlantNo) {
-        MyPlant plant = myPlantRepository.findById(myPlantNo).orElseThrow(
-                () -> new NullPointerException("해당 나의식물번호가 존재하지 않습니다.")
+
+        MyPlant myPlant = myPlantRepository.findById(myPlantNo).orElseThrow(
+                ()-> new NullPointerException("해당 나의식물번호가 존재하지 않습니다.")
+
+        );
+        Plant plant = plantRepository.findById(myPlant.getPlantNo()).orElseThrow(
+                ()-> new NullPointerException("해당 식물번호가 존재하지 않습니다.")
         );
         return new MyOnePlantResponseDto(
-                plant.getMyPlantNo(),
-                plant.getMyPlantImgUrl(),
-                plant.getMyPlantPlace(),
-                plant.getMyPlantName(),
-                plant.getPlantNo(),
-                plant.getMyPlantName()
+
+                myPlant.getMyPlantNo(),
+                myPlant.getMyPlantImgUrl(),
+                myPlant.getMyPlantPlace(),
+                myPlant.getMyPlantName(),
+                myPlant.getPlantNo(),
+                plant.getPlantName()
+
         );
 
     }
