@@ -4,20 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.finalproject.chorok.login.dto.KakaoUserInfoDto;
-import com.finalproject.chorok.login.dto.KakaoUserResponseDto;
+import com.finalproject.chorok.login.dto.UserResponseDto;
 import com.finalproject.chorok.login.model.Labeling;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.login.repository.LabelingRepository;
 import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.post.utils.CommUtils;
-import com.finalproject.chorok.security.UserDetailsImpl;
-import com.finalproject.chorok.security.jwt.JwtTokenUtils;
-import com.nimbusds.jose.shaded.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -33,16 +27,18 @@ public class KakaoUserService {
     private final UserRepository userRepository;
     private final LabelingRepository labelingRepository;
     private final CommUtils commUtils;
+    private final UserService userService;
 
     @Autowired
-    public KakaoUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository, CommUtils commUtils) {
+    public KakaoUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository, CommUtils commUtils, UserService userService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.labelingRepository = labelingRepository;
         this.commUtils = commUtils;
+        this.userService = userService;
     }
 
-    public KakaoUserResponseDto kakaoLogin(String code) throws JsonProcessingException {
+    public UserResponseDto kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
         System.out.println("1.\"인가 코드\"로 \"액세스 토큰\" 요청");
@@ -58,10 +54,10 @@ public class KakaoUserService {
         final String AUTH_HEADER = "Authorization";
         final String TOKEN_TYPE = "BEARER";
 
-        String jwt_token = forceLogin(kakaoUser); // 로그인처리 후 토큰 받아오기
+        String jwt_token = userService.forceLogin(kakaoUser); // 로그인처리 후 토큰 받아오기
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTH_HEADER, TOKEN_TYPE + " " + jwt_token);
-        KakaoUserResponseDto kakaoUserResponseDto = KakaoUserResponseDto.builder()
+        UserResponseDto kakaoUserResponseDto = UserResponseDto.builder()
                 .token(TOKEN_TYPE + " " + jwt_token)
                 .userId(kakaoUser.getUserId())
                 .nickname(kakaoUser.getNickname())
@@ -185,14 +181,6 @@ public class KakaoUserService {
 
         return kakaoUser; }
 
-
-    private String forceLogin(User kakaoUser) {
-        UserDetailsImpl userDetails = new UserDetailsImpl(kakaoUser);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        return JwtTokenUtils.generateJwtToken(userDetails);
-    }
 
     public HashMap<String, String> kakaoLogout(Long kakaoId) throws JsonProcessingException {
         System.out.println("카카오 서비스단으로 이동하나");

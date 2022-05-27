@@ -102,13 +102,13 @@ public class UserController {
 
     //카카오 로그인
     @GetMapping("/auth/kakao/callback")
-    public ResponseEntity<KakaoUserResponseDto> kakaoLogin(@RequestParam String code) throws JsonProcessingException {
+    public ResponseEntity<UserResponseDto> kakaoLogin(@RequestParam String code) throws JsonProcessingException {
         return ResponseEntity.status(HttpStatus.OK).body(kakaoUserService.kakaoLogin(code));
     }
 
     //구글 로그인
     @GetMapping("/auth/google/callback")
-    public ResponseEntity<GoogleUserResponseDto> googleLogin(@RequestParam String code) throws JsonProcessingException {
+    public ResponseEntity<UserResponseDto> googleLogin(@RequestParam String code) throws JsonProcessingException {
         return ResponseEntity.status(HttpStatus.OK).body(googleUserService.googleLogin(code));
     }
 
@@ -127,12 +127,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.isloginChk(userDetails));
     }
 
-
+    //이메일인증 버튼 클릭시 토큰확인
     @GetMapping("/auth/check-email-token")
-    public void checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
-        userService.checkEmailToken(token, email);
+    public ResponseEntity<UserResponseDto> checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
+        UserResponseDto userResponseDto = userService.checkEmailToken(token, email);
         try {
             response.sendRedirect("https://chorok.kr/auth/logIn");
+            return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
         } catch (IOException e) {
             throw new InvalidActivityException("유효하지 않은 주소입니다.");
         }
