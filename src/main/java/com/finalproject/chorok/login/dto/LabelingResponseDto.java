@@ -10,13 +10,15 @@ public class LabelingResponseDto {
     private Long plantId;
     private String plantImgUrl;
     private String plantName;
+    private boolean isResult;
 
 
 
-    public LabelingResponseDto(Long plantId, String plantImgUrl, String plantName) {
+    public LabelingResponseDto(Long plantId, String plantImgUrl, String plantName, Boolean isResult) {
         this.plantId = plantId;
         this.plantImgUrl = plantImgUrl;
         this.plantName = plantName;
+        this.isResult = isResult;
     }
 
 
