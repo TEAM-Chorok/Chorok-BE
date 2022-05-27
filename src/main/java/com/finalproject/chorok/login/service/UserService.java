@@ -234,13 +234,26 @@ public class UserService {
     @Transactional
     public LabelingResponseDto getLabelingPlant(LabelingDto labelingDto) {
         System.out.println("식물 검색하기 까지 들어옴");
-        Plant labeledPlant = plantRepository.searchOnePlantByLabeling(labelingDto.getAnswer1(), labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
+        try {
+            Plant labeledPlant = plantRepository.searchOnePlantByLabeling(labelingDto.getAnswer1(), labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
 
-        return new LabelingResponseDto(
-                labeledPlant.getPlantNo(),
-                plantUtils.getPlantThumbImg(labeledPlant.getPlantNo()),
-                labeledPlant.getPlantName()
-        );
+            return new LabelingResponseDto(
+                    labeledPlant.getPlantNo(),
+                    plantUtils.getPlantThumbImg(labeledPlant.getPlantNo()),
+                    labeledPlant.getPlantName(),
+                    true
+            );
+        }
+        catch (Exception e){
+            Plant randomPlant = plantRepository.searchOneRandomPlantByLabeling();
+
+            return new LabelingResponseDto(
+                    randomPlant.getPlantNo(),
+                    plantUtils.getPlantThumbImg(randomPlant.getPlantNo()),
+                    randomPlant.getPlantName(),
+                    false
+            );
+        }
     }
 
     @Transactional
@@ -261,7 +274,8 @@ public class UserService {
             LabelingResponseDto labelingResponseDto = new LabelingResponseDto(
                     labeledPlant.getPlantNo(),
                     plantUtils.getPlantThumbImg(labeledPlant.getPlantNo()),
-                    labeledPlant.getPlantName()
+                    labeledPlant.getPlantName(),
+                    true
             );
             labelingResponseDtos.add(labelingResponseDto);
 
