@@ -79,16 +79,16 @@ public class UserService {
         User user = new User(username, password, nickname, emailCheckToken, profileImgUrl);
 
         //이메일 인증 코드부분
-        redisUtil.set(emailCheckToken, user, 2);
-
-        System.out.println(user + "4");
-
-        sendSignupConfirmEmail(user);
+//        redisUtil.set(emailCheckToken, user, 2);
+//
+//        System.out.println(user + "4");
+//
+//        sendSignupConfirmEmail(user);
 
         // 이메일 인증 생략하고 회원가입(추후 삭제)
-//        User savedUser = userRepository.save(user);
-//        Labeling defaultLabeling = new Labeling(savedUser);
-//        labelingRepository.save(defaultLabeling);
+        User savedUser = userRepository.save(user);
+        Labeling defaultLabeling = new Labeling(savedUser);
+        labelingRepository.save(defaultLabeling);
         return commUtils.responseHashMap(HttpStatus.OK);
     }
 
@@ -236,7 +236,7 @@ public class UserService {
                 .nickname(savedUser.getNickname())
                 .email(savedUser.getUsername())
                 .build();
-        System.out.println("유저리스폰스디티오"+userResponseDto);
+        System.out.println("유저리스폰스디티"+userResponseDto);
         return userResponseDto;
 
     }
