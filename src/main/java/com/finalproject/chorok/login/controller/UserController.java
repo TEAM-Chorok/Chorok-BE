@@ -123,8 +123,6 @@ public class UserController {
 
     @GetMapping("/user/isLogIn")
     private ResponseEntity<IsLoginDto> isloginChk(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        System.out.println("시작");
-        System.out.println(userDetails);
         userService.isloginChk(userDetails);
         return ResponseEntity.status(HttpStatus.OK).body(userService.isloginChk(userDetails));
     }
@@ -168,4 +166,9 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.OK));
     }
+    //CI/CD 응답
+    @GetMapping("/auth") public String checkHealth() {
+        return "푸시 했을때만";
+    }
 }
+

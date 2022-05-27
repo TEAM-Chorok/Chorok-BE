@@ -1,16 +1,15 @@
 # logging-deploy.yml 
 
-name: logging-system 
+name: chorok-logging-system
 
 on:
-  workflow_dispatch:
-#   push:
-#     branches: [ main ]
-#   pull_request:
-#     branches: [ main ]
+  push:
+    branches: [ Login.ver20 ]
+#  pull_request:
+#    branches: [ Login.ver20 ]
   
 env:
-  S3_BUCKET_NAME: logging-deploy-user0
+  S3_BUCKET_NAME: bucket-chorok
   PROJECT_NAME: Chorok
 
 jobs: 
@@ -49,4 +48,4 @@ jobs:
       run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
 
     - name: Code Deploy
-      run: aws deploy create-deployment --application-name logging-system-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name develop --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
+      run: aws deploy create-deployment --application-name Team_Chorok --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name Team7 --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip

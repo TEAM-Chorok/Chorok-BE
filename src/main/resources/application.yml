@@ -1,0 +1,34 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ENC(QeCkAS5TXOpoGMC6GtwSush6b07xgTyaETN4gReI5K4kkRYaAG5BiOEO5eCXT+7AMYBrgGdE65LhDAuv+ot/n/skjvOBcyLVYBw65ZfE3OKVr+ABWvS2Tw==)
+            client-secret: ENC(eo8fs7mnS3dYWTQuR6rzcemqvNUvheOQoBXSd3U/if9aayLCvmCrI4fQTWfsfWK9)
+            scope: profile,email,openid
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ENC(Me/EbbBvygqh327xvKqgWZXUuRyVU7fsrKXV7vHG8fg=)
+      secretKey: ENC(sV499ai524txYIancozaY70I3JEfi5KUV3DCjjSXHjCJ9ZSvOGwmnDzYDcoyJex3LEEeeeyOOHk=)
+      # 옛날 s3
+#      accessKey: ENC(Yr8zQdA/Bagr0MIz/cc2PN1oSwpK8alXBBD06MdWRng=)
+#      secretKey: ENC(/G3QMXcU2N/Su6P6/sFcMMtPuyfdy3L4/jQVKYq52iy2yaX+YZavJ45L418I+GWht6xqltM+wcg=)
+      instanceProfile : true
+    s3:
+      bucket: miniprojectspring7
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    password: ${CUSTOMPASSWORD}
+    property:
+      prefix: ENC(
+      suffix: )

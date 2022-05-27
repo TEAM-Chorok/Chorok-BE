@@ -152,24 +152,26 @@ public class UserService {
     }
 
     //로그인 확인
-    public IsLoginDto isloginChk(UserDetailsImpl userDetails){
-        System.out.println("isloginChk함수 들어옴");
-        String username = userDetails.getUsername();
-        String nickname = userDetails.getUser().getNickname();
-        Long userId = userDetails.getUser().getUserId();
-        String profileImgUrl = userDetails.getUser().getProfileImageUrl();
-        String profileMsg = userDetails.getUser().getProfileMsg();
-        Optional<User> user = userRepository.findByUsername(username);
-        IsLoginDto isLoginDto = IsLoginDto.builder()
-                .username(username)
-                .nickname(nickname)
-                .userId(userId)
-                .profileImgUrl(profileImgUrl)
-                .profileMsg(profileMsg)
-                .build();
-        System.out.println("isLoginDto 만들어짐");
-        return isLoginDto;
+    public IsLoginDto isloginChk(UserDetailsImpl userDetails) {
+            System.out.println("isloginChk함수 들어옴");
+            String username = userDetails.getUsername();
+            String nickname = userDetails.getUser().getNickname();
+            Long userId = userDetails.getUser().getUserId();
+            String profileImgUrl = userDetails.getUser().getProfileImageUrl();
+            String profileMsg = userDetails.getUser().getProfileMsg();
+            Optional<User> user = userRepository.findByUsername(username);
+            IsLoginDto isLoginDto = IsLoginDto.builder()
+                    .username(username)
+                    .nickname(nickname)
+                    .userId(userId)
+                    .profileImgUrl(profileImgUrl)
+                    .profileMsg(profileMsg)
+                    .build();
+            System.out.println("isLoginDto 만들어짐");
+            return isLoginDto;
+
     }
+
 
     //아이디 중복체크
     public String usernameDuplichk(DuplicateChkDto duplicateChkDto){

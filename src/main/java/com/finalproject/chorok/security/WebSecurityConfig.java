@@ -203,22 +203,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 //    cors 해결
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource(){
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
-        configuration.addAllowedOrigin("http://chorok-test.s3-website.ap-northeast-2.amazonaws.com");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedMethod("GET");
-        configuration.addAllowedMethod("POST");
-        configuration.addAllowedMethod("PUT");
-        configuration.addAllowedHeader("*");
-        configuration.addExposedHeader("Authorization");
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+@Bean
+public CorsConfigurationSource corsConfigurationSource(){
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
+    configuration.addAllowedOrigin("http://chorok-test.s3-website.ap-northeast-2.amazonaws.com");
+    configuration.addAllowedOrigin("https://chorok-test.s3-website.ap-northeast-2.amazonaws.com");
+    configuration.addAllowedOrigin("https://chorok.kr");
+    configuration.addAllowedOrigin("http://chorok.kr");
+    configuration.addAllowedOrigin("https://www.chorok.kr");
+    configuration.addAllowedOrigin("http://www.chorok.kr");
+    configuration.addAllowedMethod("*");
+    configuration.addAllowedMethod("GET");
+    configuration.addAllowedMethod("POST");
+    configuration.addAllowedMethod("PUT");
+    configuration.addAllowedMethod("PATCH");
+    configuration.addAllowedHeader("*");
+    configuration.addExposedHeader("Authorization");
+    configuration.setAllowCredentials(true);
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+}
+
 
 //    @Bean
 //    public CorsConfigurationSource corsConfigurationSource() {

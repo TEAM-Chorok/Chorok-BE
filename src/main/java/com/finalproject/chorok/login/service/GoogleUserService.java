@@ -106,7 +106,7 @@ public class GoogleUserService {
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .code(code)
-                .redirectUri("http://localhost:8080/auth/google/callback")
+                .redirectUri("https://chorok.kr/auth/google/callback")
                 .grantType("authorization_code")
                 .accessType("offline")
                 .scope("openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email").build();
