@@ -236,7 +236,7 @@ public class UserService {
                 .nickname(savedUser.getNickname())
                 .email(savedUser.getUsername())
                 .build();
-
+        System.out.println("유저리스폰스디티오"+userResponseDto);
         return userResponseDto;
 
     }
