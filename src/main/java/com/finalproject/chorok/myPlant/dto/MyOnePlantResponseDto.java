@@ -11,12 +11,14 @@ public class MyOnePlantResponseDto {
     private String myPlantPlace;
     private String myPlantName;
     private Long plantNo;
+    private String plantName;
 
-    public MyOnePlantResponseDto(Long myPlantNo, String myPlantImgUrl, String myPlantPlace, String myPlantName, Long plantNo) {
+    public MyOnePlantResponseDto(Long myPlantNo, String myPlantImgUrl, String myPlantPlace, String myPlantName, Long plantNo, String plantName) {
         this.myPlantNo = myPlantNo;
         this.myPlantImgUrl = myPlantImgUrl;
         this.myPlantPlace = myPlantPlace;
         this.myPlantName = myPlantName;
         this.plantNo = plantNo;
+        this.plantName = plantName;
     }
 }

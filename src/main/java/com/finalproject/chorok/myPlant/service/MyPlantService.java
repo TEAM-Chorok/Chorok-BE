@@ -245,7 +245,8 @@ public class MyPlantService {
                 plant.getMyPlantImgUrl(),
                 plant.getMyPlantPlace(),
                 plant.getMyPlantName(),
-                plant.getPlantNo()
+                plant.getPlantNo(),
+                plant.getMyPlantName()
         );
 
     }
@@ -286,6 +287,15 @@ public class MyPlantService {
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
                 myPlantRepository.save(myPlant);
             }
+            //멀티파트파일이 날라는오는데 비어있을때
+            if (multipartFile.isEmpty()){
+
+                myPlant.setMyPlantName(myPlantName);
+                myPlant.setMyPlantImgUrl(originalUrl);
+                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+                myPlantRepository.save(myPlant);
+            }
+
 
 
             return "멀티파트파일로 저장완료";
