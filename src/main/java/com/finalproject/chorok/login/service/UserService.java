@@ -144,7 +144,7 @@ public class UserService {
     private void sendSignupConfirmEmail(User user) {
         System.out.println("sendSignupConfirmEmail 시작");
 //        String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        String path = "https://chorok.kr";
+        String path = "http://localhost:3000";
 
         Context context = new Context();
         context.setVariable("link", path + "/signup/emailValidation?token=" + user.getEmailCheckToken() +
