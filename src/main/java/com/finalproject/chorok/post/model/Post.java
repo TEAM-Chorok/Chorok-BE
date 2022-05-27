@@ -63,7 +63,7 @@ public class Post extends Timestamped {
     @Lob
     private String postContent;
 
-    @Column
+    @Column(length=1000)
     private String postImgUrl;
 
     // 게시글 등록
