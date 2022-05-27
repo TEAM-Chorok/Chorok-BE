@@ -77,19 +77,21 @@ public class Post extends Timestamped {
     }
 
     // update
-    public void update(PostWriteRequestDto post, String postImgUrl) {
+    public void update(PostWriteRequestDto post, String postImgUrl ,PostType postType) {
         this.postTitle=post.getPostTitle();
         this.postContent=post.getPostContent();
         this.postImgUrl=postImgUrl;
         this.plantPlaceCode=post.getPlantPlaceCode();
+        this.postType=postType;
     }
 
     // update 사진 삭제
-    public void updateDeleteImage(PostWriteRequestDto post){
+    public void updateDeleteImage(PostWriteRequestDto post,PostType postType){
         this.postTitle=post.getPostTitle();
         this.postContent=post.getPostContent();
         this.postImgUrl=null;
         this.plantPlaceCode=post.getPlantPlaceCode();
+        this.postType=postType;
     }
 
 }
