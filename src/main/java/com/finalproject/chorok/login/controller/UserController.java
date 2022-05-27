@@ -132,7 +132,7 @@ public class UserController {
     public ResponseEntity<UserResponseDto> checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
         UserResponseDto userResponseDto = userService.checkEmailToken(token, email);
         try {
-            response.sendRedirect("https://chorok.kr/auth/logIn");
+            response.sendRedirect("https://chorok.kr/home");
             return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
         } catch (IOException e) {
             throw new InvalidActivityException("유효하지 않은 주소입니다.");
