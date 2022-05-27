@@ -26,7 +26,7 @@ public class WeatherController {
         return map;
     }
 
-    @GetMapping("/api/weather")
+    @GetMapping("/weather/situation")
         public String getWeather(WeatherLocationDto weatherLocationDto) {
         String API_KEY = "4572bc7f6a040b32388ddc0a2675d714";
         String urlString = "https://api.openweathermap.org/data/2.5/weather?lat=" + weatherLocationDto.getLat() + "&lon=" + weatherLocationDto.getLon() + "&appid=" + API_KEY;
