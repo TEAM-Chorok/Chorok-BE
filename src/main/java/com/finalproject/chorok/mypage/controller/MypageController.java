@@ -130,24 +130,24 @@ public class MypageController {
 
     //비밀번호 수정하기
     @PatchMapping("/user/update/password")
-    public ResponseEntity<HashMap<String, String>> updatePassword(@RequestParam(name = "password") String password, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updatePassword(password, userDetails));
+    public ResponseEntity<HashMap<String, String>> updatePassword(@RequestBody ProfileUpdateDto profileUpdateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updatePassword(profileUpdateDto, userDetails));
     }
 
     //프로필 수정하기
-    @PatchMapping("/user/update/profile")
-    public ResponseEntity<HashMap<String, String>> updateProfile(@RequestBody ProfileUpdateDto profileUpdateDto,
-//            @RequestParam(value = "nickname", required = false) String nickname,
-//            @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile,
-//            @RequestParam(value = "profileMsg", required = false) String profileMsg,
+    @PostMapping("/user/update/profile")
+    public ResponseEntity<HashMap<String, String>> updateProfile(
+            @RequestParam(value = "nickname", required = false) String nickname,
+            @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile,
+            @RequestParam(value = "profileMsg", required = false) String profileMsg,
+            @RequestParam(value = "originalUrl", required = false) String originalUrl,
             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         System.out.println("컨트롤러 들어오나");
-        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updateProfile(profileUpdateDto,userDetails));
+        return ResponseEntity.status(HttpStatus.OK).body(mypageService.updateProfile(nickname,multipartFile, profileMsg, originalUrl, userDetails));
     }
 
     //회원 비활성화
-    @PatchMapping("/user/update/accountStatus")
+    @PutMapping("/user/update/accountStatus")
     public ResponseEntity<HashMap<String, String>> inactivateAccount(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.inactivateAccount(userDetails));

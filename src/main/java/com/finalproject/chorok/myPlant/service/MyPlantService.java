@@ -1,5 +1,8 @@
 package com.finalproject.chorok.myPlant.service;
 
+import com.finalproject.chorok.common.Image.Image;
+import com.finalproject.chorok.common.Image.ImageRepository;
+import com.finalproject.chorok.common.Image.S3Uploader;
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.dto.*;
 import com.finalproject.chorok.plant.model.Plant;
@@ -15,10 +18,14 @@ import com.finalproject.chorok.todo.model.Todo;
 import com.finalproject.chorok.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.Multipart;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,17 +43,19 @@ public class MyPlantService {
     private final PlantRepository plantRepository;
     private final PlantPlaceRepository plantPlaceRepository;
     private final CommUtils commUtils;
+    private final ImageRepository imageRepository;
+    private final S3Uploader s3Uploader;
 
     //식물 등록할 때, 투두리스트를 처음에 자동으로 저장해줌.
     @Transactional
-    public MyPlant addMyPlant(MyPlantRequestDto myPlantRequestDto, String plantPlace, User user) {
+    public String addMyPlant(MyPlantRequestDto myPlantRequestDto, String plantPlace, User user) {
         MyPlant myPlant = new MyPlant(myPlantRequestDto, plantPlace, user);
         todoRepository.save(new Todo("물주기", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
         todoRepository.save(new Todo("영양제", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
         todoRepository.save(new Todo("분갈이", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
         todoRepository.save(new Todo("잎닦기", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
         todoRepository.save(new Todo("환기", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
-        return myPlantRepository.save(myPlant);
+        return "내식물 등록완료";
 
     }
 
@@ -129,41 +138,54 @@ public class MyPlantService {
         List<TodoOnlyResponseDto> todoOnlyResponseDtos = new ArrayList<>();
 
         for (Todo todo : todos) {
-            Optional<Todo> todo2 = todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByLastWorkTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType());
-            Todo todo3 = todoRepository.findFirstByUserOrderByTodoNoAsc(user);
-            LocalDate thatDay = todo3.getTodoTime();
-            if(todo2.isPresent()){
-           thatDay = todo2.get().getTodoTime();
+            try {Optional<Todo> todo2 = todoRepository.findFirstByUserAndMyPlantAndStatusAndWorkTypeOrderByTodoTimeDesc(user, todo.getMyPlant(), true, todo.getWorkType());
+                LocalDate thatDay = todo2.get().getTodoTime();
+                TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
+                        todo.getTodoNo(),
+                        todo.getMyPlant().getMyPlantNo(),
+                        todo.getWorkType(),
+                        todo.getLastWorkTime(),
+                        //워크타입별 스테이터스가 true인 값과 오늘의 날짜차이. 즉, 몇일이 지났는지.
+
+                        (int) (LocalDate.now().toEpochDay() - thatDay.toEpochDay()),
+                        todo.isStatus()
+                );
+                todoOnlyResponseDtos.add(todoOnlyResponseDto);
+
+            }catch (Exception e){
+                LocalDate thatDay = myPlantRepository.findByMyPlantNo(todo.getMyPlant().getMyPlantNo()).getStartDay();
+                TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
+                        todo.getTodoNo(),
+                        todo.getMyPlant().getMyPlantNo(),
+                        todo.getWorkType(),
+                        todo.getLastWorkTime(),
+                        //워크타입별 스테이터스가 true인 값과 오늘의 날짜차이. 즉, 몇일이 지났는지.
+
+                        (int) (LocalDate.now().toEpochDay() - thatDay.toEpochDay()),
+                        todo.isStatus()
+                );
+                todoOnlyResponseDtos.add(todoOnlyResponseDto);
+            }
+
+
+
+
         }
-
-            TodoOnlyResponseDto todoOnlyResponseDto = new TodoOnlyResponseDto(
-                todo.getTodoNo(),
-                todo.getMyPlant().getMyPlantNo(),
-                todo.getWorkType(),
-                todo.getLastWorkTime(),
-                //워크타입별 스테이터스가 true인 값과 오늘의 날짜차이. 즉, 몇일이 지났는지.
-                (int) (LocalDate.now().toEpochDay() - thatDay.toEpochDay()),
-                todo.isStatus()
-        );
-        todoOnlyResponseDtos.add(todoOnlyResponseDto);
-    }
-        for(MyPlant myPlant :myPlants)
-    {
-        MyPlantResponseDto myPlantResponseDto = new MyPlantResponseDto(
-                myPlant.getMyPlantNo(),
-                myPlant.getPlantNo(),
-                plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName(),
-                myPlant.getMyPlantPlace(),
-                myPlant.getMyPlantImgUrl(),
-                myPlant.getMyPlantName(),
-                myPlant.getStartDay(),
-                myPlant.getEndDay(),
-                todoOnlyResponseDtos.stream().filter(h -> h.getMyPlantNo().equals(myPlant.getMyPlantNo())).collect(Collectors.toList()));
-        myPlantResponseDtos.add(myPlantResponseDto);
-    }
+        for (MyPlant myPlant : myPlants) {
+            MyPlantResponseDto myPlantResponseDto = new MyPlantResponseDto(
+                    myPlant.getMyPlantNo(),
+                    myPlant.getPlantNo(),
+                    plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName(),
+                    myPlant.getMyPlantPlace(),
+                    myPlant.getMyPlantImgUrl(),
+                    myPlant.getMyPlantName(),
+                    myPlant.getStartDay(),
+                    myPlant.getEndDay(),
+                    todoOnlyResponseDtos.stream().filter(h -> h.getMyPlantNo().equals(myPlant.getMyPlantNo())).collect(Collectors.toList()));
+            myPlantResponseDtos.add(myPlantResponseDto);
+        }
         return myPlantResponseDtos;
-}
-
+    }
 
 
     //나의 식물 수정하기
@@ -216,8 +238,10 @@ public class MyPlantService {
      * 내식물번호를 받아서 식물하나 정보 반환
      */
     public MyOnePlantResponseDto findMyPlant(Long myPlantNo) {
+
         MyPlant myPlant = myPlantRepository.findById(myPlantNo).orElseThrow(
                 ()-> new NullPointerException("해당 나의식물번호가 존재하지 않습니다.")
+
         );
         Plant plant = plantRepository.findById(myPlant.getPlantNo()).orElseThrow(
                 ()-> new NullPointerException("해당 식물번호가 존재하지 않습니다.")
@@ -234,13 +258,59 @@ public class MyPlantService {
     }
 
     /*
-    *2022-05-19 추가기능
-    *최은아
-    * 내식물 삭제
+     *2022-05-19 추가기능
+     *최은아
+     * 내식물 삭제
      */
     @Transactional
-    public HashMap<String, String> delMyPlant(Long myPlantNo, UserDetailsImpl userDetails){
-        myPlantRepository.deleteMyPlantByAndUserAndAndMyPlantNo(userDetails.getUser(),myPlantNo);
-    return commUtils.responseHashMap(HttpStatus.OK);
+    public HashMap<String, String> delMyPlant(Long myPlantNo, UserDetailsImpl userDetails) {
+        myPlantRepository.deleteMyPlantByAndUserAndAndMyPlantNo(userDetails.getUser(), myPlantNo);
+        return commUtils.responseHashMap(HttpStatus.OK);
+    }
+
+    //내 식물 수정
+    @Transactional
+    public String updateMyPlant(Long myPlantNo, String myPlantName, String myPlantPlaceCode, MultipartFile multipartFile, String originalUrl) {
+        MyPlant myPlant = myPlantRepository.findByMyPlantNo(myPlantNo);
+        Image image = imageRepository.findByImageUrl(myPlant.getMyPlantImgUrl());
+        try {
+            //originalUrl이 널값일때->멀티파트파일이 있을때
+//            if (originalUrl == null || originalUrl.equals(""))
+            if (!multipartFile.isEmpty()&&image!=null) {
+                //사진삭제
+                s3Uploader.deleteImage(image.getFilename());
+                imageRepository.deleteByImageUrl(myPlant.getMyPlantImgUrl());
+                String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
+                myPlant.setMyPlantName(myPlantName);
+                myPlant.setMyPlantImgUrl(myPlantImgUrl);
+                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+                myPlantRepository.save(myPlant);
+            }
+            if(!multipartFile.isEmpty()&&image==null){
+                String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
+                myPlant.setMyPlantName(myPlantName);
+                myPlant.setMyPlantImgUrl(myPlantImgUrl);
+                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+                myPlantRepository.save(myPlant);
+            }
+
+
+            return "멀티파트파일로 저장완료";
+
+        }
+        catch (NullPointerException e) {
+            //멀티파트가 null일때니까, originalImgurl로 간다.
+            myPlant.setMyPlantName(myPlantName);
+            myPlant.setMyPlantImgUrl(originalUrl);
+            myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+            myPlantRepository.save(myPlant);
+            return "오리지날유알엘로 저장완료";
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return "s3업로드오류용에러메세지";
+
+        }
+
     }
 }

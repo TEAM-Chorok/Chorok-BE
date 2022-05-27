@@ -22,7 +22,7 @@ public class Spraying {
 
     private LocalDate sprayingDay;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "my_plant_no",referencedColumnName = "my_plant_no")
     private MyPlant myPlant;
 

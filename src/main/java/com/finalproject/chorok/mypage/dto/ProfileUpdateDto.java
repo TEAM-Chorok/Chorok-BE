@@ -9,4 +9,5 @@ import lombok.Setter;
 public class ProfileUpdateDto {
     private String nickname;
     private String profileMsg;
+    private String password;
 }
