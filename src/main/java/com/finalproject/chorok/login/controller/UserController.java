@@ -168,7 +168,7 @@ public class UserController {
     }
     //CI/CD 응답
     @GetMapping("/auth") public String checkHealth() {
-        return "얼마안남음!!";
+        return "푸시 했을때만";
     }
 }
 
