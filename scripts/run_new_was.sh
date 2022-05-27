@@ -14,6 +14,7 @@ else echo "> No WAS is connected to nginx"
 fi
 
 source /etc/profile.d/codedeploy.sh # EC2 서버에 미리 만들어둔 jasypt_password를 환경변수에 등록
+echo "> CUSTOMPASSWORD is ${CUSTOMPASSWORD}."
 
 TARGET_PID=$(lsof -Fp -i TCP:${TARGET_PORT} | grep -Po 'p[0-9]+' | grep -Po '[0-9]+')
 
