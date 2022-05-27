@@ -147,7 +147,7 @@ public class UserService {
         String path = "https://chorok.kr";
 
         Context context = new Context();
-        context.setVariable("link", path + "/auth/check-email-token?token=" + user.getEmailCheckToken() +
+        context.setVariable("link", path + "/signup/emailValidation?token=" + user.getEmailCheckToken() +
                 "&email=" + user.getUsername());
         String message = templateEngine.process("email-link", context);
         EmailMessage emailMessage = EmailMessage.builder()
