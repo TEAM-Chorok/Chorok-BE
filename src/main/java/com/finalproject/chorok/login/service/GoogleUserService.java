@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.finalproject.chorok.common.utils.RedisUtil;
 import com.finalproject.chorok.login.dto.GoogleUserInfoDto;
+import com.finalproject.chorok.login.dto.GoogleUserResponseDto;
 import com.finalproject.chorok.login.dto.UserResponseDto;
 import com.finalproject.chorok.login.model.Labeling;
 import com.finalproject.chorok.login.model.User;
@@ -16,6 +17,8 @@ import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.post.utils.CommUtils;
 import com.finalproject.chorok.security.GoogleOAuthRequest;
 import com.finalproject.chorok.security.GoogleOAuthResponse;
+import com.finalproject.chorok.security.UserDetailsImpl;
+import com.finalproject.chorok.security.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -25,6 +28,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -44,16 +50,14 @@ public class GoogleUserService {
     private final LabelingRepository labelingRepository;
     private final RedisUtil redisUtil;
     private final CommUtils commUtils;
-    private final UserService userService;
 
     @Autowired
-    public GoogleUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository, RedisUtil redisUtil, CommUtils commUtils, UserService userService) {
+    public GoogleUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LabelingRepository labelingRepository, RedisUtil redisUtil, CommUtils commUtils) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.labelingRepository = labelingRepository;
         this.redisUtil = redisUtil;
         this.commUtils = commUtils;
-        this.userService = userService;
     }
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -63,7 +67,7 @@ public class GoogleUserService {
     private String clientSecret;
 
 
-    public UserResponseDto googleLogin(String accessToken) throws JsonProcessingException {
+    public GoogleUserResponseDto googleLogin(String accessToken) throws JsonProcessingException {
         //HTTP Request를 위한 RestTemplate
         RestTemplate restTemplate = new RestTemplate();
 
@@ -78,10 +82,10 @@ public class GoogleUserService {
         final String AUTH_HEADER = "Authorization";
         final String TOKEN_TYPE = "BEARER";
 
-        String jwt_token = userService.forceLogin(googleUser); // 로그인처리 후 토큰 받아오기
+        String jwt_token = forceLogin(googleUser); // 로그인처리 후 토큰 받아오기
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTH_HEADER, TOKEN_TYPE + " " + jwt_token);
-        UserResponseDto googleUserResponseDto = UserResponseDto.builder()
+        GoogleUserResponseDto googleUserResponseDto = GoogleUserResponseDto.builder()
                 .token(TOKEN_TYPE + " " + jwt_token)
                 .username(googleUser.getUsername())
                 .nickname(googleUser.getNickname())
@@ -198,5 +202,13 @@ public class GoogleUserService {
         {
         }
     return commUtils.responseHashMap(HttpStatus.OK);
+    }
+
+    private String forceLogin(User googleUser) {
+        UserDetailsImpl userDetails = new UserDetailsImpl(googleUser);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return JwtTokenUtils.generateJwtToken(userDetails);
     }
 }

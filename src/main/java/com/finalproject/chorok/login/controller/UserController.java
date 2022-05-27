@@ -102,13 +102,13 @@ public class UserController {
 
     //카카오 로그인
     @GetMapping("/auth/kakao/callback")
-    public ResponseEntity<UserResponseDto> kakaoLogin(@RequestParam String code) throws JsonProcessingException {
+    public ResponseEntity<KakaoUserResponseDto> kakaoLogin(@RequestParam String code) throws JsonProcessingException {
         return ResponseEntity.status(HttpStatus.OK).body(kakaoUserService.kakaoLogin(code));
     }
 
     //구글 로그인
     @GetMapping("/auth/google/callback")
-    public ResponseEntity<UserResponseDto> googleLogin(@RequestParam String code) throws JsonProcessingException {
+    public ResponseEntity<GoogleUserResponseDto> googleLogin(@RequestParam String code) throws JsonProcessingException {
         return ResponseEntity.status(HttpStatus.OK).body(googleUserService.googleLogin(code));
     }
 
