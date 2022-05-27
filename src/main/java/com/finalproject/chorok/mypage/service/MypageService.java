@@ -87,7 +87,9 @@ public class MypageService {
     public MypagePagingDto myPhoto(UserDetailsImpl userDetails, PlantriaFilterRequestDto plantriaFilterRequestDto, Pageable pageable) {
 
         return new MypagePagingDto(
-                postRepository.myPlanterior(userDetails.getUserId(),plantriaFilterRequestDto,pageable)
+                postRepository.myPlanterior(userDetails.getUserId(),plantriaFilterRequestDto,pageable),
+                userDetails.getUser().getProfileMsg()
+
         );
     }
 
@@ -95,21 +97,26 @@ public class MypageService {
     // 내가 북마크한 커뮤니티 전체 조회 ( 커뮤니티 )
     public MypagePagingDto myCommunityBookMark(UserDetailsImpl userDetails, Pageable pageable) {
         return new MypagePagingDto(
-                postRepository.myCommunityBookMark(userDetails.getUserId(),pageable)
+                postRepository.myCommunityBookMark(userDetails.getUserId(),pageable),
+                userDetails.getUser().getProfileMsg()
+
         );
     }
 
     // 내가 쓴 커뮤니티 게시물 전체 조회 ( 커뮤니티)
     public MypagePagingDto myCommunity(UserDetailsImpl userDetails, Pageable pageable) {
         return new MypagePagingDto(
-                postRepository.myCommunity(userDetails.getUserId(),pageable)
+                postRepository.myCommunity(userDetails.getUserId(),pageable),
+                userDetails.getUser().getProfileMsg()
         );
     }
 
     // 내가 북마크한 게시물
     public MypagePagingDto myPostBookMark(UserDetailsImpl userDetails,PlantriaFilterRequestDto plantriaFilterRequestDto,Pageable pageable) {
         return new MypagePagingDto(
-                postRepository.myBookMarkPost(userDetails.getUserId(),plantriaFilterRequestDto,pageable)
+                postRepository.myBookMarkPost(userDetails.getUserId(),plantriaFilterRequestDto,pageable),
+                userDetails.getUser().getProfileMsg()
+
         );
     }
 
@@ -117,7 +124,9 @@ public class MypageService {
     public MypagePagingDto myPlantBookMark(UserDetailsImpl userDetails, Pageable pageable) {
 
         return new MypagePagingDto(
-                postRepository.myPlantBookMark(userDetails.getUserId(),pageable)
+                postRepository.myPlantBookMark(userDetails.getUserId(),pageable),
+                userDetails.getUser().getProfileMsg()
+
         );
     }
 

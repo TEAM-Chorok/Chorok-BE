@@ -14,11 +14,13 @@ public class MypagePagingDto {
     private  int pageSize;
     private  int page;
     private  int totalPage;
+    private String profileMsg;
 
-    public MypagePagingDto(Page<?> pageList) {
+    public MypagePagingDto(Page<?> pageList, String profileMsg) {
         this.content = pageList.getContent();
         this.pageSize = pageList.getSize();
         this.page = pageList.getPageable().getPageNumber();
         this.totalPage = pageList.getTotalPages();
+        this.profileMsg = profileMsg;
     }
 }

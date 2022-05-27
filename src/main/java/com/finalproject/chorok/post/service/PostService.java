@@ -107,7 +107,8 @@ public class PostService {
                 plantPlace,
                 commUtils.LikePostChk(postId,user),
                 commUtils.BookMarkPostChk(postId,user),
-                commentResponseDtos
+                commentResponseDtos,
+                user.getProfileMsg()
         );
     }
 

@@ -47,9 +47,11 @@ public class PostDetailResponseDto {
     private int commentCount;
     List<CommentResponseDto> commentList;
 
+    private String profileMsg;
+
 
     // 플렌테리어
-    public PostDetailResponseDto(Post post, PlantPlace plantPlace,Boolean likePostChk, Boolean bookMarkPostChk, List<CommentResponseDto> commentResponseDtos) {
+    public PostDetailResponseDto(Post post, PlantPlace plantPlace,Boolean likePostChk, Boolean bookMarkPostChk, List<CommentResponseDto> commentResponseDtos, String profileMsg) {
         this.postId=post.getPostId();
         this.nickname=post.getUser().getNickname();
         this.profileImgUrl=post.getUser().getProfileImageUrl();
@@ -66,7 +68,7 @@ public class PostDetailResponseDto {
         this.postLikeCount=post.getPostLike().size();
         this.commentCount = commentResponseDtos.size();
         this.commentList=commentResponseDtos;
-
+this.profileMsg=profileMsg;
     }
 
     // 게시판
