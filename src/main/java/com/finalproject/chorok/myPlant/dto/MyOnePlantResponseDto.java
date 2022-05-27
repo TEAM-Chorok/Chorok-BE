@@ -13,7 +13,9 @@ public class MyOnePlantResponseDto {
     private Long plantNo;
     private String plantName;
 
+
     public MyOnePlantResponseDto(Long myPlantNo, String myPlantImgUrl, String myPlantPlace, String myPlantName, Long plantNo,String plantName) {
+
         this.myPlantNo = myPlantNo;
         this.myPlantImgUrl = myPlantImgUrl;
         this.myPlantPlace = myPlantPlace;

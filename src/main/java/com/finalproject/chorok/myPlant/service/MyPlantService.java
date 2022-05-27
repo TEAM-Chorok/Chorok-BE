@@ -247,12 +247,14 @@ public class MyPlantService {
                 ()-> new NullPointerException("해당 식물번호가 존재하지 않습니다.")
         );
         return new MyOnePlantResponseDto(
+
                 myPlant.getMyPlantNo(),
                 myPlant.getMyPlantImgUrl(),
                 myPlant.getMyPlantPlace(),
                 myPlant.getMyPlantName(),
                 myPlant.getPlantNo(),
                 plant.getPlantName()
+
         );
 
     }
@@ -293,6 +295,15 @@ public class MyPlantService {
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
                 myPlantRepository.save(myPlant);
             }
+            //멀티파트파일이 날라는오는데 비어있을때
+            if (multipartFile.isEmpty()){
+
+                myPlant.setMyPlantName(myPlantName);
+                myPlant.setMyPlantImgUrl(originalUrl);
+                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+                myPlantRepository.save(myPlant);
+            }
+
 
 
             return "멀티파트파일로 저장완료";
