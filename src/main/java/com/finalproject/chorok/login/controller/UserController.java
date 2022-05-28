@@ -99,6 +99,27 @@ public class UserController {
 
     }
 
+    //    이메일 재발송
+    @PostMapping("/auth/signUp/email-resend")
+    public ResponseEntity<HashMap<String, String>> resendSignUpEmail(
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "password") String password,
+            @RequestParam(value = "nickname") String nickname,
+            @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile
+    ) throws IOException {
+
+        redisUtil.delete(username);
+        System.out.println("redisutil 제거");
+        String profileImgUrl = null;
+
+        if(multipartFile!=null){
+            profileImgUrl = s3Uploader.upload(multipartFile, "static");
+        }
+        SignupRequestDto signupRequestDto = new SignupRequestDto(username, password, nickname, profileImgUrl);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.registerUser(signupRequestDto));
+
+    }
+
 
     //카카오 로그인
     @GetMapping("/auth/kakao/callback")
