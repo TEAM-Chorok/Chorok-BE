@@ -38,27 +38,32 @@ public class TodoController {
     }
 //투두완료체크
     @PatchMapping("/todo/ok/{todoNo}")
-    public void checkTodoOk(@PathVariable Long todoNo, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public String checkTodoOk(@PathVariable Long todoNo, @AuthenticationPrincipal UserDetailsImpl userDetails){
        User user = userDetails.getUser();
         try {
             Todo todo = todoRepository.findByUserAndTodoNo(user, todoNo);
             todo.setStatus(true);
             todoRepository.save(todo);
+            return "투두세팅완";
         }
         catch (Exception e){
             new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return "투두세팅실패";
         }
     }
     @PatchMapping("/todo/cancel/{todoNo}")
-    public void checkTodoCancle(@PathVariable Long todoNo, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public String checkTodoCancle(@PathVariable Long todoNo, @AuthenticationPrincipal UserDetailsImpl userDetails){
         User user = userDetails.getUser();
         try {
             Todo todo = todoRepository.findByUserAndTodoNo(user, todoNo);
             todo.setStatus(false);
             todoRepository.save(todo);
+            return "투두false완";
+
         }
         catch (Exception e){
             new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return "투두false실패";
         }
     }
 
