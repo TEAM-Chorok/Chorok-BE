@@ -131,20 +131,12 @@ public class UserController {
     @GetMapping("/auth/check-email-token")
     public ResponseEntity<UserResponseDto> checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
         UserResponseDto userResponseDto = userService.checkEmailToken(token, email);
-//        response.setHeader("Authorization", userResponseDto.getToken());
-//        response.sendRedirect("https://chorok.kr/home");
-//        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
-//        try {
-            response.setHeader("Authorization", userResponseDto.getToken());
-            response.setHeader("Access-Control-Allow-Origin", "https://chorok.kr");
-            response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT");
-            response.setHeader("Access-Control-Max-Age", "3600");
-            response.setHeader("Access-Control-Allow-Headers", "x-requested-with, origin, content-type, accept");
-//            response.sendRedirect("https://chorok.kr/");
+//            response.setHeader("Authorization", userResponseDto.getToken());
+//            response.setHeader("Access-Control-Allow-Origin", "https://chorok.kr");
+//            response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT");
+//            response.setHeader("Access-Control-Max-Age", "3600");
+//            response.setHeader("Access-Control-Allow-Headers", "x-requested-with, origin, content-type, accept");
             return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
-//        } catch (IOException e) {
-//            throw new InvalidActivityException("유효하지 않은 주소입니다.");
-//        }
 
     }
 
