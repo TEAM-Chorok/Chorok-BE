@@ -168,10 +168,10 @@ public class UserController {
     }
 
     // 비로그인 식물 추천 테스트
-    @GetMapping("/auth/labeling/{answer1}/{answer2}/{answer3}/{answer4}")
+    @GetMapping("/auth/labeling")
     public ResponseEntity<LabelingResponseDto> NonLoginLabelingTest(
-            @PathVariable String answer1, @PathVariable String answer2,
-            @PathVariable String answer3, @PathVariable String answer4) {
+            @RequestParam String answer1, @RequestParam String answer2,
+            @RequestParam String answer3, @RequestParam String answer4) {
 
         LabelingDto labelingDto = new LabelingDto(answer1, answer2, answer3, answer4);
         return ResponseEntity.status(HttpStatus.OK).body(userService.getLabelingPlant(labelingDto));
