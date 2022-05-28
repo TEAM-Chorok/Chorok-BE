@@ -136,7 +136,7 @@ public class UserController {
 //        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
         try {
             response.setHeader("Authorization", userResponseDto.getToken());
-            response.setHeader("Access-Control-Allow-Origin", "https://chorok.shop");
+            response.setHeader("Access-Control-Allow-Origin", "https://chorok.kr");
             response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT");
             response.setHeader("Access-Control-Max-Age", "3600");
             response.setHeader("Access-Control-Allow-Headers", "x-requested-with, origin, content-type, accept");
