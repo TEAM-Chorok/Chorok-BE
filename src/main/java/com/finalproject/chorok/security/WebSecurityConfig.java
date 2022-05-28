@@ -184,6 +184,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         skipPathList.add("GET,/");
 
+        // 비로그인 사용자 권한허용
+        skipPathList.add("GET,/read-posts");
+
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
