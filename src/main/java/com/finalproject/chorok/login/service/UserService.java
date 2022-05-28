@@ -144,7 +144,7 @@ public class UserService {
     private void sendSignupConfirmEmail(User user) {
         System.out.println("sendSignupConfirmEmail 시작");
 //        String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        String path = "http://localhost:3000";
+        String path = "https://chorok.kr";
 
         Context context = new Context();
         context.setVariable("link", path + "/signup/emailValidation?token=" + user.getEmailCheckToken() +
@@ -227,7 +227,6 @@ public class UserService {
         System.out.println("4. 강제 로그인 처리");
         final String AUTH_HEADER = "Authorization";
         final String TOKEN_TYPE = "BEARER";
-
         String jwt_token = forceLogin(savedUser); // 로그인처리 후 토큰 받아오기
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTH_HEADER, TOKEN_TYPE + " " + jwt_token);
