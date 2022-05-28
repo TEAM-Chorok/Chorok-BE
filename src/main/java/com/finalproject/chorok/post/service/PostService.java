@@ -117,7 +117,6 @@ public class PostService {
     public PostResponseDto writePost(PostWriteRequestDto post, User user) throws IOException {
 
         // 1. 플랜테리어 사진 유무 체크
-
         commUtils.planteriorFileChk(post.getPostTypeCode(),post.getPostImgUrl());
         // 2. 플랜테리어 와 초록톡 plantPlaceCode 체크
         post.setPlantPlaceCode(commUtils.planteriorPlantPlaceChk(post.getPostTypeCode(),post.getPlantPlaceCode()));

@@ -221,5 +221,14 @@ public class CommUtils {
 
     }
 
+    // 댓글 수정 삭제 권한 체크
+    public void commentAuthChk(Long commentId,Long userId) throws IllegalAccessException {
+        Comment comment = getComment(commentId);
+        if(comment.getUser().getUserId()!=userId){
+            throw new IllegalAccessException("권한이 없습니다.");
+        }
+
+    }
+
 }
 
