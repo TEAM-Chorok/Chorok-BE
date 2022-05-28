@@ -136,7 +136,7 @@ public class CommUtils {
     // 게시글에 사진 있는지 확인하고 있으면 삭제
     public void postPhotoDelete(Long postId) {
         Post post = getPost(postId);
-        if(!post.getPostImgUrl().isEmpty() || post.getPostImgUrl() == null){
+        if( post.getPostImgUrl() == null || post.getPostImgUrl().equals("") || post.getPostImgUrl().isEmpty() ){
             imageRepository.deleteByImageUrl(post.getPostImgUrl());
         }
     }
