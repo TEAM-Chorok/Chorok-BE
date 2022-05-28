@@ -212,5 +212,14 @@ public class CommUtils {
         return hs;
     }
 
+    // 게시글 수정 삭제 권한 체크
+    public void postAuthChk(Long userId,Long postId) throws IllegalAccessException {
+        Post post = getPost(postId);
+        if(post.getUser().getUserId()!=userId){
+             throw new IllegalAccessException("권한이 없습니다.");
+        }
+
+    }
+
 }
 

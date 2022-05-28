@@ -148,9 +148,13 @@ public class PostController {
 
     // 게시글 삭제
     @DeleteMapping("/delete-post/{postId}")
-    public ResponseEntity<HashMap<String, String>> deletePost(@Valid @PathVariable Long postId){
+    public ResponseEntity<HashMap<String, String>> deletePost(
+            @Valid @PathVariable Long postId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
 
-        return  ResponseEntity.status(HttpStatus.OK).body(postService.deletePost(postId));
+    ) throws IllegalAccessException {
+
+        return  ResponseEntity.status(HttpStatus.OK).body(postService.deletePost(postId,userDetails.getUser()));
 
     }
 
@@ -159,10 +163,11 @@ public class PostController {
     public ResponseEntity<PostResponseDto> updatePost(
             @Valid @ModelAttribute PostWriteRequestDto postWriteRequestDto,
             @RequestParam(value = "originalUrl",required = false) String originalUrl,
-            @PathVariable Long postId
-    ) throws IOException {
+            @PathVariable Long postId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws IOException, IllegalAccessException {
 
-        return  ResponseEntity.status(HttpStatus.OK).body( postService.updatePost(postId,postWriteRequestDto,originalUrl));
+        return  ResponseEntity.status(HttpStatus.OK).body( postService.updatePost(postId,postWriteRequestDto,originalUrl,userDetails.getUser()));
     }
 
     // 게시글 좋아요 기능

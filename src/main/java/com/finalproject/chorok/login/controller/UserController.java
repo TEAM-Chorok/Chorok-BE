@@ -99,6 +99,26 @@ public class UserController {
 
     }
 
+    //    이메일 재발송
+    @PostMapping("/auth/signUp/email-resend")
+    public ResponseEntity<HashMap<String, String>> resendSignUpEmail(
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "password") String password,
+            @RequestParam(value = "nickname") String nickname,
+            @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile
+    ) throws IOException {
+
+        redisUtil.delete(username);
+        String profileImgUrl = null;
+
+        if(multipartFile!=null){
+            profileImgUrl = s3Uploader.upload(multipartFile, "static");
+        }
+        SignupRequestDto signupRequestDto = new SignupRequestDto(username, password, nickname, profileImgUrl);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.registerUser(signupRequestDto));
+
+    }
+
 
     //카카오 로그인
     @GetMapping("/auth/kakao/callback")
@@ -131,20 +151,12 @@ public class UserController {
     @GetMapping("/auth/check-email-token")
     public ResponseEntity<UserResponseDto> checkEmailToken(String token, String email, HttpServletResponse response) throws InvalidActivityException {
         UserResponseDto userResponseDto = userService.checkEmailToken(token, email);
-//        response.setHeader("Authorization", userResponseDto.getToken());
-//        response.sendRedirect("https://chorok.kr/home");
-//        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
-//        try {
             response.setHeader("Authorization", userResponseDto.getToken());
             response.setHeader("Access-Control-Allow-Origin", "https://chorok.kr");
             response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT");
             response.setHeader("Access-Control-Max-Age", "3600");
             response.setHeader("Access-Control-Allow-Headers", "x-requested-with, origin, content-type, accept");
-//            response.sendRedirect("https://chorok.kr/home");
             return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
-//        } catch (IOException e) {
-//            throw new InvalidActivityException("유효하지 않은 주소입니다.");
-//        }
 
     }
 
@@ -152,6 +164,16 @@ public class UserController {
     @PutMapping("/user/labeling")
     public ResponseEntity<LabelingResponseDto> labelingTest(@RequestBody LabelingDto labelingDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.updateLabeling(labelingDto, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getLabelingPlant(labelingDto));
+    }
+
+    // 비로그인 식물 추천 테스트
+    @GetMapping("/auth/labeling")
+    public ResponseEntity<LabelingResponseDto> NonLoginLabelingTest(
+            @RequestParam String answer1, @RequestParam String answer2,
+            @RequestParam String answer3, @RequestParam String answer4) {
+
+        LabelingDto labelingDto = new LabelingDto(answer1, answer2, answer3, answer4);
         return ResponseEntity.status(HttpStatus.OK).body(userService.getLabelingPlant(labelingDto));
     }
 
@@ -177,7 +199,7 @@ public class UserController {
     }
     //CI/CD 응답
     @GetMapping("/auth") public String checkHealth() {
-        return "푸시 했을때만!~!ㅋ";
+        return "확인용5";
     }
 }
 
