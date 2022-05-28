@@ -28,14 +28,16 @@ public class CommentService {
 
     // 댓글 수정
     @Transactional
-    public void updateComment(CommentUpdateRequestDto commentUpdateRequestDto) {
+    public void updateComment(CommentUpdateRequestDto commentUpdateRequestDto,User user) throws IllegalAccessException {
+        commUtils.commentAuthChk(commentUpdateRequestDto.getCommentId(),user.getUserId());
         Comment comment = commUtils.getComment(commentUpdateRequestDto.getCommentId());
         comment.update(commentUpdateRequestDto);
     }
 
     // 댓글 삭제
     @Transactional
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId,User user) throws IllegalAccessException {
+        commUtils.commentAuthChk(commentId,user.getUserId());
         //commUtils.getComment(commentId);
         commentRepository.deleteById(commentId);
     }

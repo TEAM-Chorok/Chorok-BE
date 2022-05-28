@@ -33,15 +33,22 @@ public class CommentController {
 
     // 댓글 수정
     @PutMapping("/update-comment")
-    public ResponseEntity<?> updateComment(@Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto){
-        commentService.updateComment(commentUpdateRequestDto);
+    public ResponseEntity<?> updateComment(
+            @Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+
+    ) throws IllegalAccessException {
+        commentService.updateComment(commentUpdateRequestDto, userDetails.getUser());
         return  ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.OK));
     }
 
     // 댓글 삭제
     @DeleteMapping("/delete-comment/{commentId}")
-    public ResponseEntity<?> deleteComment(@Valid @PathVariable Long commentId){
-        commentService.deleteComment(commentId);
+    public ResponseEntity<?> deleteComment(
+            @Valid @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws IllegalAccessException {
+        commentService.deleteComment(commentId, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.OK).body(commUtils.responseHashMap(HttpStatus.OK));
     }
 }
