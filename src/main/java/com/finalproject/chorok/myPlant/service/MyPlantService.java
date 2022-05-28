@@ -240,11 +240,11 @@ public class MyPlantService {
     public MyOnePlantResponseDto findMyPlant(Long myPlantNo) {
 
         MyPlant myPlant = myPlantRepository.findById(myPlantNo).orElseThrow(
-                ()-> new NullPointerException("해당 나의식물번호가 존재하지 않습니다.")
+                () -> new NullPointerException("해당 나의식물번호가 존재하지 않습니다.")
 
         );
         Plant plant = plantRepository.findById(myPlant.getPlantNo()).orElseThrow(
-                ()-> new NullPointerException("해당 식물번호가 존재하지 않습니다.")
+                () -> new NullPointerException("해당 식물번호가 존재하지 않습니다.")
         );
         return new MyOnePlantResponseDto(
 
@@ -272,68 +272,74 @@ public class MyPlantService {
 
     //내 식물 수정
     @Transactional
-    public String updateMyPlant(Long myPlantNo, String myPlantName, String myPlantPlaceCode, MultipartFile multipartFile, String originalUrl) {
+    public String updateMyPlant(Long myPlantNo, String myPlantName, String myPlantPlaceCode, MultipartFile multipartFile, String originalUrl, UserDetailsImpl userDetails) {
         MyPlant myPlant = myPlantRepository.findByMyPlantNo(myPlantNo);
         Image image = imageRepository.findByImageUrl(myPlant.getMyPlantImgUrl());
-        try {
-            //originalUrl이 널값일때->멀티파트파일이 있을때
+        if (userDetails.getUser().getUserId().equals(myPlant.getUser().getUserId())) {
+            try {
+                //originalUrl이 널값일때->멀티파트파일이 있을때
 //            if (originalUrl == null || originalUrl.equals(""))
-            if (!multipartFile.isEmpty() && image != null) {
-                //사진삭제
-                System.out.println("일번");
-                s3Uploader.deleteImage(image.getFilename());
-                imageRepository.deleteByImageUrl(myPlant.getMyPlantImgUrl());
-                String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
-                myPlant.setMyPlantName(myPlantName);
-                myPlant.setMyPlantImgUrl(myPlantImgUrl);
-                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
-                myPlantRepository.save(myPlant);
-            }
-            if (!multipartFile.isEmpty() && image == null) {
-                System.out.println("이번");
-                String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
-                myPlant.setMyPlantName(myPlantName);
-                myPlant.setMyPlantImgUrl(myPlantImgUrl);
-                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
-                myPlantRepository.save(myPlant);
-            }
-            //멀티파트파일이 날라는오는데 비어있을때
-            if (multipartFile.isEmpty()){
+                if (!multipartFile.isEmpty() && image != null) {
+                    //사진삭제
+                    System.out.println("일번");
+                    s3Uploader.deleteImage(image.getFilename());
+                    imageRepository.deleteByImageUrl(myPlant.getMyPlantImgUrl());
+                    String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
+                    myPlant.setMyPlantName(myPlantName);
+                    myPlant.setMyPlantImgUrl(myPlantImgUrl);
+                    myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+                    myPlantRepository.save(myPlant);
+                }
+                if (!multipartFile.isEmpty() && image == null) {
+                    System.out.println("이번");
+                    String myPlantImgUrl = s3Uploader.upload(multipartFile, "static");
+                    myPlant.setMyPlantName(myPlantName);
+                    myPlant.setMyPlantImgUrl(myPlantImgUrl);
+                    myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+                    myPlantRepository.save(myPlant);
+                }
+                //멀티파트파일이 날라는오는데 비어있을때
+                if (multipartFile.isEmpty()) {
 
+                    myPlant.setMyPlantName(myPlantName);
+                    myPlant.setMyPlantImgUrl(originalUrl);
+                    myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+                    myPlantRepository.save(myPlant);
+                }
+
+
+                //멀티파트파일이 날라는오는데 비어있을때
+                if (multipartFile.isEmpty() || multipartFile == null) {
+                    System.out.println("삼번ㅋ");
+
+                    myPlant.setMyPlantName(myPlantName);
+                    myPlant.setMyPlantImgUrl(originalUrl);
+                    myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
+                    myPlantRepository.save(myPlant);
+                }
+
+
+                return "멀티파트파일로 저장완료";
+
+            } catch (NullPointerException e) {
+                //멀티파트가 null일때니까, originalImgurl로 간다.
+                System.out.println("사번");
+                System.out.println("오리지날 유알엘은" + originalUrl);
                 myPlant.setMyPlantName(myPlantName);
                 myPlant.setMyPlantImgUrl(originalUrl);
                 myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
                 myPlantRepository.save(myPlant);
+                return "오리지날유알엘로 저장완료";
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "s3업로드오류용에러메세지";
+
+            } catch (Exception e) {
+                return "나의 식물이 아닙니다";
             }
-
-
-            //멀티파트파일이 날라는오는데 비어있을때
-            if (multipartFile.isEmpty()||multipartFile==null){
-                System.out.println("삼번ㅋ");
-
-                myPlant.setMyPlantName(myPlantName);
-                myPlant.setMyPlantImgUrl(originalUrl);
-                myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
-                myPlantRepository.save(myPlant);
-            }
-
-
-            return "멀티파트파일로 저장완료";
-
-        } catch (NullPointerException e) {
-            //멀티파트가 null일때니까, originalImgurl로 간다.
-            System.out.println("사번");
-            System.out.println("오리지날 유알엘은"+originalUrl);
-            myPlant.setMyPlantName(myPlantName);
-            myPlant.setMyPlantImgUrl(originalUrl);
-            myPlant.setMyPlantPlace(plantPlaceRepository.findByPlantPlaceCode(myPlantPlaceCode).getPlantPlace());
-            myPlantRepository.save(myPlant);
-            return "오리지날유알엘로 저장완료";
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "s3업로드오류용에러메세지";
-
-        }
-
+        } else return "내 식물이 아닙니다";
     }
+
 }
+
+
