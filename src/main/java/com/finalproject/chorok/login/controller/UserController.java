@@ -135,7 +135,7 @@ public class UserController {
 //        response.sendRedirect("https://chorok.kr/home");
 //        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
         try {
-            response.setHeader("Authorization", userResponseDto.getToken());
+//            response.setHeader("Authorization", userResponseDto.getToken());
             response.sendRedirect("https://chorok.kr/home");
             return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
         } catch (IOException e) {
