@@ -178,7 +178,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/auth/**");
         skipPathList.add("POST,/auth/**");
         skipPathList.add("GET,/weather/**");
-//        skipPathList.add("GET,/signup/**");
+
 
         skipPathList.add("GET,/non-login/**");
 
@@ -186,7 +186,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 비로그인 사용자 권한허용
         skipPathList.add("GET,/read-posts");
-
+        skipPathList.add("GET,/search-post/integrate/planterior");
+        skipPathList.add("GET,/search-post/photo/planterior");
+        skipPathList.add("GET,/search-post/dictionary/planterior");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
