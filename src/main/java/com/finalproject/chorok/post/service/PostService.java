@@ -132,7 +132,8 @@ public class PostService {
 
     // 6. 게시글 삭제
     @Transactional
-    public HashMap<String, String> deletePost(Long postId) {
+    public HashMap<String, String> deletePost(Long postId,User user) throws IllegalAccessException {
+        commUtils.postAuthChk(user.getUserId(), postId);
         // 게시글에 사진 있는지 확인하고 있으면 삭제
         commUtils.postPhotoDelete(postId);
         // 게시글 삭제
@@ -143,8 +144,8 @@ public class PostService {
 
     // 7. 게시글 수정
     @Transactional
-    public PostResponseDto updatePost(Long postId, PostWriteRequestDto postRequestDto,String originalUrl) throws IOException {
-
+    public PostResponseDto updatePost(Long postId, PostWriteRequestDto postRequestDto,String originalUrl,User user) throws IOException, IllegalAccessException {
+        commUtils.postAuthChk(user.getUserId(),postId);
         if(originalUrl == null || originalUrl.equals("")){
             // 1. 플랜테리어 사진 유무 체크
             commUtils.planteriorFileChk(postRequestDto.getPostTypeCode(),postRequestDto.getPostImgUrl());
