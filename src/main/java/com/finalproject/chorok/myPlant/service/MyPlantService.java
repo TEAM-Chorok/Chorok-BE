@@ -49,6 +49,9 @@ public class MyPlantService {
     //식물 등록할 때, 투두리스트를 처음에 자동으로 저장해줌.
     @Transactional
     public String addMyPlant(MyPlantRequestDto myPlantRequestDto, String plantPlace, User user) {
+
+        commUtils.getPlant(Long.parseLong(myPlantRequestDto.getPlantNo()));
+
         MyPlant myPlant = new MyPlant(myPlantRequestDto, plantPlace, user);
         todoRepository.save(new Todo("물주기", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
         todoRepository.save(new Todo("영양제", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
