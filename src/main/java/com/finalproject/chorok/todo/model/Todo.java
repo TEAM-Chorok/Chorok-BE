@@ -5,6 +5,7 @@ import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.todo.dto.TodoAutoDto;
 import com.finalproject.chorok.todo.dto.TodoRequestDto;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -27,7 +28,7 @@ public class Todo {
     private LocalDate todoTime;
     private boolean status;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "my_plant_no", referencedColumnName = "my_plant_no")
     private MyPlant myPlant;
 
