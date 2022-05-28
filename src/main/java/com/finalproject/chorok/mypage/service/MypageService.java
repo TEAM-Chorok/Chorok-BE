@@ -216,7 +216,8 @@ public class MypageService {
             MypageMyplantSixDto mypageMyplantSixDto = new MypageMyplantSixDto(
                     myPlant.getMyPlantImgUrl(),
                     myPlant.getMyPlantName(),
-                    plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName()
+                    plantRepository.findByPlantNo(myPlant.getPlantNo()).getPlantName(),
+                    myPlant.getMyPlantNo()
             );
             mypageMyplantSixDtos.add(mypageMyplantSixDto);
         }

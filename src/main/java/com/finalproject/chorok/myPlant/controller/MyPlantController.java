@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -53,15 +54,15 @@ public class MyPlantController {
     //내식물 수정하기
     @PostMapping("/myplant/update/{myPlantNo}")
     public ResponseEntity<String> updateMyPlant(@PathVariable Long myPlantNo,
-                                                @RequestParam(value = "myPlantName", required = false) String myPlantName,
-                                                @RequestParam(value = "myPlantPlaceCode", required = false) String myPlantPlaceCode,
-                                                @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
-                                                @RequestParam(value = "originalUrl", required = false) String originalUrl,
-                                                @AuthenticationPrincipal UserDetailsImpl userDetails
+                                                                 @RequestParam(value = "myPlantName", required = false) String myPlantName,
+                                                                 @RequestParam(value = "myPlantPlaceCode", required = false) String myPlantPlaceCode,
+                                                                 @RequestParam(value = "myPlantImgUrl", required = false) MultipartFile multipartFile,
+                                                                 @RequestParam(value = "originalUrl", required = false) String originalUrl,
+                                                                 @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(myPlantService.updateMyPlant(myPlantNo,myPlantName,myPlantPlaceCode,multipartFile,originalUrl));
+                .body(myPlantService.updateMyPlant(myPlantNo,myPlantName,myPlantPlaceCode,multipartFile,originalUrl,userDetails));
     }
 
 

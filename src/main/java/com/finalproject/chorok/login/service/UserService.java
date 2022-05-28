@@ -56,8 +56,7 @@ public class UserService {
 
     @Transactional
     public HashMap<String, String> registerUser(SignupRequestDto requestDto) {
-        String msg = "회원가입 성공";
-//        String msg = "회원인증 이메일 전송";
+        String msg = "회원인증 이메일 전송";
 
         try {
             //회원가입 확인
@@ -71,7 +70,6 @@ public class UserService {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
         String nickname = requestDto.getNickname();
-        System.out.println(password + "3");
 
         String emailCheckToken = UUID.randomUUID().toString();
         String profileImgUrl = requestDto.getProfileImgUrl();
@@ -79,9 +77,7 @@ public class UserService {
         User user = new User(username, password, nickname, emailCheckToken, profileImgUrl);
 
         //이메일 인증 코드부분
-        redisUtil.set(emailCheckToken, user, 2);
-
-        System.out.println(user + "4");
+        redisUtil.set(username, user, 3);
 
         sendSignupConfirmEmail(user);
 
@@ -211,16 +207,20 @@ public class UserService {
     public UserResponseDto checkEmailToken(String token, String email) throws InvalidActivityException {
         System.out.println("이메일 토큰 인증과정 함수시작");
 
-        User findUser = (User) redisUtil.get(token);
+        User findUser = (User) redisUtil.get(email);
 
         if (!findUser.isValidToken(token))
-            throw new InvalidActivityException("유효하지 않는 토큰입니다.");
+            throw new InvalidActivityException("유효한 토큰이 아닙니다.");
+
+        Optional<User> existingUser = userRepository.findByUsername(findUser.getUsername());
+        if(existingUser.isPresent())
+            throw new InvalidActivityException("이미 등록된 유저입니다.");
 
         User savedUser = userRepository.save(findUser);
         Labeling defaultLabeling = new Labeling(savedUser);
         labelingRepository.save(defaultLabeling);
         System.out.println("User 저장");
-        if (savedUser.getUserId() > 0) redisUtil.delete(token);
+        if (savedUser.getUserId() > 0) redisUtil.delete(email);
         System.out.println("redisutil 제거");
 
         // 4. 강제 로그인 처리
