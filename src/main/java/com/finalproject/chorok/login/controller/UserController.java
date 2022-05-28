@@ -168,7 +168,7 @@ public class UserController {
     }
 
     // 비로그인 식물 추천 테스트
-    @GetMapping("/auth/labeling")
+    @PutMapping("/auth/labeling")
     public ResponseEntity<LabelingResponseDto> NonLoginLabelingTest(@RequestBody LabelingDto labelingDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getLabelingPlant(labelingDto));
     }
