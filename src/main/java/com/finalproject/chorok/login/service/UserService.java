@@ -70,7 +70,6 @@ public class UserService {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
         String nickname = requestDto.getNickname();
-        System.out.println(password + "3");
 
         String emailCheckToken = UUID.randomUUID().toString();
         String profileImgUrl = requestDto.getProfileImgUrl();
@@ -78,9 +77,7 @@ public class UserService {
         User user = new User(username, password, nickname, emailCheckToken, profileImgUrl);
 
         //이메일 인증 코드부분
-        redisUtil.set(username, user, 2);
-
-        System.out.println(user + "4");
+        redisUtil.set(username, user, 3);
 
         sendSignupConfirmEmail(user);
 

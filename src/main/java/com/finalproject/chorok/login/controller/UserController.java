@@ -109,7 +109,6 @@ public class UserController {
     ) throws IOException {
 
         redisUtil.delete(username);
-        System.out.println("redisutil 제거");
         String profileImgUrl = null;
 
         if(multipartFile!=null){
@@ -165,6 +164,12 @@ public class UserController {
     @PutMapping("/user/labeling")
     public ResponseEntity<LabelingResponseDto> labelingTest(@RequestBody LabelingDto labelingDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.updateLabeling(labelingDto, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getLabelingPlant(labelingDto));
+    }
+
+    // 비로그인 식물 추천 테스트
+    @GetMapping("/auth/labeling")
+    public ResponseEntity<LabelingResponseDto> NonLoginLabelingTest(@RequestBody LabelingDto labelingDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getLabelingPlant(labelingDto));
     }
 
