@@ -210,7 +210,7 @@ public CorsConfigurationSource corsConfigurationSource(){
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
     configuration.addAllowedOrigin("http://chorok-test.s3-website.ap-northeast-2.amazonaws.com");
-    configuration.addAllowedOrigin("https://chorok-test.s3-website.ap-northeast-2.amazonaws.com");
+    configuration.addAllowedOrigin("https://chorok.shop");
     configuration.addAllowedOrigin("https://chorok.kr");
     configuration.addAllowedOrigin("http://chorok.kr");
     configuration.addAllowedOrigin("https://www.chorok.kr");
