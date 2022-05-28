@@ -140,7 +140,7 @@ public class UserController {
             response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT");
             response.setHeader("Access-Control-Max-Age", "3600");
             response.setHeader("Access-Control-Allow-Headers", "x-requested-with, origin, content-type, accept");
-//            response.sendRedirect("https://chorok.kr/home");
+//            response.sendRedirect("https://chorok.kr/");
             return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
 //        } catch (IOException e) {
 //            throw new InvalidActivityException("유효하지 않은 주소입니다.");
