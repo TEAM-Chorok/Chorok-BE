@@ -50,6 +50,7 @@ public class MyPlantService {
     @Transactional
     public String addMyPlant(MyPlantRequestDto myPlantRequestDto, String plantPlace, User user) {
         MyPlant myPlant = new MyPlant(myPlantRequestDto, plantPlace, user);
+        myPlantRepository.save(myPlant);
         todoRepository.save(new Todo("물주기", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
         todoRepository.save(new Todo("영양제", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
         todoRepository.save(new Todo("분갈이", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
