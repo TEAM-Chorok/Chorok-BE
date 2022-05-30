@@ -253,8 +253,11 @@ public class UserService {
     }
 
     @Transactional
-    public HashMap<String, String> checkPasswordResetEmailToken(String token, String email, String password) throws InvalidActivityException {
+    public HashMap<String, String> checkPasswordResetEmailToken(PasswordResetDto passwordResetDto) throws InvalidActivityException {
 
+        String email = passwordResetDto.getEmail();
+        String token = passwordResetDto.getToken();
+        String password = passwordResetDto.getNewPassword();
         String emailCheckToken = (String) redisUtil.get(email);
 
         if (!token.equals(emailCheckToken))
