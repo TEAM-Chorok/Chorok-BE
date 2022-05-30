@@ -137,7 +137,9 @@ public class UserController {
     // 비밀번호 재설정 링크 보내기
     @PostMapping("/auth/password-reset-email")
     public ResponseEntity<CMResponseDto> sendPasswordResetLink(@RequestBody @Valid EmailRequestDto emailRequestDto) throws InvalidActivityException {
+        System.out.println("이메일 재설정 링크 전송컨트롤러");
         return ResponseEntity.status(HttpStatus.OK).body(userService.sendPasswordResetLink(emailRequestDto));
+
     }
 
     //이메일인증 버튼 클릭시 토큰확인

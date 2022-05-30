@@ -91,7 +91,7 @@ public class UserService {
 
     @Transactional
     public CMResponseDto sendPasswordResetLink(EmailRequestDto emailRequestDto) throws InvalidActivityException {
-
+        System.out.println("서비스단1");
         User findUser = userRepository.findByUsername(emailRequestDto.getEmail()).orElseThrow(
                 () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
         );
@@ -100,7 +100,7 @@ public class UserService {
         String emailCheckToken = UUID.randomUUID().toString();
 //        redisUtil.set(emailCheckToken, findUser, 3 );
 
-        sendSignupConfirmEmail2(findUser, emailCheckToken);
+        sendPwResetEmail(findUser, emailCheckToken);
         System.out.println("작업완료");
         return new CMResponseDto("true");
     }
@@ -151,13 +151,14 @@ public class UserService {
         emailService.sendEmail(emailMessage);
     }
 
-    private void sendSignupConfirmEmail2(User user, String emailCheckToken) {
+    private void sendPwResetEmail(User user, String emailCheckToken) {
         System.out.println("sendSignupConfirmEmail 시작");
         String path = "https://chorok.kr";
 
         Context context = new Context();
         context.setVariable("link", path + "/auth/password-reset-email?token=" + emailCheckToken +
                 "&email=" + user.getUsername());
+        System.out.println("서비스단2");
         String message = templateEngine.process("reset-password-link", context);
         EmailMessage emailMessage = EmailMessage.builder()
                 .to(user.getUsername())
@@ -165,6 +166,7 @@ public class UserService {
                 .message(message)
                 .build();
         emailService.sendEmail(emailMessage);
+        System.out.println("서비스단3");
         redisUtil.set(user.getUsername(), emailCheckToken, 3);
     }
 
