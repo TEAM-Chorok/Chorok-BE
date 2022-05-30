@@ -215,6 +215,8 @@ public class CommUtils {
     // 게시글 수정 삭제 권한 체크
     public void postAuthChk(Long userId,Long postId) throws IllegalAccessException {
         Post post = getPost(postId);
+        System.out.println("넘겨받은 유저아이디"+postId);
+        System.out.println("포스트에 있는 포스트아이디"+post.getUser().getUserId());
         if(post.getUser().getUserId()!=userId){
              throw new IllegalAccessException("권한이 없습니다.");
         }
