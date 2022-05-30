@@ -57,10 +57,11 @@ public class UserService {
     @Transactional
     public HashMap<String, String> registerUser(SignupRequestDto requestDto) {
         String msg = "회원인증 이메일 전송";
-
+        System.out.println("들어오나3");
         try {
             //회원가입 확인
             validator.signupValidate(requestDto);
+            System.out.println("들어오나4");
         } catch (IllegalArgumentException e) {
             msg = e.getMessage();
             return commUtils.errResponseHashMap(HttpStatus.BAD_REQUEST);
@@ -73,7 +74,7 @@ public class UserService {
 
         String emailCheckToken = UUID.randomUUID().toString();
         String profileImgUrl = requestDto.getProfileImgUrl();
-
+        System.out.println("들어오나5");
         User user = new User(username, password, nickname, emailCheckToken, profileImgUrl);
 
         //이메일 인증 코드부분

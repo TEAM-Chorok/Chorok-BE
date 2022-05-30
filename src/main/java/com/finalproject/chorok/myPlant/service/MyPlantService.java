@@ -53,6 +53,7 @@ public class MyPlantService {
         commUtils.getPlant(Long.parseLong(myPlantRequestDto.getPlantNo()));
 
         MyPlant myPlant = new MyPlant(myPlantRequestDto, plantPlace, user);
+        myPlantRepository.save(myPlant);
         todoRepository.save(new Todo("물주기", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
         todoRepository.save(new Todo("영양제", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
         todoRepository.save(new Todo("분갈이", myPlant.getStartDay(), myPlant.getStartDay(), false, user, myPlant));
