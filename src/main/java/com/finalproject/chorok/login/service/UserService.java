@@ -206,7 +206,6 @@ public class UserService {
 
     @Transactional
     public UserResponseDto checkEmailToken(String token, String email) throws InvalidActivityException {
-        System.out.println("이메일 토큰 인증과정 함수시작");
 
         User findUser = (User) redisUtil.get(email);
 
@@ -220,12 +219,9 @@ public class UserService {
         User savedUser = userRepository.save(findUser);
         Labeling defaultLabeling = new Labeling(savedUser);
         labelingRepository.save(defaultLabeling);
-        System.out.println("User 저장");
         if (savedUser.getUserId() > 0) redisUtil.delete(email);
-        System.out.println("redisutil 제거");
 
         // 4. 강제 로그인 처리
-        System.out.println("4. 강제 로그인 처리");
         final String AUTH_HEADER = "Authorization";
         final String TOKEN_TYPE = "BEARER";
         String jwt_token = forceLogin(savedUser); // 로그인처리 후 토큰 받아오기
@@ -237,7 +233,6 @@ public class UserService {
                 .nickname(savedUser.getNickname())
                 .email(savedUser.getUsername())
                 .build();
-        System.out.println("유저리스폰스디티"+userResponseDto);
         return userResponseDto;
 
     }
