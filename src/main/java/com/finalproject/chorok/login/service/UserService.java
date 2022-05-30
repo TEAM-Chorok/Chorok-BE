@@ -90,21 +90,17 @@ public class UserService {
     }
 
     @Transactional
-    public CMResponseDto sendTempPassword(EmailRequestDto emailRequestDto) throws InvalidActivityException {
+    public CMResponseDto sendPasswordResetLink(EmailRequestDto emailRequestDto) throws InvalidActivityException {
 
         User findUser = userRepository.findByUsername(emailRequestDto.getEmail()).orElseThrow(
                 () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
         );
         System.out.println("이메일 존재여부 체크");
-        //인증 이메일 1시간 지났는지 체크
 
-        String tempPassword = temporaryPassword(10); // 8글자 랜덤으로 임시 비밀번호 생성
+        String emailCheckToken = UUID.randomUUID().toString();
+//        redisUtil.set(emailCheckToken, findUser, 3 );
 
-        String tempEncPassword = passwordEncoder.encode(tempPassword); // 암호화
-        System.out.println("암호화" + tempEncPassword);
-        findUser.changePassword(tempEncPassword);
-
-        sendTempPasswordConfirmEmail(findUser, tempPassword);
+        sendSignupConfirmEmail2(findUser, emailCheckToken);
         System.out.println("작업완료");
         return new CMResponseDto("true");
     }
@@ -153,6 +149,23 @@ public class UserService {
                 .message(message)
                 .build();
         emailService.sendEmail(emailMessage);
+    }
+
+    private void sendSignupConfirmEmail2(User user, String emailCheckToken) {
+        System.out.println("sendSignupConfirmEmail 시작");
+        String path = "https://chorok.kr";
+
+        Context context = new Context();
+        context.setVariable("link", path + "/auth/password-reset-email?token=" + emailCheckToken +
+                "&email=" + user.getUsername());
+        String message = templateEngine.process("reset-password-link", context);
+        EmailMessage emailMessage = EmailMessage.builder()
+                .to(user.getUsername())
+                .subject("초록(Chorok), 비밀번호 재설정 메일")
+                .message(message)
+                .build();
+        emailService.sendEmail(emailMessage);
+        redisUtil.set(user.getUsername(), emailCheckToken, 3);
     }
 
     //로그인 확인
@@ -236,6 +249,25 @@ public class UserService {
         return userResponseDto;
 
     }
+
+    @Transactional
+    public HashMap<String, String> checkPasswordResetEmailToken(String token, String email, String password) throws InvalidActivityException {
+
+        String emailCheckToken = (String) redisUtil.get(email);
+
+        if (!token.equals(emailCheckToken))
+            throw new InvalidActivityException("유효한 토큰이 아닙니다.");
+
+        Optional<User> user = userRepository.findByUsername(email);
+        if(user.isPresent()){
+            user.get().changeEmailChkToken(token);
+            user.get().changePassword(password);
+            userRepository.save(user.get());
+            redisUtil.delete(email);
+
+            return commUtils.responseHashMap(HttpStatus.OK);
+        } throw new InvalidActivityException("오류입니다.");
+            }
 
     @Transactional
     public String updateLabeling(LabelingDto labelingDto, UserDetailsImpl userDetails) {
