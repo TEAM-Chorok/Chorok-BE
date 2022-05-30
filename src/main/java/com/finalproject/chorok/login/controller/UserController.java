@@ -93,7 +93,7 @@ public class UserController {
 
         if(multipartFile!=null){
             profileImgUrl = s3Uploader.upload(multipartFile, "static");
-            System.out.println("들어오나2");
+            System.out.println("들어오나22");
         }
         SignupRequestDto signupRequestDto = new SignupRequestDto(username, password, nickname, profileImgUrl);
         return ResponseEntity.status(HttpStatus.OK).body(userService.registerUser(signupRequestDto));
