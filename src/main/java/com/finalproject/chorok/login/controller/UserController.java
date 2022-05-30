@@ -134,14 +134,25 @@ public class UserController {
     }
 
 
-    //임시 비밀번호 보내기
-    @PostMapping("/auth/send-temp-password")
-    public ResponseEntity<CMResponseDto> sendTempPassword(@RequestBody @Valid EmailRequestDto emailRequestDto) throws InvalidActivityException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.sendTempPassword(emailRequestDto));
+    // 비밀번호 재설정 링크 보내기
+    @PostMapping("/auth/password-reset-email")
+    public ResponseEntity<CMResponseDto> sendPasswordResetLink(@RequestBody @Valid EmailRequestDto emailRequestDto) throws InvalidActivityException {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.sendPasswordResetLink(emailRequestDto));
+    }
+
+    //이메일인증 버튼 클릭시 토큰확인
+    @GetMapping("/auth/password-reset-email/callback")
+    public ResponseEntity<HashMap<String, String>> checkResetEmailToken(String token, String email, String newPassword ,HttpServletResponse response) throws InvalidActivityException {
+//        UserResponseDto userResponseDto = userService.checkPasswordResetEmailToken(token, email, newPassword);
+//        response.setHeader("Access-Control-Allow-Origin", "https://chorok.kr");
+//        response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT");
+//        response.setHeader("Access-Control-Max-Age", "3600");
+//        response.setHeader("Access-Control-Allow-Headers", "x-requested-with, origin, content-type, accept");
+
+        return ResponseEntity.status(HttpStatus.OK).body(userService.checkPasswordResetEmailToken(token, email, newPassword));
     }
 
     //로그인 확인
-
     @GetMapping("/user/isLogIn")
     private ResponseEntity<IsLoginDto> isloginChk(@AuthenticationPrincipal UserDetailsImpl userDetails){
         userService.isloginChk(userDetails);
