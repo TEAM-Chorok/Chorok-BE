@@ -141,8 +141,8 @@ public class UserController {
     }
 
     //이메일인증 버튼 클릭시 토큰확인
-    @GetMapping("/auth/password-reset-email/callback")
-    public ResponseEntity<HashMap<String, String>> checkResetEmailToken(String token, String email, String newPassword ,HttpServletResponse response) throws InvalidActivityException {
+    @PostMapping("/auth/password-reset-email/callback")
+    public ResponseEntity<HashMap<String, String>> checkResetEmailToken(String token, String email, String newPassword) throws InvalidActivityException {
 //        UserResponseDto userResponseDto = userService.checkPasswordResetEmailToken(token, email, newPassword);
 //        response.setHeader("Access-Control-Allow-Origin", "https://chorok.kr");
 //        response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT");
