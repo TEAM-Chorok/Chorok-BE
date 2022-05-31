@@ -164,11 +164,13 @@ public class PostService {
         if(commUtils.getLikePost(postId,user)!=null){
             // 좋아요 삭제
             postLikeRepository.deleteByUser_UserIdAndPost_PostId(user.getUserId(),postId);
-            return commUtils.toggleResponseHashMap(false);
+            int count =postLikeRepository.findByPostPostIdAndUserUserId(postId,user.getUserId()).size();
+            return commUtils.toggleResponseHashMap(false,count,postId);
         }else{
             // 좋아요 추가
             postLikeRepository.save(new PostLike(commUtils.getPost(postId),user));
-            return commUtils.toggleResponseHashMap(true);
+            int count =postLikeRepository.findByPostPostIdAndUserUserId(postId,user.getUserId()).size();
+            return commUtils.toggleResponseHashMap(true,count,postId);
         }
 
     }
@@ -179,6 +181,7 @@ public class PostService {
         if(commUtils.getBookMarkPost(postId,user)!=null){
             // 북마크 삭제
             postBookMarkRepository.deleteByUserBookMarkQuery(user.getUserId(),postId);
+
             return commUtils.toggleResponseHashMap(false);
 
         }else{

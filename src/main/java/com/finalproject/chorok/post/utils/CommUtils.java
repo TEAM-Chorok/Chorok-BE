@@ -113,6 +113,18 @@ public class CommUtils {
         return hs;
     }
 
+    // 좋아요 북마크 반환값
+    public HashMap<String,String> toggleResponseHashMap(Boolean result, int count,Long postId){
+        HashMap<String,String> hs = new HashMap<>();
+
+        hs.put("postId", String.valueOf(postId));
+        hs.put("result",String.valueOf(result));
+        hs.put("likeCount", String.valueOf(count));
+        hs.put("msg","성공적으로 완료되었습니다");
+        return hs;
+    }
+
+
     // 게시글 좋아요 값 유무 확인
     public Boolean LikePostChk(Long postId, User user){
         return getLikePost(postId, user) != null;
