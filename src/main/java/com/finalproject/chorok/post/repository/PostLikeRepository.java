@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface PostLikeRepository extends JpaRepository<PostLike,Long> {
@@ -16,4 +18,6 @@ public interface PostLikeRepository extends JpaRepository<PostLike,Long> {
     @Modifying
     @Query(value = "DELETE FROM post_like WHERE user_id=:userId And post_id=:postId",nativeQuery = true)
     void deleteByUser_UserIdAndPost_PostId(@Param("userId") Long userId, @Param("postId") Long postId);
+
+    List<PostLike> findByPostPostIdAndUserUserId(Long postId, Long userId);
 }
