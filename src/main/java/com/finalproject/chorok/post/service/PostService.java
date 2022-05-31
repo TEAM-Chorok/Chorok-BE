@@ -164,12 +164,12 @@ public class PostService {
         if(commUtils.getLikePost(postId,user)!=null){
             // 좋아요 삭제
             postLikeRepository.deleteByUser_UserIdAndPost_PostId(user.getUserId(),postId);
-            int count =postLikeRepository.findByPostPostIdAndUserUserId(postId,user.getUserId()).size();
+            int count =postLikeRepository.findByPostPostId(postId).size();
             return commUtils.toggleResponseHashMap(false,count,postId);
         }else{
             // 좋아요 추가
             postLikeRepository.save(new PostLike(commUtils.getPost(postId),user));
-            int count =postLikeRepository.findByPostPostIdAndUserUserId(postId,user.getUserId()).size();
+            int count =postLikeRepository.findByPostPostId(postId).size();
             return commUtils.toggleResponseHashMap(true,count,postId);
         }
 
