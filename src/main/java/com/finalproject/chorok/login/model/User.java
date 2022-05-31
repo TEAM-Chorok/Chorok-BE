@@ -105,6 +105,10 @@ public class User {
         System.out.println("유저 프로필 메세지 바꾸기");
     }
 
+    public void changeEmailChkToken(String emailCheckToken) {
+        this.emailCheckToken = emailCheckToken;
+        System.out.println("emailChkToken 바꾸기");
+    }
 
     public boolean isValidToken(String token) {
         return this.emailCheckToken.equals(token);

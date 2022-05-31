@@ -88,11 +88,12 @@ public class UserController {
             @RequestParam(value = "nickname") String nickname,
             @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile
     ) throws IOException {
-
+        System.out.println("들어오나");
         String profileImgUrl = null;
 
         if(multipartFile!=null){
             profileImgUrl = s3Uploader.upload(multipartFile, "static");
+            System.out.println("들어오나22");
         }
         SignupRequestDto signupRequestDto = new SignupRequestDto(username, password, nickname, profileImgUrl);
         return ResponseEntity.status(HttpStatus.OK).body(userService.registerUser(signupRequestDto));
@@ -133,14 +134,27 @@ public class UserController {
     }
 
 
-    //임시 비밀번호 보내기
-    @PostMapping("/auth/send-temp-password")
-    public ResponseEntity<CMResponseDto> sendTempPassword(@RequestBody @Valid EmailRequestDto emailRequestDto) throws InvalidActivityException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.sendTempPassword(emailRequestDto));
+    // 비밀번호 재설정 링크 보내기
+    @PostMapping("/auth/password-reset-email")
+    public ResponseEntity<CMResponseDto> sendPasswordResetLink(@RequestBody @Valid EmailRequestDto emailRequestDto) throws InvalidActivityException {
+        System.out.println("이메일 재설정 링크 전송컨트롤러");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.sendPasswordResetLink(emailRequestDto));
+
+    }
+
+    //이메일인증 버튼 클릭시 토큰확인
+    @PostMapping("/auth/password-reset-email/callback")
+    public ResponseEntity<HashMap<String, String>> checkResetEmailToken(PasswordResetDto passwordResetDto) throws InvalidActivityException {
+//        UserResponseDto userResponseDto = userService.checkPasswordResetEmailToken(token, email, newPassword);
+//        response.setHeader("Access-Control-Allow-Origin", "https://chorok.kr");
+//        response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT");
+//        response.setHeader("Access-Control-Max-Age", "3600");
+//        response.setHeader("Access-Control-Allow-Headers", "x-requested-with, origin, content-type, accept");
+        System.out.println("이메일 재설정 링크 콜백 컨트롤러");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.checkPasswordResetEmailToken(passwordResetDto));
     }
 
     //로그인 확인
-
     @GetMapping("/user/isLogIn")
     private ResponseEntity<IsLoginDto> isloginChk(@AuthenticationPrincipal UserDetailsImpl userDetails){
         userService.isloginChk(userDetails);
