@@ -198,8 +198,10 @@ public class MypageService {
         catch (NullPointerException e) {
             //멀티파트가 null일때니까, originalImgurl로 간다.
             if(originalUrl.equals("null")||originalUrl.equals("")){
-            user.changeProfileImage(null);}
+            user.changeProfileImage(null);
+            }else {
             user.changeProfileImage(originalUrl);
+            }
             user.changeNickname(nickname);
             user.changeProfileMsg(profileMsg);
             userRepository.save(user);
