@@ -31,7 +31,7 @@ public class ScheduledTodo3 {
     private final UserRepository userRepository;
 
     //매일 00시 00분에 아래의 행위 반복
-    @Scheduled(cron = "0 14 3 * * *")
+    @Scheduled(cron = "0 24 3 * * *")
     @SchedulerLock(name="SchedulerLock",lockAtMostFor = "PT30S", lockAtLeastFor = "PT30S")
     public void autoTodo() {
         String water = "물주기";
@@ -43,7 +43,7 @@ public class ScheduledTodo3 {
         for (int i=0; i<20; i++) {
 
             Todo2 todo1 = new Todo2("물주기", LocalDate.now(), LocalDate.now(), true,
-                    userRepository.findFirstOrderByUsername().get(),
+                    userRepository.findFirstOrderByUsername(),
                     myPlantRepository.findFirstOrderByMyPlantNo());
 
                     todoRepository.save(todo1);
