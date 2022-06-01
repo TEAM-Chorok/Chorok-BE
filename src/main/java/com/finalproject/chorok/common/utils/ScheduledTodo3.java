@@ -1,11 +1,8 @@
 package com.finalproject.chorok.common.utils;
 
-import com.finalproject.chorok.login.model.User;
-import com.finalproject.chorok.login.repository.UserRepository;
-import com.finalproject.chorok.myPlant.model.MyPlant;
-import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
-import com.finalproject.chorok.todo.model.Todo2;
-import com.finalproject.chorok.todo.repository.Todo2Repository;
+
+import com.finalproject.chorok.todo.model.Todo3;
+import com.finalproject.chorok.todo.repository.Todo3Repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
@@ -16,7 +13,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -26,12 +22,10 @@ import java.util.List;
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 public class ScheduledTodo3 {
 
-    private final Todo2Repository todoRepository;
-    private final MyPlantRepository myPlantRepository;
-    private final UserRepository userRepository;
+    private final Todo3Repository todoRepository;
 
     //매일 00시 00분에 아래의 행위 반복
-    @Scheduled(cron = "0 24 3 * * *")
+    @Scheduled(cron = "0 34 3 * * *")
     @SchedulerLock(name="SchedulerLock",lockAtMostFor = "PT30S", lockAtLeastFor = "PT30S")
     public void autoTodo() {
         String water = "물주기";
@@ -42,10 +36,7 @@ public class ScheduledTodo3 {
 
         for (int i=0; i<20; i++) {
 
-            Todo2 todo1 = new Todo2("물주기", LocalDate.now(), LocalDate.now(), true,
-                    userRepository.findFirstOrderByUsername(),
-                    myPlantRepository.findFirstOrderByMyPlantNo());
-
+            Todo3 todo1 = new Todo3("물주기", LocalDate.now(), LocalDate.now(), true);
                     todoRepository.save(todo1);
                 }
 

@@ -29,8 +29,6 @@ public interface MyPlantRepository extends JpaRepository<MyPlant, Long> {
 
     MyPlant findByMyPlantNoAndUser(Long myPlantNo, User user);
 
-    MyPlant findFirstOrderByMyPlantNo();
-
     List<MyPlant> findTop6ByUserOrderByMyPlantNameAsc(User user);
 void deleteMyPlantByAndUserAndAndMyPlantNo(User user, Long myPlantNo);
 
