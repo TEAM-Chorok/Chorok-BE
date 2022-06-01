@@ -69,7 +69,8 @@ public class Post extends Timestamped {
     // 게시글 등록
     public Post(PostWriteRequestDto post, User user, PostType postType, String postImgUrl) {
         this.user = user;
-        this.postTitle=post.getPostTitle();
+        //this.postTitle=post.getPostTitle();
+        this.postTitle=post.getPostTypeCode().equals("postType01")?null:post.getPostTitle();
         this.postContent=post.getPostContent();
         this.postType = postType;
         this.postImgUrl =postImgUrl;
