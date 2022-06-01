@@ -31,7 +31,7 @@ public class ScheduledTodo3 {
     private final MyPlantRepository myPlantRepository;
 
     //매일 00시 00분에 아래의 행위 반복
-    @Scheduled(cron = "0 50 1 * * *")
+    @Scheduled(cron = "0 55 1 * * *")
     @SchedulerLock(name="SchedulerLock",lockAtMostFor = "PT30S", lockAtLeastFor = "PT30S")
     public void autoTodo() {
         String water = "물주기";
