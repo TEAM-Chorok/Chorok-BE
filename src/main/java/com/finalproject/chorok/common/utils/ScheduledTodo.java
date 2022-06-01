@@ -14,14 +14,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Component
-@EnableScheduling // 아래의 클래스를 스케줄링 목적으로 사용하도록 하겠다는 명시
+//@EnableScheduling // 아래의 클래스를 스케줄링 목적으로 사용하도록 하겠다는 명시
 @Configuration
 @RequiredArgsConstructor
 public class ScheduledTodo {
 
     private final TodoRepository todoRepository;
 
-    //매일 00시 30분에 아래의 행위 반복
+    //매일 00시 00분에 아래의 행위 반복
     @Scheduled(cron = "0 0 0 * * *")
     public void autoTodo() {
 
