@@ -78,6 +78,14 @@ dependencies {
     //querydsl 추가
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+    //스케쥴러관련
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:4.14.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.14.0'
+
+    // slf4j & logback
+    implementation('org.slf4j:jcl-over-slf4j')
+    implementation('ch.qos.logback:logback-classic')
 }
 tasks.named('test') {
     useJUnitPlatform()
