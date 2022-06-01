@@ -182,6 +182,7 @@ public class MypageService {
                 user.changeNickname(nickname);
                 user.changeProfileMsg(profileMsg);
                 userRepository.save(user);
+                System.out.println("여기타나1");
             }
             if(!multipartFile.isEmpty()&&image==null){
                 String updatedProfileImgUrl = s3Uploader.upload(multipartFile, "static");
@@ -189,18 +190,20 @@ public class MypageService {
                 user.changeNickname(nickname);
                 user.changeProfileMsg(profileMsg);
                 userRepository.save(user);
+                System.out.println("여기타나2");
             }
             return commUtils.responseHashMap(HttpStatus.OK);
 
         }
         catch (NullPointerException e) {
             //멀티파트가 null일때니까, originalImgurl로 간다.
-            if(originalUrl.equals("null")){
+            if(originalUrl.equals("null")||originalUrl.equals("")){
             user.changeProfileImage(null);}
             user.changeProfileImage(originalUrl);
             user.changeNickname(nickname);
             user.changeProfileMsg(profileMsg);
             userRepository.save(user);
+            System.out.println("여기타나3");
             return commUtils.responseHashMap(HttpStatus.OK);
         }
         catch (IOException e) {
