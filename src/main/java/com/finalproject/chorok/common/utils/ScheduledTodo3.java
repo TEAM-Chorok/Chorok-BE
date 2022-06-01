@@ -1,6 +1,7 @@
 package com.finalproject.chorok.common.utils;
 
 import com.finalproject.chorok.login.model.User;
+import com.finalproject.chorok.login.repository.UserRepository;
 import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.myPlant.repository.MyPlantRepository;
 import com.finalproject.chorok.todo.model.Todo2;
@@ -27,9 +28,10 @@ public class ScheduledTodo3 {
 
     private final Todo2Repository todoRepository;
     private final MyPlantRepository myPlantRepository;
+    private final UserRepository userRepository;
 
     //매일 00시 00분에 아래의 행위 반복
-    @Scheduled(cron = "0 52 2 * * *")
+    @Scheduled(cron = "0 14 3 * * *")
     @SchedulerLock(name="SchedulerLock",lockAtMostFor = "PT30S", lockAtLeastFor = "PT30S")
     public void autoTodo() {
         String water = "물주기";
@@ -37,9 +39,12 @@ public class ScheduledTodo3 {
         String supplement = "영양제";
         String cleaning = "잎닦기";
 
+
         for (int i=0; i<20; i++) {
 
-                Todo2 todo1 = new Todo2("물주기", LocalDate.now(), LocalDate.now(), true);
+            Todo2 todo1 = new Todo2("물주기", LocalDate.now(), LocalDate.now(), true,
+                    userRepository.findFirstOrderByUsername().get(),
+                    myPlantRepository.findFirstOrderByMyPlantNo());
 
                     todoRepository.save(todo1);
                 }
