@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "todo")
+@Table
 public class Todo2 {
 
     @Id
@@ -36,11 +36,13 @@ public class Todo2 {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
-    public Todo2(String workType, LocalDate lastWorkTime, LocalDate todoTime, boolean status) {
+    public Todo2(String workType, LocalDate lastWorkTime, LocalDate todoTime, boolean status, User user, MyPlant myplant) {
         this.workType = workType;
         this.lastWorkTime = lastWorkTime;
         this.todoTime = todoTime;
         this.status = status;
+        this.user = user;
+        this.myPlant = myplant;
     }
 
     public Todo2(TodoRequestDto todoRequestDto, LocalDate lastWorkTime, LocalDate todoTime, User user, MyPlant myPlant) {
