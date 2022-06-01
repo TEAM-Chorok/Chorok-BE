@@ -3,7 +3,6 @@ package com.finalproject.chorok.todo.repository;
 
 import com.finalproject.chorok.login.model.User;
 import com.finalproject.chorok.myPlant.model.MyPlant;
-import com.finalproject.chorok.todo.model.Todo;
 import com.finalproject.chorok.todo.model.Todo2;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
