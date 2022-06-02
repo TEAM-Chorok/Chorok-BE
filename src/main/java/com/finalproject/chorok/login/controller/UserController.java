@@ -206,7 +206,7 @@ public class UserController {
     }
     //CI/CD 응답
     @GetMapping("/auth") public String checkHealth() {
-        return "확인용11";
+        return "확인용12";
     }
 }
 
