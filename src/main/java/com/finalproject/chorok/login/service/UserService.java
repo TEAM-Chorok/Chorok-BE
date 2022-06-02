@@ -153,7 +153,7 @@ public class UserService {
 
     private void sendPwResetEmail(User user, String emailCheckToken) {
         System.out.println("sendSignupConfirmEmail 시작");
-        String path = "https://chorok.kr";
+        String path = "http://localhost:3000";
 
         Context context = new Context();
         context.setVariable("link", path + "/changepwd?token=" + emailCheckToken +
