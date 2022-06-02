@@ -256,13 +256,9 @@ public class UserService {
     public HashMap<String, String> checkPasswordResetEmailToken(PasswordResetDto passwordResetDto) throws InvalidActivityException {
 
         String email = passwordResetDto.getEmail();
-        System.out.println("이메일 키값" + email);
         String token = passwordResetDto.getToken();
-        System.out.println("토큰" + email);
-        String password = passwordResetDto.getNewPassword();
-        System.out.println("패스워드" + email);
+        String password = passwordEncoder.encode(passwordResetDto.getNewPassword());
         String emailCheckToken = (String) redisUtil.get(email);
-        System.out.println("이메일체크토큰"+emailCheckToken);
         if (!token.equals(emailCheckToken))
             throw new InvalidActivityException("유효한 토큰이 아닙니다.");
 
