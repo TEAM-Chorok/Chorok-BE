@@ -203,7 +203,11 @@ public class MypageService {
             user.changeProfileImage(originalUrl);
             }
             user.changeNickname(nickname);
-            user.changeProfileMsg(profileMsg);
+            if(profileMsg.equals("null")||profileMsg.equals("")){
+                user.changeProfileMsg(null);
+            }else {
+                user.changeProfileMsg(profileMsg);
+            }
             userRepository.save(user);
             System.out.println("여기타나3");
             return commUtils.responseHashMap(HttpStatus.OK);
