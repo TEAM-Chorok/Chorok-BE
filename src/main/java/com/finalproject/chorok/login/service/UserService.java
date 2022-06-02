@@ -289,15 +289,19 @@ public class UserService {
         System.out.println("식물 검색하기 까지 들어옴");
         Optional<Plant> labeledPlant = plantRepository.searchOnePlantByLabeling(labelingDto.getAnswer1(), labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
         boolean isResult = true;
+        System.out.println("여기들어오나0"+labeledPlant);
         if (!labeledPlant.isPresent() && labelingDto.getAnswer1().equals("pl03")) {
             labeledPlant = plantRepository.searchOnePlantByLabeling("pl02", labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
+            System.out.println("여기들어오나1"+labeledPlant);
         }
         if (!labeledPlant.isPresent() && labelingDto.getAnswer1().equals("pl02")) {
             labeledPlant = plantRepository.searchOnePlantByLabeling("pl01", labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
+            System.out.println("여기들어오나2"+labeledPlant);
         }
         if (!labeledPlant.isPresent()) {
             labeledPlant = plantRepository.searchOneRandomPlantByLabeling();
             isResult = false;
+            System.out.println("여기들어오나3"+labeledPlant);
         }
         return new LabelingResponseDto(
                     labeledPlant.get().getPlantNo(),
