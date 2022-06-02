@@ -287,27 +287,24 @@ public class UserService {
     @Transactional
     public LabelingResponseDto getLabelingPlant(LabelingDto labelingDto) {
         System.out.println("식물 검색하기 까지 들어옴");
-        try {
-            Plant labeledPlant = plantRepository.searchOnePlantByLabeling(labelingDto.getAnswer1(), labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
-
-            return new LabelingResponseDto(
-                    labeledPlant.getPlantNo(),
-                    plantUtils.getPlantThumbImg(labeledPlant.getPlantNo()),
-                    labeledPlant.getPlantName(),
-                    true
-            );
-        } catch (Exception e) {
-            Plant randomPlant = plantRepository.searchOneRandomPlantByLabeling();
-
-            return new LabelingResponseDto(
-                    randomPlant.getPlantNo(),
-                    plantUtils.getPlantThumbImg(randomPlant.getPlantNo()),
-                    randomPlant.getPlantName(),
-                    false
-            );
+        Optional<Plant> labeledPlant = plantRepository.searchOnePlantByLabeling(labelingDto.getAnswer1(), labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
+        boolean isResult = true;
+        if (!labeledPlant.isPresent() && labelingDto.getAnswer1().equals("pl03")) {
+            labeledPlant = plantRepository.searchOnePlantByLabeling("pl02", labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
         }
+        if (!labeledPlant.isPresent() && labelingDto.getAnswer1().equals("pl02")) {
+            labeledPlant = plantRepository.searchOnePlantByLabeling("pl01", labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
+        }
+        if (!labeledPlant.isPresent()) {
+            labeledPlant = plantRepository.searchOneRandomPlantByLabeling();
+            isResult = false;
+        }
+        return new LabelingResponseDto(
+                    labeledPlant.get().getPlantNo(),
+                    plantUtils.getPlantThumbImg(labeledPlant.get().getPlantNo()),
+                    labeledPlant.get().getPlantName(),
+                    isResult);
     }
-
     @Transactional
     public List<LabelingResponseDto> getLabelingResults(UserDetailsImpl userDetails) {
 
