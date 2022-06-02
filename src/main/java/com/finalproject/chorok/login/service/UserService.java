@@ -105,38 +105,9 @@ public class UserService {
         return new CMResponseDto("true");
     }
 
-    //
-    private void sendTempPasswordConfirmEmail(User user, String tempPwd) {
-        EmailMessage emailMessage = EmailMessage.builder()
-                .to(user.getUsername())
-                .subject("초록(Chorok), 임시 비밀번호 발급")
-                .message("<p>임시 비밀번호: <b>" + tempPwd + "</b></p><br>" +
-                        "<p>로그인 후 비밀번호를 변경해주세요.</p>")
-                .build();
-        System.out.println("sendTempPasswordConfirmEmail");
-        System.out.println(emailMessage);
-        emailService.sendEmail(emailMessage);
-        System.out.println("sendEmail");
-    }
-
-
-    private String temporaryPassword(int size) {
-        StringBuffer buffer = new StringBuffer();
-        Random random = new Random();
-        String chars[] = ("A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z," +
-                "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9").split(",");
-        for (int i = 0; i < size; i++) {
-            buffer.append(chars[random.nextInt(chars.length)]);
-        }
-        buffer.append("!a1");
-        System.out.println("임시비밀번호 생성" + buffer.toString());
-        return buffer.toString();
-    }
-
 
     private void sendSignupConfirmEmail(User user) {
         System.out.println("sendSignupConfirmEmail 시작");
-//        String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
         String path = "https://chorok.kr";
 
         Context context = new Context();
@@ -156,7 +127,7 @@ public class UserService {
         String path = "http://localhost:3000";
 
         Context context = new Context();
-        context.setVariable("link", path + "/changepwd?token=" + emailCheckToken +
+        context.setVariable("link2", path + "/changepwd?token=" + emailCheckToken +
                 "&email=" + user.getUsername());
         System.out.println("서비스단2");
         String message = templateEngine.process("reset-password-link", context);
@@ -292,6 +263,9 @@ public class UserService {
         System.out.println("여기들어오나0"+labeledPlant);
         if (!labeledPlant.isPresent() && labelingDto.getAnswer1().equals("pl03")) {
             labeledPlant = plantRepository.searchOnePlantByLabeling("pl02", labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
+            if (!labeledPlant.isPresent()){
+                labeledPlant = plantRepository.searchOnePlantByLabeling("pl01", labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
+            }
             System.out.println("여기들어오나1"+labeledPlant);
         }
         if (!labeledPlant.isPresent() && labelingDto.getAnswer1().equals("pl02")) {
@@ -308,7 +282,9 @@ public class UserService {
                     plantUtils.getPlantThumbImg(labeledPlant.get().getPlantNo()),
                     labeledPlant.get().getPlantName(),
                     isResult);
+
     }
+
     @Transactional
     public List<LabelingResponseDto> getLabelingResults(UserDetailsImpl userDetails) {
 

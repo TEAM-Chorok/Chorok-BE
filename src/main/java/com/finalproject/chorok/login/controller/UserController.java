@@ -137,7 +137,6 @@ public class UserController {
     // 비밀번호 재설정 링크 보내기
     @PostMapping("/auth/password-reset-email")
     public ResponseEntity<CMResponseDto> sendPasswordResetLink(@RequestBody @Valid EmailRequestDto emailRequestDto) throws InvalidActivityException {
-        System.out.println("이메일 재설정 링크 전송컨트롤러");
         return ResponseEntity.status(HttpStatus.OK).body(userService.sendPasswordResetLink(emailRequestDto));
 
     }
@@ -145,12 +144,6 @@ public class UserController {
     //이메일인증 버튼 클릭시 토큰확인
     @PostMapping("/auth/password-reset-email/callback")
     public ResponseEntity<HashMap<String, String>> checkResetEmailToken(PasswordResetDto passwordResetDto) throws InvalidActivityException {
-//        UserResponseDto userResponseDto = userService.checkPasswordResetEmailToken(token, email, newPassword);
-//        response.setHeader("Access-Control-Allow-Origin", "https://chorok.kr");
-//        response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT");
-//        response.setHeader("Access-Control-Max-Age", "3600");
-//        response.setHeader("Access-Control-Allow-Headers", "x-requested-with, origin, content-type, accept");
-        System.out.println("이메일 재설정 링크 콜백 컨트롤러");
         return ResponseEntity.status(HttpStatus.OK).body(userService.checkPasswordResetEmailToken(passwordResetDto));
     }
 
