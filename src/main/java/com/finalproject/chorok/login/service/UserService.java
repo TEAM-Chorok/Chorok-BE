@@ -124,7 +124,7 @@ public class UserService {
 
     private void sendPwResetEmail(User user, String emailCheckToken) {
         System.out.println("sendSignupConfirmEmail 시작");
-        String path = "http://localhost:3000";
+        String path = "https://chorok.kr";
 
         Context context = new Context();
         context.setVariable("link2", path + "/changepwd?token=" + emailCheckToken +
@@ -258,7 +258,7 @@ public class UserService {
     @Transactional
     public LabelingResponseDto getLabelingPlant(LabelingDto labelingDto) {
         System.out.println("식물 검색하기 까지 들어옴");
-        Optional<Plant> labeledPlant = plantRepository.searchOnePlantByLabeling(labelingDto.getAnswer1(), labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
+        Optional<Plant> labeledPlant = getLabelingTest(labelingDto.getAnswer1(), labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
         boolean isResult = true;
         System.out.println("여기들어오나0"+labeledPlant);
         if (!labeledPlant.isPresent() && labelingDto.getAnswer1().equals("pl03")) {
@@ -321,5 +321,11 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return JwtTokenUtils.generateJwtToken(userDetails);
+    }
+
+    @Transactional
+    public Optional<Plant> getLabelingTest(String answer1, String answer2, String answer3, String answer4) {
+        System.out.println("식물 검색하기 까지 들어옴");
+        return plantRepository.searchOnePlantByLabeling(answer1, answer2, answer3, answer4);
     }
 }
