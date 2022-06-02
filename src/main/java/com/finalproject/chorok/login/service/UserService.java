@@ -156,7 +156,7 @@ public class UserService {
         String path = "https://chorok.kr";
 
         Context context = new Context();
-        context.setVariable("link", path + "/auth/password-reset-email?token=" + emailCheckToken +
+        context.setVariable("link", path + "/changepwd?token=" + emailCheckToken +
                 "&email=" + user.getUsername());
         System.out.println("서비스단2");
         String message = templateEngine.process("reset-password-link", context);
