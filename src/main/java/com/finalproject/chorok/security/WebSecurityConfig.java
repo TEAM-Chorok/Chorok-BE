@@ -4,9 +4,9 @@ package com.finalproject.chorok.security;
 import com.finalproject.chorok.security.filter.FormLoginFilter;
 import com.finalproject.chorok.security.filter.JwtAuthFilter;
 import com.finalproject.chorok.security.jwt.HeaderTokenExtractor;
+import com.finalproject.chorok.security.jwt.JwtDecoder;
 import com.finalproject.chorok.security.provider.FormLoginAuthProvider;
 import com.finalproject.chorok.security.provider.JWTAuthProvider;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -37,13 +37,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JWTAuthProvider jwtAuthProvider;
     private final HeaderTokenExtractor headerTokenExtractor;
+    private final JwtDecoder jwtDecoder;
 
     public WebSecurityConfig(
             JWTAuthProvider jwtAuthProvider,
-            HeaderTokenExtractor headerTokenExtractor
+            HeaderTokenExtractor headerTokenExtractor,
+            JwtDecoder jwtDecoder
     ) {
         this.jwtAuthProvider = jwtAuthProvider;
         this.headerTokenExtractor = headerTokenExtractor;
+        this.jwtDecoder = jwtDecoder;
     }
 
 //    @Bean
@@ -85,6 +88,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http
+                .exceptionHandling();
+//                .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
+
 
 /*
          * 1.
@@ -197,7 +204,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         JwtAuthFilter filter = new JwtAuthFilter(
                 matcher,
-                headerTokenExtractor
+                headerTokenExtractor,
+                jwtDecoder
         );
         filter.setAuthenticationManager(super.authenticationManagerBean());
 

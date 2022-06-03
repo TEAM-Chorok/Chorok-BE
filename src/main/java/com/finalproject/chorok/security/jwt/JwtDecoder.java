@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.Optional;
 
@@ -29,7 +31,9 @@ public class JwtDecoder {
 
         Date now = new Date();
         if (expiredDate.before(now)) {
+//            request.setAttribute("exception", ErrorCode.EXPIRED_TOKEN.getCode());
             throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
+
         }
 
         String username = decodedJWT
@@ -40,7 +44,7 @@ public class JwtDecoder {
     }
 
 
-    private Optional<DecodedJWT> isValidToken(String token) {
+    public Optional<DecodedJWT> isValidToken(String token) {
         DecodedJWT jwt = null;
 
         try {
