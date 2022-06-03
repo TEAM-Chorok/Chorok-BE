@@ -5,6 +5,8 @@ import com.finalproject.chorok.myPlant.model.MyPlant;
 import com.finalproject.chorok.todo.model.Todo;
 import com.finalproject.chorok.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,15 +16,18 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Component
-//@EnableScheduling // 아래의 클래스를 스케줄링 목적으로 사용하도록 하겠다는 명시
+@EnableScheduling // 아래의 클래스를 스케줄링 목적으로 사용하도록 하겠다는 명시
 @Configuration
 @RequiredArgsConstructor
+@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
+
 public class ScheduledTodo {
 
     private final TodoRepository todoRepository;
 
     //매일 00시 00분에 아래의 행위 반복
     @Scheduled(cron = "0 0 0 * * *")
+    @SchedulerLock(name="SchedulerLock",lockAtMostFor = "PT30S", lockAtLeastFor = "PT30S")
     public void autoTodo() {
 
 
