@@ -44,13 +44,13 @@ public class KakaoUserService {
 
     public KakaoUserResponseDto kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
+        System.out.println("코드"+code);
         String accessToken = getAccessToken(code);
+        System.out.println("액세스토큰"+accessToken);
         System.out.println("1.\"인가 코드\"로 \"액세스 토큰\" 요청");
-        System.out.println(code);
         // 2. 토큰으로 카카오 API 호출
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
         System.out.println("2. 토큰으로 카카오 API 호출, 액세스토큰");
-        System.out.println(accessToken);
         // 3. 필요시에 회원가입
 //        User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
@@ -112,7 +112,7 @@ public class KakaoUserService {
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        System.out.println(accessToken);
+        System.out.println("액세스토큰" + accessToken);
 
         // HTTP 요청 보내기
         HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
