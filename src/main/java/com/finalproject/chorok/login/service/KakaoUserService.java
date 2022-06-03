@@ -46,9 +46,11 @@ public class KakaoUserService {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
         System.out.println("1.\"인가 코드\"로 \"액세스 토큰\" 요청");
+        System.out.println(code);
         // 2. 토큰으로 카카오 API 호출
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
         System.out.println("2. 토큰으로 카카오 API 호출");
+        System.out.println(accessToken);
         // 3. 필요시에 회원가입
 //        User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
