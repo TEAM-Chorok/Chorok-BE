@@ -26,6 +26,7 @@ public class ScheduledTodo {
     private final TodoRepository todoRepository;
 
     //매일 00시 00분에 아래의 행위 반복
+    //스케줄러락 적용
     @Scheduled(cron = "0 0 0 * * *")
     @SchedulerLock(name="SchedulerLock",lockAtMostFor = "PT30S", lockAtLeastFor = "PT30S")
     public void autoTodo() {
