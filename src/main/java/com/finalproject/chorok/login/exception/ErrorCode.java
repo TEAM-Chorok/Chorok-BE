@@ -15,7 +15,7 @@ public enum ErrorCode {
 //    COUPON_NOT_FOUND(404, "C002", "Coupon Not Found");
 
 
-    private final int httpsStatus;
+    private final int httpStatus;
     private final String code;
     private final String message;
 
