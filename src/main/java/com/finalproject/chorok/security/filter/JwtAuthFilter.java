@@ -23,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.Date;
 
 import static com.finalproject.chorok.login.exception.ErrorCode.DONT_USE_THIS_TOKEN;
@@ -57,7 +58,6 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         // JWT 값을 담아주는 변수 TokenPayload
         String tokenPayload = request.getHeader("Authorization");
         if (tokenPayload == null) {
-//            response.sendRedirect("/auth/logIn");
             response.sendError(494, "로그인이 필요한 서비스입니다.");
             return null;
         }
@@ -68,11 +68,9 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         String nowToken = extractor.extract(tokenPayload, request);
 
 
-        //////////////////////////////
         try {
             DecodedJWT decodedJWT = jwtDecoder.isValidToken(nowToken)
-                    .orElseThrow(() -> new NamedParametersNotSupportedException("유효한 토큰 X"));
-//                    .orElseThrow(() -> new CustomException(DONT_USE_THIS_TOKEN));
+                    .orElseThrow(() -> new InvalidParameterException("유효하지 않은 토큰입니다."));
 
             Date expiredDate = decodedJWT
                     .getClaim(CLAIM_EXPIRED_DATE)
@@ -80,57 +78,36 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
             Date now = new Date();
             if (expiredDate.before(now)) {
-//            request.setAttribute("exception", ErrorCode.EXPIRED_TOKEN.getCode());
-                throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
+                throw new IllegalArgumentException("만료된 토큰입니다.");
 
             }
         }
-        catch (NamedParametersNotSupportedException e){
-            response.setStatus(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding("UTF-8");
-            ErrorObject errorObject = new ErrorObject("999", e.getMessage());
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(response.getWriter(), errorObject);
+        catch (InvalidParameterException e){
+            response.sendError(495, "유효하지 않은 토큰입니다.");
+//            response.setStatus(495);
+//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//            response.setCharacterEncoding("UTF-8");
+//            ErrorObject errorObject = new ErrorObject("998", e.getMessage());
+//            ObjectMapper mapper = new ObjectMapper();
+//            mapper.writeValue(response.getWriter(), errorObject);
         }
         catch (IllegalArgumentException e){
-            response.setStatus(HttpStatus.GATEWAY_TIMEOUT.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding("UTF-8");
-            ErrorObject errorObject = new ErrorObject("998", e.getMessage());
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(response.getWriter(), errorObject);
+            response.sendError(496, "만료된 토큰입니다.");
+
+//            response.setStatus(496);
+//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//            response.setCharacterEncoding("UTF-8");
+//            ErrorObject errorObject = new ErrorObject("999", e.getMessage());
+//            ObjectMapper mapper = new ObjectMapper();
+//            mapper.writeValue(response.getWriter(), errorObject);
         }
-//            DecodedJWT decodedJWT = jwtDecoder.isValidToken(nowToken)
-//                    .orElseThrow(() -> new CustomException(DONT_USE_THIS_TOKEN));
 
-
-
-//        if(expiredDate.before(new Date())){
-//            putErrorMessage(response, "만료된 토큰입니다.");
-//            return null;
-//
-//        }
-
-        /////////////////////////////////////////
 
         return super
                 .getAuthenticationManager()
                 .authenticate(jwtToken);
     }
 
-
-    private void putErrorMessage(HttpServletResponse response, String errorMessage) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf-8"); // HelloData 객체
-        RestApiException exception = new RestApiException();
-        exception.setHttpStatus(HttpStatus.BAD_REQUEST);
-//        exception.set(HttpStatus.BAD_REQUEST);
-        exception.setErrorMessage(errorMessage);
-        String result = mapper.writeValueAsString(exception);
-        response.getWriter().print(result);
-    }
 
     @Override
     protected void successfulAuthentication(
