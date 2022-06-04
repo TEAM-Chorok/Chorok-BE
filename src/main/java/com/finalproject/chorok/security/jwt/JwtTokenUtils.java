@@ -34,8 +34,8 @@ public final class JwtTokenUtils {
                     .withClaim(CLAIM_USER_ID, userDetails.getUserId())
                     .withClaim(CLAIM_NICK_NAME, userDetails.getNickname())
                      // 토큰 만료 일시 = 현재 시간 + 토큰 유효기간)
-                    .withClaim(CLAIM_EXPIRED_DATE, new Date(System.currentTimeMillis() + JWT_TOKEN_VALID_MILLI_SEC))
-//                    .withClaim(CLAIM_EXPIRED_DATE, new Date(System.currentTimeMillis() + 10000))
+//                    .withClaim(CLAIM_EXPIRED_DATE, new Date(System.currentTimeMillis() + JWT_TOKEN_VALID_MILLI_SEC))
+                    .withClaim(CLAIM_EXPIRED_DATE, new Date(System.currentTimeMillis() + 30000))
                     .sign(generateAlgorithm());
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -24,7 +24,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +48,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.jwtDecoder = jwtDecoder;
     }
 
-//    @Bean
-//    public UserDetailsServiceImpl userDetailsService() {
-//        return new UserDetailsServiceImpl();
-//    }
 
     @Bean
     public BCryptPasswordEncoder encodePassword() {
@@ -87,11 +82,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()
                 .csrf().disable()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .exceptionHandling();
-//                .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
-
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 /*
          * 1.
@@ -129,27 +120,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // "접근 불가" 페이지 URL 설정
 //                .accessDeniedPage("/forbidden.html");
     }
-
-    //cors
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.addAllowedOrigin("http://localhost:3000");
-//        configuration.addAllowedOrigin("http://localhost:8080");
-//        configuration.addAllowedMethod("*");
-//        configuration.addAllowedHeader("*");
-//        configuration.addExposedHeader("Authorization");
-////        configuration.addAllowedOrigin("http://52.79.233.178:8080");
-////        configuration.addAllowedOrigin("http://52.79.233.178:3000");
-////        configuration.addAllowedOrigin("http://52.79.233.178");
-////        configuration.addAllowedOrigin("/**"); //배포시
-////        configuration.addAllowedOrigin(""); //배포시
-//        configuration.setAllowCredentials(true);
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 
 
     @Bean
@@ -221,13 +191,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 @Bean
 public CorsConfigurationSource corsConfigurationSource(){
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
-    configuration.addAllowedOrigin("http://chorok-test.s3-website.ap-northeast-2.amazonaws.com");
+//    configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
     configuration.addAllowedOrigin("https://chorok.shop");
     configuration.addAllowedOrigin("https://chorok.kr");
-    configuration.addAllowedOrigin("http://chorok.kr");
     configuration.addAllowedOrigin("https://www.chorok.kr");
-    configuration.addAllowedOrigin("http://www.chorok.kr");
     configuration.addAllowedMethod("*");
     configuration.addAllowedMethod("GET");
     configuration.addAllowedMethod("POST");
@@ -241,24 +208,4 @@ public CorsConfigurationSource corsConfigurationSource(){
     return source;
 }
 
-
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.addAllowedOrigin("http://localhost:3000");
-//        configuration.addAllowedOrigin("http://localhost:8080");
-//        configuration.addAllowedMethod("*");
-//        configuration.addAllowedHeader("*");
-//        configuration.addExposedHeader("Authorization");
-////        configuration.addAllowedOrigin("http://52.79.233.178:8080");
-////        configuration.addAllowedOrigin("http://52.79.233.178:3000");
-////        configuration.addAllowedOrigin("http://52.79.233.178");
-////        configuration.addAllowedOrigin("/**"); //배포시
-////        configuration.addAllowedOrigin(""); //배포시
-//        configuration.setAllowCredentials(true);
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 }
