@@ -88,12 +88,10 @@ public class UserController {
             @RequestParam(value = "nickname") String nickname,
             @RequestParam(value = "profileImgUrl", required = false) MultipartFile multipartFile
     ) throws IOException {
-        System.out.println("들어오나");
         String profileImgUrl = null;
 
         if(multipartFile!=null){
             profileImgUrl = s3Uploader.upload(multipartFile, "static");
-            System.out.println("들어오나22");
         }
         SignupRequestDto signupRequestDto = new SignupRequestDto(username, password, nickname, profileImgUrl);
         return ResponseEntity.status(HttpStatus.OK).body(userService.registerUser(signupRequestDto));

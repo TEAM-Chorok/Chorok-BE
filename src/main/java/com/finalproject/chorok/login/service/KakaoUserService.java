@@ -44,19 +44,13 @@ public class KakaoUserService {
 
     public KakaoUserResponseDto kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
-        System.out.println("코드"+code);
         String accessToken = getAccessToken(code);
-        System.out.println("액세스토큰"+accessToken);
-        System.out.println("1.\"인가 코드\"로 \"액세스 토큰\" 요청");
         // 2. 토큰으로 카카오 API 호출
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
-        System.out.println("2. 토큰으로 카카오 API 호출, 액세스토큰");
         // 3. 필요시에 회원가입
 //        User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
-        System.out.println("3. 필요시에 회원가입");
         // 4. 강제 로그인 처리
-        System.out.println("4. 강제 로그인 처리");
         final String AUTH_HEADER = "Authorization";
         final String TOKEN_TYPE = "BEARER";
 
@@ -69,9 +63,6 @@ public class KakaoUserService {
                 .nickname(kakaoUser.getNickname())
                 .email(kakaoUser.getUsername())
                 .build();
-        System.out.println("kakao user's token : " + TOKEN_TYPE + " " + jwt_token);
-        System.out.println("LOGIN SUCCESS!");
-        System.out.println(kakaoUserResponseDto.getUserId());
         return kakaoUserResponseDto;
 
     }
@@ -98,7 +89,6 @@ public class KakaoUserService {
                 kakaoTokenRequest,
                 String.class
         );
-        System.out.println();
         // HTTP 응답 (JSON) -> 액세스 토큰 파싱
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -111,8 +101,6 @@ public class KakaoUserService {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-
-        System.out.println("액세스토큰" + accessToken);
 
         // HTTP 요청 보내기
         HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
@@ -127,8 +115,6 @@ public class KakaoUserService {
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
-        System.out.println("jsonNode");
-        System.out.println(jsonNode);
 
         Long id = jsonNode.get("id").asLong();
         String nickname = jsonNode.get("properties")
@@ -139,15 +125,12 @@ public class KakaoUserService {
         } else {
             email = jsonNode.get("kakao_account").get("email").asText();
         }
-        System.out.println("email 받아와짐");
 
         if(jsonNode.get("properties").get("profile_image")==null){
         } else {
             profileImage = jsonNode.get("properties").get("profile_image").asText();
         }
-        System.out.println(profileImage);
 
-        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email+ ", " + profileImage);
         return new KakaoUserInfoDto(id, nickname, email, profileImage);
     }
 
@@ -195,18 +178,14 @@ public class KakaoUserService {
 //        headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Authorization", "KakaoAK a9ba6acfe9d2580f14981aaa7fc2af9d"); //현정님 어드민키 넣어야함
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-        System.out.println("헤더");
         String kakaoIdString = String.valueOf(kakaoId);
         MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
         map.add("target_id_type", "user_id");
         map.add("target_id", kakaoIdString);
-        System.out.println("파라미터");
         // HTTP 요청 보내기
         HttpEntity<MultiValueMap<String, String>> kakaoLogoutRequest = new HttpEntity<MultiValueMap<String, String>>(map, headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange("https://kapi.kakao.com/v1/user/logout", HttpMethod.POST, kakaoLogoutRequest, String.class);
-        System.out.println("요청 잘 들어갔나");
-        System.out.println(response);
 
         return commUtils.responseHashMap(HttpStatus.OK);
     }

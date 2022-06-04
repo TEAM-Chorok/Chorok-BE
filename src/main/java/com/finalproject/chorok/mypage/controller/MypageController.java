@@ -142,7 +142,6 @@ public class MypageController {
             @RequestParam(value = "profileMsg", required = false) String profileMsg,
             @RequestParam(value = "originalUrl", required = false) String originalUrl,
             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        System.out.println("컨트롤러 들어오나");
         return ResponseEntity.status(HttpStatus.OK).body(mypageService.updateProfile(nickname,multipartFile, profileMsg, originalUrl, userDetails));
     }
 

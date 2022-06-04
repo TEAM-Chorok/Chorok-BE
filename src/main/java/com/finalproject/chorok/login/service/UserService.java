@@ -57,11 +57,9 @@ public class UserService {
     @Transactional
     public HashMap<String, String> registerUser(SignupRequestDto requestDto) {
         String msg = "회원인증 이메일 전송";
-        System.out.println("들어오나3");
         try {
             //회원가입 확인
             validator.signupValidate(requestDto);
-            System.out.println("들어오나4");
         } catch (IllegalArgumentException e) {
             msg = e.getMessage();
             return commUtils.errResponseHashMap(HttpStatus.BAD_REQUEST);
@@ -74,7 +72,6 @@ public class UserService {
 
         String emailCheckToken = UUID.randomUUID().toString();
         String profileImgUrl = requestDto.getProfileImgUrl();
-        System.out.println("들어오나5");
         User user = new User(username, password, nickname, emailCheckToken, profileImgUrl);
 
         //이메일 인증 코드부분
@@ -91,23 +88,19 @@ public class UserService {
 
     @Transactional
     public CMResponseDto sendPasswordResetLink(EmailRequestDto emailRequestDto) throws InvalidActivityException {
-        System.out.println("서비스단1");
         User findUser = userRepository.findByUsername(emailRequestDto.getEmail()).orElseThrow(
                 () -> new InvalidActivityException("존재하지 않는 이메일입니다.")
         );
-        System.out.println("이메일 존재여부 체크");
 
         String emailCheckToken = UUID.randomUUID().toString();
 //        redisUtil.set(emailCheckToken, findUser, 3 );
 
         sendPwResetEmail(findUser, emailCheckToken);
-        System.out.println("작업완료");
         return new CMResponseDto("true");
     }
 
 
     private void sendSignupConfirmEmail(User user) {
-        System.out.println("sendSignupConfirmEmail 시작");
         String path = "https://chorok.kr";
 
         Context context = new Context();
@@ -123,13 +116,11 @@ public class UserService {
     }
 
     private void sendPwResetEmail(User user, String emailCheckToken) {
-        System.out.println("sendSignupConfirmEmail 시작");
         String path = "https://chorok.kr";
 
         Context context = new Context();
         context.setVariable("link2", path + "/changepwd?token=" + emailCheckToken +
                 "&email=" + user.getUsername());
-        System.out.println("서비스단2");
         String message = templateEngine.process("reset-password-link", context);
         EmailMessage emailMessage = EmailMessage.builder()
                 .to(user.getUsername())
@@ -137,13 +128,11 @@ public class UserService {
                 .message(message)
                 .build();
         emailService.sendEmail(emailMessage);
-        System.out.println("서비스단3");
         redisUtil.set(user.getUsername(), emailCheckToken, 3);
     }
 
     //로그인 확인
     public IsLoginDto isloginChk(UserDetailsImpl userDetails) {
-        System.out.println("isloginChk함수 들어옴");
         String username = userDetails.getUsername();
         String nickname = userDetails.getUser().getNickname();
         Long userId = userDetails.getUser().getUserId();
@@ -157,7 +146,6 @@ public class UserService {
                 .profileImgUrl(profileImgUrl)
                 .profileMsg(profileMsg)
                 .build();
-        System.out.println("isLoginDto 만들어짐");
         return isLoginDto;
 
     }
@@ -251,31 +239,25 @@ public class UserService {
                 () -> new IllegalArgumentException("레이블링 오류입니다.")
         );
         labeling.update(labelingDto);
-        System.out.println("레이블링 업데이트 성공");
         return msg;
     }
 
     @Transactional
     public LabelingResponseDto getLabelingPlant(LabelingDto labelingDto) {
-        System.out.println("식물 검색하기 까지 들어옴");
         Optional<Plant> labeledPlant = getLabelingTest(labelingDto.getAnswer1(), labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
         boolean isResult = true;
-        System.out.println("여기들어오나0"+labeledPlant);
         if (!labeledPlant.isPresent() && labelingDto.getAnswer1().equals("pl03")) {
             labeledPlant = plantRepository.searchOnePlantByLabeling("pl02", labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
             if (!labeledPlant.isPresent()){
                 labeledPlant = plantRepository.searchOnePlantByLabeling("pl01", labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
             }
-            System.out.println("여기들어오나1"+labeledPlant);
         }
         if (!labeledPlant.isPresent() && labelingDto.getAnswer1().equals("pl02")) {
             labeledPlant = plantRepository.searchOnePlantByLabeling("pl01", labelingDto.getAnswer2(), labelingDto.getAnswer3(), labelingDto.getAnswer4());
-            System.out.println("여기들어오나2"+labeledPlant);
         }
         if (!labeledPlant.isPresent()) {
             labeledPlant = plantRepository.searchOneRandomPlantByLabeling();
             isResult = false;
-            System.out.println("여기들어오나3"+labeledPlant);
         }
         return new LabelingResponseDto(
                     labeledPlant.get().getPlantNo(),
@@ -287,7 +269,6 @@ public class UserService {
 
     @Transactional
     public List<LabelingResponseDto> getLabelingResults(UserDetailsImpl userDetails) {
-
         Optional<Labeling> labelingTested = labelingRepository.findByUser_UserId(userDetails.getUserId());
         if (labelingTested.isPresent()) {
             List<Plant> labeledPlants = plantRepository.searchThreePlantByLabeling(
@@ -325,7 +306,6 @@ public class UserService {
 
     @Transactional
     public Optional<Plant> getLabelingTest(String answer1, String answer2, String answer3, String answer4) {
-        System.out.println("식물 검색하기 까지 들어옴");
         return plantRepository.searchOnePlantByLabeling(answer1, answer2, answer3, answer4);
     }
 }

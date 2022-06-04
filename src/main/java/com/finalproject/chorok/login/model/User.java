@@ -82,32 +82,26 @@ public class User {
 
     public void changeUsername(String username) {
         this.username = username;
-        System.out.println("유저 아이디 바꾸기");
     }
 
     public void changePassword(String tempPassword) {
         this.password = tempPassword;
-        System.out.println("유저 비밀번호 바꾸기");
     }
 
     public void changeNickname(String nickname) {
         this.nickname = nickname;
-        System.out.println("유저 닉네임 바꾸기");
     }
 
     public void changeProfileImage(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
-        System.out.println("유저 프로필 이미지 바꾸기");
     }
 
     public void changeProfileMsg(String profileMsg) {
         this.profileMsg = profileMsg;
-        System.out.println("유저 프로필 메세지 바꾸기");
     }
 
     public void changeEmailChkToken(String emailCheckToken) {
         this.emailCheckToken = emailCheckToken;
-        System.out.println("emailChkToken 바꾸기");
     }
 
     public boolean isValidToken(String token) {
