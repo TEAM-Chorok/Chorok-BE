@@ -1,7 +1,6 @@
 package com.finalproject.chorok.security.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.finalproject.chorok.login.exception.RestApiException;
 import com.finalproject.chorok.security.jwt.HeaderTokenExtractor;
 import com.finalproject.chorok.security.jwt.JwtDecoder;
 import com.finalproject.chorok.security.jwt.JwtPreProcessingToken;
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.Date;
 
-import static com.finalproject.chorok.login.exception.ErrorCode.DONT_USE_THIS_TOKEN;
 import static com.finalproject.chorok.security.jwt.JwtTokenUtils.CLAIM_EXPIRED_DATE;
 
 /**
