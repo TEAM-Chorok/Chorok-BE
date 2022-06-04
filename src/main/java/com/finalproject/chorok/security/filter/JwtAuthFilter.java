@@ -1,16 +1,10 @@
 package com.finalproject.chorok.security.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.finalproject.chorok.login.exception.CustomException;
 import com.finalproject.chorok.login.exception.RestApiException;
 import com.finalproject.chorok.security.jwt.HeaderTokenExtractor;
 import com.finalproject.chorok.security.jwt.JwtDecoder;
 import com.finalproject.chorok.security.jwt.JwtPreProcessingToken;
-import com.nimbusds.oauth2.sdk.ErrorObject;
-import org.hibernate.procedure.NamedParametersNotSupportedException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -68,6 +62,7 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         String nowToken = extractor.extract(tokenPayload, request);
 
 
+        // 유효하지 않은 토큰, 만료된 토큰 에러처리
         try {
             DecodedJWT decodedJWT = jwtDecoder.isValidToken(nowToken)
                     .orElseThrow(() -> new InvalidParameterException("유효하지 않은 토큰입니다."));
@@ -79,27 +74,13 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
             Date now = new Date();
             if (expiredDate.before(now)) {
                 throw new IllegalArgumentException("만료된 토큰입니다.");
-
             }
         }
         catch (InvalidParameterException e){
             response.sendError(495, "유효하지 않은 토큰입니다.");
-//            response.setStatus(495);
-//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-//            response.setCharacterEncoding("UTF-8");
-//            ErrorObject errorObject = new ErrorObject("998", e.getMessage());
-//            ObjectMapper mapper = new ObjectMapper();
-//            mapper.writeValue(response.getWriter(), errorObject);
         }
         catch (IllegalArgumentException e){
             response.sendError(496, "만료된 토큰입니다.");
-
-//            response.setStatus(496);
-//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-//            response.setCharacterEncoding("UTF-8");
-//            ErrorObject errorObject = new ErrorObject("999", e.getMessage());
-//            ObjectMapper mapper = new ObjectMapper();
-//            mapper.writeValue(response.getWriter(), errorObject);
         }
 
 
