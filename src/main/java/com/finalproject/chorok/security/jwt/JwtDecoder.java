@@ -31,7 +31,6 @@ public class JwtDecoder {
 
         Date now = new Date();
         if (expiredDate.before(now)) {
-//            request.setAttribute("exception", ErrorCode.EXPIRED_TOKEN.getCode());
             throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
 
         }

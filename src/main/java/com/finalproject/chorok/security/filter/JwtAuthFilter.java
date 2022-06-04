@@ -7,7 +7,10 @@ import com.finalproject.chorok.login.exception.RestApiException;
 import com.finalproject.chorok.security.jwt.HeaderTokenExtractor;
 import com.finalproject.chorok.security.jwt.JwtDecoder;
 import com.finalproject.chorok.security.jwt.JwtPreProcessingToken;
+import com.nimbusds.oauth2.sdk.ErrorObject;
+import org.hibernate.procedure.NamedParametersNotSupportedException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -66,19 +69,48 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
 
         //////////////////////////////
+        try {
+            DecodedJWT decodedJWT = jwtDecoder.isValidToken(nowToken)
+                    .orElseThrow(() -> new NamedParametersNotSupportedException("유효한 토큰 X"));
+//                    .orElseThrow(() -> new CustomException(DONT_USE_THIS_TOKEN));
 
-        DecodedJWT decodedJWT = jwtDecoder.isValidToken(nowToken)
-                .orElseThrow(() -> new CustomException(DONT_USE_THIS_TOKEN));
+            Date expiredDate = decodedJWT
+                    .getClaim(CLAIM_EXPIRED_DATE)
+                    .asDate();
 
-        Date expiredDate = decodedJWT
-                .getClaim(CLAIM_EXPIRED_DATE)
-                .asDate();
+            Date now = new Date();
+            if (expiredDate.before(now)) {
+//            request.setAttribute("exception", ErrorCode.EXPIRED_TOKEN.getCode());
+                throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
 
-        if(expiredDate.before(new Date())){
-            putErrorMessage(response, "만료된 토큰입니다.");
-            return null;
-
+            }
         }
+        catch (NamedParametersNotSupportedException e){
+            response.setStatus(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding("UTF-8");
+            ErrorObject errorObject = new ErrorObject("999", e.getMessage());
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getWriter(), errorObject);
+        }
+        catch (IllegalArgumentException e){
+            response.setStatus(HttpStatus.GATEWAY_TIMEOUT.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding("UTF-8");
+            ErrorObject errorObject = new ErrorObject("998", e.getMessage());
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getWriter(), errorObject);
+        }
+//            DecodedJWT decodedJWT = jwtDecoder.isValidToken(nowToken)
+//                    .orElseThrow(() -> new CustomException(DONT_USE_THIS_TOKEN));
+
+
+
+//        if(expiredDate.before(new Date())){
+//            putErrorMessage(response, "만료된 토큰입니다.");
+//            return null;
+//
+//        }
 
         /////////////////////////////////////////
 
