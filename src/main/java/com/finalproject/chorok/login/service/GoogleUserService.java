@@ -90,8 +90,6 @@ public class GoogleUserService {
                 .username(googleUser.getUsername())
                 .nickname(googleUser.getNickname())
                 .build();
-        System.out.println("Google user's token : " + TOKEN_TYPE + " " + jwt_token);
-        System.out.println("LOGIN SUCCESS!");
         return googleUserResponseDto;
     }
 
