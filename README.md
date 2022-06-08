@@ -75,3 +75,9 @@ Chorok은 식물 집사들을 위한 일정관리 및 커뮤니티 서비스입�
 
 <br/>
 <br/>
+
+[![Video Label](http://img.youtube.com/vi/-KQNzxRhB94/0.jpg)](https://youtu.be/-KQNzxRhB94?t=0s)
+https://youtu.be/-KQNzxRhB94 
+
+<br/>
+<br/>
